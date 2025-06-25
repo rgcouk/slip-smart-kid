@@ -37,6 +37,8 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
   const currentStepData = steps.find(step => step.number === currentStep);
   const CurrentStepComponent = currentStepData?.component;
 
+  const canProceedToNext = canProceed();
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-blue-100">
       <ProgressIndicator steps={steps} currentStep={currentStep} />
@@ -56,7 +58,7 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
       <StepNavigation
         currentStep={currentStep}
         totalSteps={5}
-        canProceed={canProceed()}
+        canProceed={canProceedToNext}
         isLoading={isLoading}
         onPrevStep={prevStep}
         onNextStep={nextStep}

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Mail, Edit } from 'lucide-react';
+import { Download, Mail, Edit, Save } from 'lucide-react';
 
 interface PreviewStepProps {
   payslipData: any;
@@ -25,7 +25,7 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
     <div className="space-y-6">
       <div className="text-center mb-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-2">Payslip Preview</h2>
-        <p className="text-gray-600">Review your payslip before generating</p>
+        <p className="text-gray-600">Review your payslip before saving</p>
       </div>
 
       {/* Payslip Preview */}
@@ -34,6 +34,7 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
         <div className="text-center border-b border-gray-200 pb-4 mb-6">
           <h1 className="text-2xl font-bold text-blue-900">PAYSLIP</h1>
           <p className="text-gray-600 mt-1">Pay Period: {formatPeriod(payslipData.period)}</p>
+          <p className="text-gray-600 text-sm">{payslipData.companyName}</p>
         </div>
 
         {/* Employee Info */}
@@ -99,21 +100,16 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="space-y-3">
-        <Button className="w-full bg-blue-600 hover:bg-blue-700">
+      {/* Future Action Buttons (for later implementation) */}
+      <div className="space-y-3 opacity-50">
+        <Button disabled className="w-full bg-blue-600 hover:bg-blue-700">
           <Download className="h-4 w-4 mr-2" />
-          Download PDF
+          Download PDF (Coming Soon)
         </Button>
         
-        <Button variant="outline" className="w-full">
+        <Button disabled variant="outline" className="w-full">
           <Mail className="h-4 w-4 mr-2" />
-          Email Payslip
-        </Button>
-
-        <Button variant="ghost" className="w-full">
-          <Edit className="h-4 w-4 mr-2" />
-          Edit Details
+          Email Payslip (Coming Soon)
         </Button>
       </div>
 

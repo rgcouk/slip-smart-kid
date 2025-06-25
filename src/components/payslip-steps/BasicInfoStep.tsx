@@ -18,7 +18,8 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode, selec
       ...payslipData,
       name: selectedChild?.name || 'John Smith',
       period: '2025-01',
-      grossPay: 5000
+      grossPay: 5000,
+      companyName: 'SlipSim Company'
     });
   };
 
@@ -48,6 +49,19 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode, selec
             value={payslipData.name}
             onChange={(e) => setPayslipData({ ...payslipData, name: e.target.value })}
             placeholder="Enter full name"
+            className="mt-1"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="companyName" className="text-sm font-medium text-gray-700">
+            Company Name
+          </Label>
+          <Input
+            id="companyName"
+            value={payslipData.companyName}
+            onChange={(e) => setPayslipData({ ...payslipData, companyName: e.target.value })}
+            placeholder="Enter company name"
             className="mt-1"
           />
         </div>

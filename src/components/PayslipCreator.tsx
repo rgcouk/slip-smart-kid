@@ -5,11 +5,15 @@ import { DeductionsStep } from './payslip-steps/DeductionsStep';
 import { PreviewStep } from './payslip-steps/PreviewStep';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface PayslipData {
   name: string;
   period: string;
   grossPay: number;
+  companyName: string;
   deductions: Array<{
     id: string;
     name: string;
@@ -26,10 +30,15 @@ interface PayslipCreatorProps {
 
 export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorProps) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  
   const [payslipData, setPayslipData] = useState<PayslipData>({
     name: '',
     period: '',
     grossPay: 0,
+    companyName: 'SlipSim Company',
     deductions: []
   });
 
@@ -55,11 +64,88 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
       case 1:
         return payslipData.name && payslipData.period && payslipData.grossPay > 0;
       case 2:
-        return true; // Can always proceed from deductions
+        return true;
       case 3:
         return true;
       default:
         return false;
+    }
+  };
+
+  const calculateNetSalary = () => {
+    const totalDeductions = payslipData.deductions.reduce((sum, d) => sum + d.amount, 0);
+    return payslipData.grossPay - totalDeductions;
+  };
+
+  const savePayslip = async () => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to save payslips",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      // Parse period to get start and end dates
+      const [year, month] = payslipData.period.split('-');
+      const payPeriodStart = `${year}-${month}-01`;
+      const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
+      const payPeriodEnd = `${year}-${month}-${lastDay.toString().padStart(2, '0')}`;
+
+      const netSalary = calculateNetSalary();
+
+      const payslipRecord = {
+        user_id: user.id,
+        child_id: isParentMode && selectedChild ? selectedChild.id : null,
+        employee_name: payslipData.name,
+        company_name: payslipData.companyName,
+        pay_period_start: payPeriodStart,
+        pay_period_end: payPeriodEnd,
+        gross_salary: payslipData.grossPay,
+        deductions: payslipData.deductions,
+        net_salary: netSalary
+      };
+
+      const { error } = await supabase
+        .from('payslips')
+        .insert([payslipRecord]);
+
+      if (error) {
+        console.error('Error saving payslip:', error);
+        toast({
+          title: "Error",
+          description: "Failed to save payslip. Please try again.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "Payslip saved successfully!",
+        });
+        
+        // Reset form for new payslip
+        setPayslipData({
+          name: '',
+          period: '',
+          grossPay: 0,
+          companyName: 'SlipSim Company',
+          deductions: []
+        });
+        setCurrentStep(1);
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -126,8 +212,12 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
             <ArrowRight className="h-4 w-4" />
           </Button>
         ) : (
-          <Button className="bg-green-600 hover:bg-green-700">
-            Generate Payslip
+          <Button 
+            onClick={savePayslip}
+            disabled={isLoading}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            {isLoading ? 'Saving...' : 'Save Payslip'}
           </Button>
         )}
       </div>

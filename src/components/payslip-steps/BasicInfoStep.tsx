@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
+import { useLocale } from '@/hooks/useLocale';
 
 interface BasicInfoStepProps {
   payslipData: any;
@@ -13,10 +14,13 @@ interface BasicInfoStepProps {
 }
 
 export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode, selectedChild }: BasicInfoStepProps) => {
+  const { config } = useLocale();
+  
   const fillExampleData = () => {
     setPayslipData({
       ...payslipData,
       name: selectedChild?.name || 'John Smith',
+      payrollNumber: 'EMP001234',
       period: '2025-01',
       grossPay: 5000,
       companyName: 'SlipSim Company'
@@ -54,6 +58,19 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode, selec
         </div>
 
         <div>
+          <Label htmlFor="payrollNumber" className="text-sm font-medium text-gray-700">
+            Payroll Number
+          </Label>
+          <Input
+            id="payrollNumber"
+            value={payslipData.payrollNumber || ''}
+            onChange={(e) => setPayslipData({ ...payslipData, payrollNumber: e.target.value })}
+            placeholder="Enter payroll number"
+            className="mt-1"
+          />
+        </div>
+
+        <div>
           <Label htmlFor="companyName" className="text-sm font-medium text-gray-700">
             Company Name
           </Label>
@@ -81,7 +98,7 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode, selec
 
         <div>
           <Label htmlFor="grossPay" className="text-sm font-medium text-gray-700">
-            Gross Pay ($)
+            Gross Pay ({config.currency})
           </Label>
           <Input
             id="grossPay"

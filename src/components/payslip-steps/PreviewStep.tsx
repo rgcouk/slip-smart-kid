@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Download, Mail, Edit, Save } from 'lucide-react';
+import { useLocale } from '@/hooks/useLocale';
 
 interface PreviewStepProps {
   payslipData: any;
@@ -11,13 +12,14 @@ interface PreviewStepProps {
 }
 
 export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: PreviewStepProps) => {
+  const { locale, config } = useLocale();
   const totalDeductions = payslipData.deductions.reduce((sum: number, d: any) => sum + d.amount, 0);
   const netPay = payslipData.grossPay - totalDeductions;
 
   // Calculate YTD values (for demo purposes, multiplying by period number)
   const getCurrentPeriodNumber = () => {
     if (!payslipData.period) return 1;
-    const [year, month] = payslipData.period.ytd('-');
+    const [year, month] = payslipData.period.split('-');
     return parseInt(month);
   };
 
@@ -37,9 +39,15 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
     if (!payslipData.period) return '';
     const [year, month] = payslipData.period.split('-');
     const currentYear = parseInt(year);
-    // UK tax year runs from April to March
-    const taxYearStart = parseInt(month) >= 4 ? currentYear : currentYear - 1;
-    return `${taxYearStart}/${(taxYearStart + 1).toString().slice(2)}`;
+    
+    if (locale === 'UK') {
+      // UK tax year runs from April to March
+      const taxYearStart = parseInt(month) >= 4 ? currentYear : currentYear - 1;
+      return `${taxYearStart}/${(taxYearStart + 1).toString().slice(2)}`;
+    } else {
+      // US tax year is calendar year
+      return currentYear.toString();
+    }
   };
 
   return (
@@ -70,6 +78,12 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
                 <span className="text-gray-600">Name:</span>
                 <span className="font-medium">{payslipData.name}</span>
               </div>
+              {payslipData.payrollNumber && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Payroll Number:</span>
+                  <span className="font-medium">{payslipData.payrollNumber}</span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="text-gray-600">Company:</span>
                 <span className="font-medium">{payslipData.companyName}</span>
@@ -95,12 +109,12 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
             <div className="p-4 space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Gross Pay</span>
-                <span className="font-medium">£{payslipData.grossPay.toFixed(2)}</span>
+                <span className="font-medium">{config.currency}{payslipData.grossPay.toFixed(2)}</span>
               </div>
               <div className="border-t border-gray-200 pt-2 mt-4">
                 <div className="flex justify-between font-semibold">
                   <span>Total</span>
-                  <span>£{payslipData.grossPay.toFixed(2)}</span>
+                  <span>{config.currency}{payslipData.grossPay.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -117,13 +131,13 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
                   {payslipData.deductions.map((deduction: any) => (
                     <div key={deduction.id} className="flex justify-between">
                       <span className="text-gray-600">{deduction.name}</span>
-                      <span className="font-medium">£{deduction.amount.toFixed(2)}</span>
+                      <span className="font-medium">{config.currency}{deduction.amount.toFixed(2)}</span>
                     </div>
                   ))}
                   <div className="border-t border-gray-200 pt-2 mt-4">
                     <div className="flex justify-between font-semibold">
                       <span>Total</span>
-                      <span>£{totalDeductions.toFixed(2)}</span>
+                      <span>{config.currency}{totalDeductions.toFixed(2)}</span>
                     </div>
                   </div>
                 </>
@@ -144,16 +158,16 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
             <div className="p-4 space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Gross Pay</span>
-                <span className="font-medium">£{payslipData.grossPay.toFixed(2)}</span>
+                <span className="font-medium">{config.currency}{payslipData.grossPay.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Total Deductions</span>
-                <span className="font-medium">£{totalDeductions.toFixed(2)}</span>
+                <span className="font-medium">{config.currency}{totalDeductions.toFixed(2)}</span>
               </div>
               <div className="border-t border-gray-200 pt-2 mt-2">
                 <div className="flex justify-between font-semibold">
                   <span>Net Pay</span>
-                  <span>£{netPay.toFixed(2)}</span>
+                  <span>{config.currency}{netPay.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -167,16 +181,16 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
             <div className="p-4 space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Gross Pay</span>
-                <span className="font-medium">£{ytdGrossPay.toFixed(2)}</span>
+                <span className="font-medium">{config.currency}{ytdGrossPay.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Total Deductions</span>
-                <span className="font-medium">£{ytdTotalDeductions.toFixed(2)}</span>
+                <span className="font-medium">{config.currency}{ytdTotalDeductions.toFixed(2)}</span>
               </div>
               <div className="border-t border-gray-200 pt-2 mt-2">
                 <div className="flex justify-between font-semibold">
                   <span>Net Pay</span>
-                  <span>£{ytdNetPay.toFixed(2)}</span>
+                  <span>{config.currency}{ytdNetPay.toFixed(2)}</span>
                 </div>
               </div>
             </div>

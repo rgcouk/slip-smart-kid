@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface PayslipData {
   name: string;
+  payrollNumber: string;
   period: string;
   grossPay: number;
   companyName: string;
@@ -36,6 +37,7 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
   
   const [payslipData, setPayslipData] = useState<PayslipData>({
     name: '',
+    payrollNumber: '',
     period: '',
     grossPay: 0,
     companyName: 'SlipSim Company',
@@ -102,6 +104,7 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
         user_id: user.id,
         child_id: isParentMode && selectedChild ? selectedChild.id : null,
         employee_name: payslipData.name,
+        payroll_number: payslipData.payrollNumber,
         company_name: payslipData.companyName,
         pay_period_start: payPeriodStart,
         pay_period_end: payPeriodEnd,
@@ -130,6 +133,7 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
         // Reset form for new payslip
         setPayslipData({
           name: '',
+          payrollNumber: '',
           period: '',
           grossPay: 0,
           companyName: 'SlipSim Company',

@@ -1,8 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Dialog,
   DialogContent,
@@ -11,11 +9,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Download, Mail, Loader2, CheckCircle, XCircle, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generatePayslipPDF, generatePayslipBlob } from '@/utils/pdfGenerator';
 import { useLocale } from '@/hooks/useLocale';
-import { PDFPreview } from './PDFPreview';
+import { PreviewSection } from './export/PreviewSection';
+import { DownloadSection } from './export/DownloadSection';
+import { EmailSection } from './export/EmailSection';
 
 interface ExportOverlayProps {
   isOpen: boolean;
@@ -96,14 +95,9 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
     try {
       console.log('Generating PDF for email to:', email);
       
-      // Generate PDF blob for email attachment
       const pdfBlob = await generatePayslipBlob(payslipData, config.currency);
-      
-      // In a real implementation, you would send this blob via email API
-      // For now, we'll simulate the email sending and download the PDF
       const fileName = `payslip-${payslipData.name.replace(/\s+/g, '-').toLowerCase()}-${payslipData.period}.pdf`;
       
-      // Create download link for the blob (simulating email attachment)
       const url = URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
       link.href = url;
@@ -113,7 +107,6 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
-      // Simulate email API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       setEmailStatus('success');
@@ -148,7 +141,6 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
     onClose();
   };
 
-  // Auto-generate preview when overlay opens
   useEffect(() => {
     if (isOpen && !pdfBlob) {
       generatePreview();
@@ -166,98 +158,26 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* PDF Preview Section */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Label className="text-sm font-medium">PDF Preview</Label>
-              <Button
-                onClick={generatePreview}
-                disabled={isGeneratingPreview}
-                variant="outline"
-                size="sm"
-              >
-                {isGeneratingPreview ? (
-                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                ) : (
-                  <Eye className="h-3 w-3 mr-1" />
-                )}
-                {isGeneratingPreview ? 'Generating...' : 'Refresh Preview'}
-              </Button>
-            </div>
-            
-            {showPreview && pdfBlob ? (
-              <PDFPreview pdfBlob={pdfBlob} />
-            ) : isGeneratingPreview ? (
-              <div className="flex items-center justify-center p-8 bg-gray-100 rounded-lg">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-                <span className="ml-2 text-gray-600">Generating PDF preview...</span>
-              </div>
-            ) : null}
-          </div>
+          <PreviewSection
+            isGeneratingPreview={isGeneratingPreview}
+            showPreview={showPreview}
+            pdfBlob={pdfBlob}
+            onGeneratePreview={generatePreview}
+          />
 
-          {/* Download Section */}
-          <div className="space-y-3">
-            <Label className="text-sm font-medium">Download PDF</Label>
-            <div className="flex items-center gap-3">
-              <Button
-                onClick={handleDownload}
-                disabled={isDownloading}
-                className="flex-1"
-                variant="outline"
-              >
-                {isDownloading ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Download className="h-4 w-4 mr-2" />
-                )}
-                {isDownloading ? 'Generating PDF...' : 'Download PDF'}
-              </Button>
-              {downloadStatus === 'success' && (
-                <CheckCircle className="h-5 w-5 text-green-600" />
-              )}
-              {downloadStatus === 'error' && (
-                <XCircle className="h-5 w-5 text-red-600" />
-              )}
-            </div>
-          </div>
+          <DownloadSection
+            isDownloading={isDownloading}
+            downloadStatus={downloadStatus}
+            onDownload={handleDownload}
+          />
 
-          {/* Email Section */}
-          <div className="space-y-3">
-            <Label htmlFor="email" className="text-sm font-medium">
-              Email Payslip
-            </Label>
-            <div className="space-y-2">
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isEmailing}
-              />
-              <div className="flex items-center gap-3">
-                <Button
-                  onClick={handleEmailSend}
-                  disabled={isEmailing || !email}
-                  className="flex-1"
-                  variant="outline"
-                >
-                  {isEmailing ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <Mail className="h-4 w-4 mr-2" />
-                  )}
-                  {isEmailing ? 'Preparing...' : 'Send Email'}
-                </Button>
-                {emailStatus === 'success' && (
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                )}
-                {emailStatus === 'error' && (
-                  <XCircle className="h-5 w-5 text-red-600" />
-                )}
-              </div>
-            </div>
-          </div>
+          <EmailSection
+            email={email}
+            isEmailing={isEmailing}
+            emailStatus={emailStatus}
+            onEmailChange={setEmail}
+            onEmailSend={handleEmailSend}
+          />
 
           <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded">
             <strong>Note:</strong> The PDF preview shows exactly how your downloaded payslip will appear. 

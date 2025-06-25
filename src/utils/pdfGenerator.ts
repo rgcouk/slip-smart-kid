@@ -44,8 +44,7 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
       logging: false,
       imageTimeout: 15000,
       removeContainer: true,
-      foreignObjectRendering: true, // Better text rendering
-      letterRendering: true // Improved font rendering
+      foreignObjectRendering: true // Better text rendering
     });
 
     // Calculate PDF dimensions for A4 (210 x 297mm)
@@ -103,8 +102,7 @@ export const generatePayslipBlob = async (payslipData: PayslipData, currency: st
       logging: false,
       imageTimeout: 15000,
       removeContainer: true,
-      foreignObjectRendering: true,
-      letterRendering: true
+      foreignObjectRendering: true
     });
 
     const imgWidth = 210;

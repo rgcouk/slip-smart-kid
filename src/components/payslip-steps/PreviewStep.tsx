@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Mail, Edit, Save } from 'lucide-react';
+import { Download, Mail, Edit, Save, Share } from 'lucide-react';
 import { useLocale } from '@/hooks/useLocale';
+import { ExportOverlay } from './ExportOverlay';
 
 interface PreviewStepProps {
   payslipData: any;
@@ -13,6 +14,8 @@ interface PreviewStepProps {
 
 export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: PreviewStepProps) => {
   const { locale, config } = useLocale();
+  const [isExportOverlayOpen, setIsExportOverlayOpen] = useState(false);
+  
   const totalDeductions = payslipData.deductions.reduce((sum: number, d: any) => sum + d.amount, 0);
   const netPay = payslipData.grossPay - totalDeductions;
 
@@ -244,16 +247,14 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
         </div>
       </div>
 
-      {/* Future Action Buttons (for later implementation) */}
-      <div className="space-y-3 opacity-50">
-        <Button disabled className="w-full bg-blue-600 hover:bg-blue-700">
-          <Download className="h-4 w-4 mr-2" />
-          Download PDF (Coming Soon)
-        </Button>
-        
-        <Button disabled variant="outline" className="w-full">
-          <Mail className="h-4 w-4 mr-2" />
-          Email Payslip (Coming Soon)
+      {/* Export and Share Actions */}
+      <div className="space-y-3">
+        <Button 
+          onClick={() => setIsExportOverlayOpen(true)}
+          className="w-full bg-blue-600 hover:bg-blue-700"
+        >
+          <Share className="h-4 w-4 mr-2" />
+          Export & Share
         </Button>
       </div>
 
@@ -266,6 +267,13 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
           </p>
         </div>
       )}
+
+      {/* Export Overlay */}
+      <ExportOverlay
+        isOpen={isExportOverlayOpen}
+        onClose={() => setIsExportOverlayOpen(false)}
+        payslipData={payslipData}
+      />
     </div>
   );
 };

@@ -16,7 +16,7 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
   const totalDeductions = payslipData.deductions.reduce((sum: number, d: any) => sum + d.amount, 0);
   const netPay = payslipData.grossPay - totalDeductions;
 
-  // Calculate YTD values (for demo purposes, multiplying by period number)
+  // Calculate YTD values
   const getCurrentPeriodNumber = () => {
     if (!payslipData.period) return 1;
     const [year, month] = payslipData.period.split('-');
@@ -24,9 +24,13 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
   };
 
   const periodNumber = getCurrentPeriodNumber();
-  const ytdGrossPay = payslipData.grossPay * periodNumber;
-  const ytdTotalDeductions = totalDeductions * periodNumber;
-  const ytdNetPay = netPay * periodNumber;
+  
+  // Use override values if available, otherwise calculate automatically
+  const ytdValues = payslipData.ytdOverride || {
+    grossPay: payslipData.grossPay * periodNumber,
+    totalDeductions: totalDeductions * periodNumber,
+    netPay: netPay * periodNumber
+  };
 
   const formatPeriod = (period: string) => {
     if (!period) return '';
@@ -41,11 +45,9 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
     const currentYear = parseInt(year);
     
     if (locale === 'UK') {
-      // UK tax year runs from April to March
       const taxYearStart = parseInt(month) >= 4 ? currentYear : currentYear - 1;
       return `${taxYearStart}/${(taxYearStart + 1).toString().slice(2)}`;
     } else {
-      // US tax year is calendar year
       return currentYear.toString();
     }
   };
@@ -59,15 +61,48 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
 
       {/* Payslip Preview */}
       <div className="bg-white border-2 border-gray-200 rounded-lg p-6 shadow-sm">
-        {/* Header */}
+        {/* Header with Logo */}
         <div className="text-center border-b border-gray-200 pb-4 mb-6">
+          {payslipData.companyLogo && (
+            <div className="mb-4">
+              <img
+                src={payslipData.companyLogo}
+                alt="Company Logo"
+                className="h-16 w-auto mx-auto"
+              />
+            </div>
+          )}
           <h1 className="text-2xl font-bold text-gray-900">PAYSLIP</h1>
           <p className="text-gray-600 mt-1">Pay Period: {formatPeriod(payslipData.period)}</p>
           <p className="text-sm text-gray-500">Tax Year: {getTaxYear()}</p>
         </div>
 
-        {/* Three Column Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        {/* Company and Employee Info */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {/* Company Details */}
+          <div className="border border-gray-200 rounded">
+            <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
+              <h3 className="font-semibold text-gray-800">Company Details</h3>
+            </div>
+            <div className="p-4 space-y-2 text-sm">
+              <div>
+                <span className="font-medium">{payslipData.companyName}</span>
+              </div>
+              {payslipData.companyAddress && (
+                <div className="text-gray-600">{payslipData.companyAddress}</div>
+              )}
+              {payslipData.companyPhone && (
+                <div className="text-gray-600">Tel: {payslipData.companyPhone}</div>
+              )}
+              {payslipData.companyEmail && (
+                <div className="text-gray-600">Email: {payslipData.companyEmail}</div>
+              )}
+              {payslipData.companyRegistration && (
+                <div className="text-gray-600">Reg: {payslipData.companyRegistration}</div>
+              )}
+            </div>
+          </div>
+
           {/* Employee Details */}
           <div className="border border-gray-200 rounded">
             <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
@@ -85,10 +120,6 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-gray-600">Company:</span>
-                <span className="font-medium">{payslipData.companyName}</span>
-              </div>
-              <div className="flex justify-between">
                 <span className="text-gray-600">Pay Period:</span>
                 <span className="font-medium">{formatPeriod(payslipData.period)}</span>
               </div>
@@ -100,7 +131,10 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
               )}
             </div>
           </div>
+        </div>
 
+        {/* Payments and Deductions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {/* Payments */}
           <div className="border border-gray-200 rounded">
             <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
@@ -176,21 +210,28 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
           {/* Year to Date */}
           <div className="border border-gray-200 rounded">
             <div className="bg-blue-50 px-4 py-2 border-b border-gray-200">
-              <h3 className="font-semibold text-blue-800">Year to Date</h3>
+              <h3 className="font-semibold text-blue-800">
+                Year to Date
+                {payslipData.ytdOverride && (
+                  <span className="ml-2 text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">
+                    Manual
+                  </span>
+                )}
+              </h3>
             </div>
             <div className="p-4 space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Gross Pay</span>
-                <span className="font-medium">{config.currency}{ytdGrossPay.toFixed(2)}</span>
+                <span className="font-medium">{config.currency}{ytdValues.grossPay.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Total Deductions</span>
-                <span className="font-medium">{config.currency}{ytdTotalDeductions.toFixed(2)}</span>
+                <span className="font-medium">{config.currency}{ytdValues.totalDeductions.toFixed(2)}</span>
               </div>
               <div className="border-t border-gray-200 pt-2 mt-2">
                 <div className="flex justify-between font-semibold">
                   <span>Net Pay</span>
-                  <span>{config.currency}{ytdNetPay.toFixed(2)}</span>
+                  <span>{config.currency}{ytdValues.netPay.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -220,8 +261,8 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <h3 className="font-medium text-green-800 mb-2">🎉 Great Job!</h3>
           <p className="text-sm text-green-700">
-            You've created a professional payslip! This shows how money flows from what you earn 
-            to what you actually take home. Understanding this helps with budgeting and financial planning.
+            You've created a professional payslip with company information and year-to-date tracking! 
+            This shows how money flows and helps with financial planning and record keeping.
           </p>
         </div>
       )}

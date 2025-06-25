@@ -1,7 +1,8 @@
-
 import React, { useState } from 'react';
 import { BasicInfoStep } from './payslip-steps/BasicInfoStep';
+import { CompanyInfoStep } from './payslip-steps/CompanyInfoStep';
 import { DeductionsStep } from './payslip-steps/DeductionsStep';
+import { YTDStep } from './payslip-steps/YTDStep';
 import { PreviewStep } from './payslip-steps/PreviewStep';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -15,6 +16,16 @@ interface PayslipData {
   period: string;
   grossPay: number;
   companyName: string;
+  companyAddress?: string;
+  companyPhone?: string;
+  companyEmail?: string;
+  companyRegistration?: string;
+  companyLogo?: string;
+  ytdOverride?: {
+    grossPay: number;
+    totalDeductions: number;
+    netPay: number;
+  };
   deductions: Array<{
     id: string;
     name: string;
@@ -46,15 +57,17 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
 
   const steps = [
     { number: 1, title: 'Basic Info', component: BasicInfoStep },
-    { number: 2, title: 'Deductions', component: DeductionsStep },
-    { number: 3, title: 'Preview', component: PreviewStep }
+    { number: 2, title: 'Company', component: CompanyInfoStep },
+    { number: 3, title: 'Deductions', component: DeductionsStep },
+    { number: 4, title: 'Year to Date', component: YTDStep },
+    { number: 5, title: 'Preview', component: PreviewStep }
   ];
 
   const currentStepData = steps.find(step => step.number === currentStep);
   const CurrentStepComponent = currentStepData?.component;
 
   const nextStep = () => {
-    if (currentStep < 3) setCurrentStep(currentStep + 1);
+    if (currentStep < 5) setCurrentStep(currentStep + 1);
   };
 
   const prevStep = () => {
@@ -66,8 +79,12 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
       case 1:
         return payslipData.name && payslipData.period && payslipData.grossPay > 0;
       case 2:
-        return true;
+        return payslipData.companyName;
       case 3:
+        return true;
+      case 4:
+        return true;
+      case 5:
         return true;
       default:
         return false;
@@ -206,7 +223,7 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
           Back
         </Button>
 
-        {currentStep < 3 ? (
+        {currentStep < 5 ? (
           <Button
             onClick={nextStep}
             disabled={!canProceed()}

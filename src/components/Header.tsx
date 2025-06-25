@@ -3,6 +3,7 @@ import React from 'react';
 import { Calculator, LogOut, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { Navigation } from '@/components/Navigation';
 import { useToast } from '@/hooks/use-toast';
 
 export const Header = () => {
@@ -28,9 +29,13 @@ export const Header = () => {
   return (
     <header className="bg-white shadow-sm border-b border-blue-100">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Calculator className="h-6 w-6 text-blue-600" />
-          <span className="font-semibold text-blue-900">SlipSim</span>
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <Calculator className="h-6 w-6 text-blue-600" />
+            <span className="font-semibold text-blue-900">SlipSim</span>
+          </div>
+          
+          {user && <Navigation />}
         </div>
         
         <div className="flex items-center gap-3">

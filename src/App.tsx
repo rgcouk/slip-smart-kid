@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
+import App from "./pages/App";
 import Auth from "./pages/Auth";
 import Pricing from "./pages/Pricing";
 import Settings from "./pages/Settings";
@@ -15,7 +16,7 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const AppRouter = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -23,11 +24,12 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
+            <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/pricing" element={<Pricing />} />
-            <Route path="/" element={
+            <Route path="/app" element={
               <ProtectedRoute>
-                <Index />
+                <App />
               </ProtectedRoute>
             } />
             <Route path="/settings" element={
@@ -49,4 +51,4 @@ const App = () => (
   </QueryClientProvider>
 );
 
-export default App;
+export default AppRouter;

@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/dialog';
 import { Download, Mail, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { generatePayslipPDF, generatePayslipBlob } from '@/utils/pdfGenerator';
+import { useLocale } from '@/hooks/useLocale';
 
 interface ExportOverlayProps {
   isOpen: boolean;
@@ -27,17 +29,15 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
   const [emailStatus, setEmailStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [downloadStatus, setDownloadStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const { toast } = useToast();
+  const { config } = useLocale();
 
   const handleDownload = async () => {
     setIsDownloading(true);
     setDownloadStatus('idle');
     
     try {
-      // Simulate PDF generation and download
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // In a real implementation, you would generate and download the PDF here
-      console.log('Downloading PDF for:', payslipData.name);
+      console.log('Starting PDF generation for:', payslipData.name);
+      await generatePayslipPDF(payslipData, config.currency);
       
       setDownloadStatus('success');
       toast({
@@ -45,10 +45,11 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
         description: "Your payslip PDF has been downloaded successfully.",
       });
     } catch (error) {
+      console.error('PDF generation failed:', error);
       setDownloadStatus('error');
       toast({
         title: "Download Failed",
-        description: "Failed to download the payslip. Please try again.",
+        description: "Failed to generate the payslip PDF. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -70,23 +71,40 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
     setEmailStatus('idle');
     
     try {
-      // Simulate email sending
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      console.log('Generating PDF for email to:', email);
       
-      // In a real implementation, you would send the email here
-      console.log('Sending payslip to:', email);
+      // Generate PDF blob for email attachment
+      const pdfBlob = await generatePayslipBlob(payslipData, config.currency);
+      
+      // In a real implementation, you would send this blob via email API
+      // For now, we'll simulate the email sending and download the PDF
+      const fileName = `payslip-${payslipData.name.replace(/\s+/g, '-').toLowerCase()}-${payslipData.period}.pdf`;
+      
+      // Create download link for the blob (simulating email attachment)
+      const url = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      // Simulate email API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       setEmailStatus('success');
       toast({
         title: "Email Sent",
-        description: `Payslip has been sent to ${email} successfully.`,
+        description: `Payslip has been prepared for ${email}. PDF downloaded for reference.`,
       });
       setEmail('');
     } catch (error) {
+      console.error('Email preparation failed:', error);
       setEmailStatus('error');
       toast({
         title: "Email Failed",
-        description: "Failed to send the payslip. Please try again.",
+        description: "Failed to prepare the payslip for email. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -131,7 +149,7 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
                 ) : (
                   <Download className="h-4 w-4 mr-2" />
                 )}
-                {isDownloading ? 'Generating...' : 'Download PDF'}
+                {isDownloading ? 'Generating PDF...' : 'Download PDF'}
               </Button>
               {downloadStatus === 'success' && (
                 <CheckCircle className="h-5 w-5 text-green-600" />
@@ -168,7 +186,7 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
                   ) : (
                     <Mail className="h-4 w-4 mr-2" />
                   )}
-                  {isEmailing ? 'Sending...' : 'Send Email'}
+                  {isEmailing ? 'Preparing...' : 'Send Email'}
                 </Button>
                 {emailStatus === 'success' && (
                   <CheckCircle className="h-5 w-5 text-green-600" />
@@ -178,6 +196,11 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
                 )}
               </div>
             </div>
+          </div>
+
+          <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded">
+            <strong>Note:</strong> The PDF will be generated from the payslip preview above. 
+            Make sure the preview looks correct before downloading.
           </div>
         </div>
 

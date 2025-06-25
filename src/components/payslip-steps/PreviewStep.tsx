@@ -46,8 +46,11 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
         <p className="text-gray-600">Review your payslip before saving</p>
       </div>
 
-      {/* Payslip Preview */}
-      <div className="bg-white border-2 border-gray-200 rounded-lg p-6 shadow-sm">
+      {/* Payslip Preview - Added data attribute for PDF generation */}
+      <div 
+        className="bg-white border-2 border-gray-200 rounded-lg p-6 shadow-sm"
+        data-payslip-preview
+      >
         <PayslipHeader 
           companyLogo={payslipData.companyLogo}
           period={payslipData.period}

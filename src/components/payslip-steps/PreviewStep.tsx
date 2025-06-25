@@ -3,10 +3,9 @@ import React, { useState } from 'react';
 import { useLocale } from '@/hooks/useLocale';
 import { ExportOverlay } from './ExportOverlay';
 import { PayslipHeader } from './preview/PayslipHeader';
-import { CompanyEmployeeDetails } from './preview/CompanyEmployeeDetails';
-import { PaymentsDeductionsSection } from './preview/PaymentsDeductionsSection';
-import { SummarySection } from './preview/SummarySection';
-import { PayslipFooter } from './preview/PayslipFooter';
+import { CompactPaymentsDeductions } from './preview/CompactPaymentsDeductions';
+import { CompactSummary } from './preview/CompactSummary';
+import { CompactPayslipFooter } from './preview/CompactPayslipFooter';
 import { ExportActions } from './preview/ExportActions';
 
 interface PreviewStepProps {
@@ -46,10 +45,11 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
         <p className="text-gray-600">Review your payslip before saving</p>
       </div>
 
-      {/* Payslip Preview - Added data attribute for PDF generation */}
+      {/* Compact Payslip Preview - Optimized for PDF */}
       <div 
-        className="bg-white border-2 border-gray-200 rounded-lg p-6 shadow-sm"
+        className="bg-white border border-gray-300 p-4 shadow-sm max-w-4xl mx-auto"
         data-payslip-preview
+        style={{ fontSize: '12px', lineHeight: '1.3' }}
       >
         <PayslipHeader 
           companyLogo={payslipData.companyLogo}
@@ -57,24 +57,18 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
           locale={locale}
         />
 
-        <CompanyEmployeeDetails 
-          payslipData={payslipData}
-          isParentMode={isParentMode}
-          selectedChild={selectedChild}
-        />
-
-        <PaymentsDeductionsSection 
+        <CompactPaymentsDeductions 
           payslipData={payslipData}
           currency={config.currency}
         />
 
-        <SummarySection 
+        <CompactSummary 
           payslipData={payslipData}
           currency={config.currency}
           ytdValues={ytdValues}
         />
 
-        <PayslipFooter />
+        <CompactPayslipFooter payslipData={payslipData} />
       </div>
 
       <ExportActions 

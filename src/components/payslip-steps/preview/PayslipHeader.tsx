@@ -29,19 +29,19 @@ export const PayslipHeader = ({ companyLogo, period, locale }: PayslipHeaderProp
   };
 
   return (
-    <div className="text-center border-b border-gray-200 pb-4 mb-6">
+    <div className="text-center border-b border-gray-300 pb-3 mb-4">
       {companyLogo && (
-        <div className="mb-4">
+        <div className="mb-2">
           <img
             src={companyLogo}
             alt="Company Logo"
-            className="h-16 w-auto mx-auto"
+            className="h-12 w-auto mx-auto"
           />
         </div>
       )}
-      <h1 className="text-2xl font-bold text-gray-900">PAYSLIP</h1>
-      <p className="text-gray-600 mt-1">Pay Period: {formatPeriod(period)}</p>
-      <p className="text-sm text-gray-500">Tax Year: {getTaxYear()}</p>
+      <h1 className="text-xl font-bold text-gray-900 mb-1">PAYSLIP</h1>
+      <p className="text-sm text-gray-700">Pay Period: {formatPeriod(period)}</p>
+      <p className="text-xs text-gray-600">Tax Year: {getTaxYear()}</p>
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Plus, Trash2, Percent, DollarSign } from 'lucide-react';
+import { useLocale } from '@/hooks/useLocale';
 
 interface DeductionsStepProps {
   payslipData: any;
@@ -13,6 +14,7 @@ interface DeductionsStepProps {
 }
 
 export const DeductionsStep = ({ payslipData, setPayslipData, isParentMode }: DeductionsStepProps) => {
+  const { locale, config } = useLocale();
   const [newDeduction, setNewDeduction] = useState({
     name: '',
     type: 'percentage' as 'percentage' | 'fixed',
@@ -65,6 +67,24 @@ export const DeductionsStep = ({ payslipData, setPayslipData, isParentMode }: De
     });
   };
 
+  // UK-specific common deductions
+  const ukDeductions = [
+    { name: 'Income Tax', value: 20, type: 'percentage' as const },
+    { name: 'National Insurance', value: 12, type: 'percentage' as const },
+    { name: 'Pension', value: 5, type: 'percentage' as const },
+    { name: 'Student Loan', value: 9, type: 'percentage' as const }
+  ];
+
+  // US-specific common deductions
+  const usDeductions = [
+    { name: 'Federal Tax', value: 22, type: 'percentage' as const },
+    { name: 'State Tax', value: 5, type: 'percentage' as const },
+    { name: 'Social Security', value: 6.2, type: 'percentage' as const },
+    { name: 'Medicare', value: 1.45, type: 'percentage' as const }
+  ];
+
+  const commonDeductions = locale === 'UK' ? ukDeductions : usDeductions;
+
   const totalDeductions = payslipData.deductions.reduce((sum: number, d: any) => sum + d.amount, 0);
   const netPay = payslipData.grossPay - totalDeductions;
 
@@ -77,40 +97,21 @@ export const DeductionsStep = ({ payslipData, setPayslipData, isParentMode }: De
 
       {/* Quick Add Common Deductions */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="font-medium text-blue-800 mb-3">Quick Add Common Deductions</h3>
+        <h3 className="font-medium text-blue-800 mb-3">
+          Quick Add Common {locale === 'UK' ? 'UK' : 'US'} Deductions
+        </h3>
         <div className="grid grid-cols-2 gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => addCommonDeduction('Federal Tax', 'percentage', 22)}
-            className="text-xs"
-          >
-            Federal Tax (22%)
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => addCommonDeduction('State Tax', 'percentage', 5)}
-            className="text-xs"
-          >
-            State Tax (5%)
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => addCommonDeduction('Social Security', 'percentage', 6.2)}
-            className="text-xs"
-          >
-            Social Security
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => addCommonDeduction('Medicare', 'percentage', 1.45)}
-            className="text-xs"
-          >
-            Medicare
-          </Button>
+          {commonDeductions.map((deduction, index) => (
+            <Button
+              key={index}
+              variant="outline"
+              size="sm"
+              onClick={() => addCommonDeduction(deduction.name, deduction.type, deduction.value)}
+              className="text-xs"
+            >
+              {deduction.name} ({deduction.value}%)
+            </Button>
+          ))}
         </div>
       </div>
 
@@ -125,7 +126,7 @@ export const DeductionsStep = ({ payslipData, setPayslipData, isParentMode }: De
               id="deductionName"
               value={newDeduction.name}
               onChange={(e) => setNewDeduction({ ...newDeduction, name: e.target.value })}
-              placeholder="e.g., Health Insurance"
+              placeholder={locale === 'UK' ? 'e.g., Private Health Insurance' : 'e.g., Health Insurance'}
             />
           </div>
 
@@ -139,13 +140,13 @@ export const DeductionsStep = ({ payslipData, setPayslipData, isParentMode }: De
                   setNewDeduction({ ...newDeduction, type: checked ? 'fixed' : 'percentage' })
                 }
               />
-              <DollarSign className="h-4 w-4 text-gray-500" />
+              <span className="text-sm">{config.currency}</span>
             </div>
           </div>
 
           <div>
             <Label htmlFor="deductionValue">
-              {newDeduction.type === 'percentage' ? 'Percentage (%)' : 'Fixed Amount ($)'}
+              {newDeduction.type === 'percentage' ? 'Percentage (%)' : `Fixed Amount (${config.currency})`}
             </Label>
             <Input
               id="deductionValue"
@@ -172,11 +173,11 @@ export const DeductionsStep = ({ payslipData, setPayslipData, isParentMode }: De
               <div>
                 <span className="font-medium text-gray-900">{deduction.name}</span>
                 <div className="text-sm text-gray-500">
-                  {deduction.type === 'percentage' ? `${deduction.value}%` : `$${deduction.value}`}
+                  {deduction.type === 'percentage' ? `${deduction.value}%` : `${config.currency}${deduction.value}`}
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-medium text-red-600">-${deduction.amount.toFixed(2)}</span>
+                <span className="font-medium text-red-600">-{config.currency}{deduction.amount.toFixed(2)}</span>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -196,15 +197,15 @@ export const DeductionsStep = ({ payslipData, setPayslipData, isParentMode }: De
         <div className="space-y-2">
           <div className="flex justify-between">
             <span className="text-gray-700">Gross Pay:</span>
-            <span className="font-medium">${payslipData.grossPay.toFixed(2)}</span>
+            <span className="font-medium">{config.currency}{payslipData.grossPay.toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-700">Total Deductions:</span>
-            <span className="font-medium text-red-600">-${totalDeductions.toFixed(2)}</span>
+            <span className="font-medium text-red-600">-{config.currency}{totalDeductions.toFixed(2)}</span>
           </div>
           <div className="border-t border-green-300 pt-2 flex justify-between">
             <span className="font-semibold text-green-800">Net Pay:</span>
-            <span className="font-semibold text-green-800">${netPay.toFixed(2)}</span>
+            <span className="font-semibold text-green-800">{config.currency}{netPay.toFixed(2)}</span>
           </div>
         </div>
       </div>
@@ -213,9 +214,10 @@ export const DeductionsStep = ({ payslipData, setPayslipData, isParentMode }: De
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <h3 className="font-medium text-green-800 mb-2">💡 Learning Moment</h3>
           <p className="text-sm text-green-700">
-            Deductions are amounts taken out of your gross pay. Think of it like sharing your allowance - 
-            some goes to savings (like taxes for roads and schools), some for insurance (protection), 
-            and what's left is yours to keep!
+            {locale === 'UK' 
+              ? "Deductions are amounts taken from your gross pay. In the UK, this includes Income Tax (for public services), National Insurance (for NHS and pensions), and optional things like pension contributions. What's left is your take-home pay!"
+              : "Deductions are amounts taken out of your gross pay. Think of it like sharing your allowance - some goes to savings (like taxes for roads and schools), some for insurance (protection), and what's left is yours to keep!"
+            }
           </p>
         </div>
       )}

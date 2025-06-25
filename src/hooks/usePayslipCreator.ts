@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -52,12 +51,12 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  const canProceed = () => {
+  const canProceed = (): boolean => {
     switch (currentStep) {
       case 1:
-        return payslipData.name && payslipData.period && payslipData.grossPay > 0;
+        return Boolean(payslipData.name && payslipData.period && payslipData.grossPay > 0);
       case 2:
-        return payslipData.companyName;
+        return Boolean(payslipData.companyName);
       case 3:
         return true;
       case 4:

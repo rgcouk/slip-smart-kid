@@ -9,7 +9,128 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      child_profiles: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          parent_id: string
+          photo_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          parent_id: string
+          photo_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          parent_id?: string
+          photo_url?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_profiles_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payslips: {
+        Row: {
+          child_id: string | null
+          company_name: string
+          created_at: string
+          deductions: Json
+          employee_name: string
+          gross_salary: number
+          id: string
+          net_salary: number
+          pay_period_end: string
+          pay_period_start: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          child_id?: string | null
+          company_name: string
+          created_at?: string
+          deductions?: Json
+          employee_name: string
+          gross_salary: number
+          id?: string
+          net_salary: number
+          pay_period_end: string
+          pay_period_start: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          child_id?: string | null
+          company_name?: string
+          created_at?: string
+          deductions?: Json
+          employee_name?: string
+          gross_salary?: number
+          id?: string
+          net_salary?: number
+          pay_period_end?: string
+          pay_period_start?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payslips_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payslips_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

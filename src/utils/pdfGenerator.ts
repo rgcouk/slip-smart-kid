@@ -30,43 +30,55 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
       throw new Error('Payslip preview element not found');
     }
 
-    // Create canvas from the payslip element with higher quality settings
+    // Wait a moment for any animations or layouts to settle
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Create canvas from the payslip element with premium quality settings
     const canvas = await html2canvas(payslipElement, {
-      scale: 3, // Increased scale for better quality
+      scale: 4, // Ultra high scale for crisp text and borders
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
       width: payslipElement.scrollWidth,
       height: payslipElement.scrollHeight,
-      logging: false, // Disable logging for cleaner output
-      imageTimeout: 10000 // Increased timeout
+      logging: false,
+      imageTimeout: 15000,
+      removeContainer: true,
+      foreignObjectRendering: true, // Better text rendering
+      letterRendering: true // Improved font rendering
     });
 
-    // Calculate PDF dimensions for A4
-    const imgWidth = 210; // A4 width in mm
-    const pageHeight = 297; // A4 height in mm
+    // Calculate PDF dimensions for A4 (210 x 297mm)
+    const imgWidth = 210;
+    const pageHeight = 297;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    // Create PDF with A4 dimensions
-    const pdf = new jsPDF('p', 'mm', 'a4');
+    // Create PDF with high-quality settings
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+      compress: false // Don't compress for better quality
+    });
     
-    // Add the canvas as image to PDF - centered and properly sized
-    const imgData = canvas.toDataURL('image/png', 1.0); // Maximum quality
+    // Convert canvas to high-quality image
+    const imgData = canvas.toDataURL('image/png', 1.0);
     
-    // Center the content if it's smaller than the page
-    const yOffset = imgHeight < pageHeight ? (pageHeight - imgHeight) / 4 : 0;
+    // Center the content and ensure it fits on one page
+    const yOffset = Math.max(0, (pageHeight - imgHeight) / 6);
+    const finalHeight = Math.min(imgHeight, pageHeight - (yOffset * 2));
     
-    pdf.addImage(imgData, 'PNG', 0, yOffset, imgWidth, Math.min(imgHeight, pageHeight - yOffset));
+    pdf.addImage(imgData, 'PNG', 0, yOffset, imgWidth, finalHeight, '', 'FAST');
 
-    // Generate filename
+    // Generate professional filename
     const fileName = `payslip-${payslipData.name.replace(/\s+/g, '-').toLowerCase()}-${payslipData.period}.pdf`;
     
     // Download the PDF
     pdf.save(fileName);
     
-    console.log('PDF generated and downloaded successfully');
+    console.log('Professional PDF generated successfully');
   } catch (error) {
-    console.error('Error generating PDF:', error);
+    console.error('PDF generation failed:', error);
     throw error;
   }
 };
@@ -79,31 +91,43 @@ export const generatePayslipBlob = async (payslipData: PayslipData, currency: st
       throw new Error('Payslip preview element not found');
     }
 
+    await new Promise(resolve => setTimeout(resolve, 500));
+
     const canvas = await html2canvas(payslipElement, {
-      scale: 3,
+      scale: 4,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
       width: payslipElement.scrollWidth,
       height: payslipElement.scrollHeight,
       logging: false,
-      imageTimeout: 10000
+      imageTimeout: 15000,
+      removeContainer: true,
+      foreignObjectRendering: true,
+      letterRendering: true
     });
 
     const imgWidth = 210;
     const pageHeight = 297;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+      compress: false
+    });
+    
     const imgData = canvas.toDataURL('image/png', 1.0);
     
-    const yOffset = imgHeight < pageHeight ? (pageHeight - imgHeight) / 4 : 0;
+    const yOffset = Math.max(0, (pageHeight - imgHeight) / 6);
+    const finalHeight = Math.min(imgHeight, pageHeight - (yOffset * 2));
     
-    pdf.addImage(imgData, 'PNG', 0, yOffset, imgWidth, Math.min(imgHeight, pageHeight - yOffset));
+    pdf.addImage(imgData, 'PNG', 0, yOffset, imgWidth, finalHeight, '', 'FAST');
 
     return pdf.output('blob');
   } catch (error) {
-    console.error('Error generating PDF blob:', error);
+    console.error('PDF blob generation failed:', error);
     throw error;
   }
 };

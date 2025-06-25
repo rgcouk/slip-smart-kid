@@ -29,19 +29,26 @@ export const PayslipHeader = ({ companyLogo, period, locale }: PayslipHeaderProp
   };
 
   return (
-    <div className="text-center border-b border-gray-300 pb-3 mb-4">
-      {companyLogo && (
-        <div className="mb-2">
-          <img
-            src={companyLogo}
-            alt="Company Logo"
-            className="h-12 w-auto mx-auto"
-          />
+    <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-gray-800">
+      <div className="flex items-center">
+        {companyLogo && (
+          <div className="mr-4">
+            <img
+              src={companyLogo}
+              alt="Company Logo"
+              className="h-16 w-auto"
+            />
+          </div>
+        )}
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">PAYSLIP</h1>
+          <p className="text-sm text-gray-600">Pay Period: {formatPeriod(period)}</p>
         </div>
-      )}
-      <h1 className="text-xl font-bold text-gray-900 mb-1">PAYSLIP</h1>
-      <p className="text-sm text-gray-700">Pay Period: {formatPeriod(period)}</p>
-      <p className="text-xs text-gray-600">Tax Year: {getTaxYear()}</p>
+      </div>
+      <div className="text-right">
+        <p className="text-sm font-semibold text-gray-800">Tax Year: {getTaxYear()}</p>
+        <p className="text-xs text-gray-600">Generated: {new Date().toLocaleDateString('en-GB')}</p>
+      </div>
     </div>
   );
 };

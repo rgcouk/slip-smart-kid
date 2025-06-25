@@ -3,8 +3,7 @@ import React, { useState } from 'react';
 import { useLocale } from '@/hooks/useLocale';
 import { ExportOverlay } from './ExportOverlay';
 import { PayslipHeader } from './preview/PayslipHeader';
-import { CompactPaymentsDeductions } from './preview/CompactPaymentsDeductions';
-import { CompactSummary } from './preview/CompactSummary';
+import { ProfessionalPayslip } from './preview/ProfessionalPayslip';
 import { CompactPayslipFooter } from './preview/CompactPayslipFooter';
 import { ExportActions } from './preview/ExportActions';
 
@@ -41,15 +40,20 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Payslip Preview</h2>
-        <p className="text-gray-600">Review your payslip before saving</p>
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Professional Payslip Preview</h2>
+        <p className="text-gray-600">Review your professionally formatted payslip before export</p>
       </div>
 
-      {/* Compact Payslip Preview - Optimized for PDF */}
+      {/* Professional Payslip Preview - Optimized for PDF */}
       <div 
-        className="bg-white border border-gray-300 p-4 shadow-sm max-w-4xl mx-auto"
+        className="bg-white border border-gray-300 shadow-lg max-w-5xl mx-auto"
         data-payslip-preview
-        style={{ fontSize: '12px', lineHeight: '1.3' }}
+        style={{ 
+          padding: '40px',
+          fontSize: '14px', 
+          lineHeight: '1.4',
+          fontFamily: 'system-ui, -apple-system, sans-serif'
+        }}
       >
         <PayslipHeader 
           companyLogo={payslipData.companyLogo}
@@ -57,12 +61,7 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
           locale={locale}
         />
 
-        <CompactPaymentsDeductions 
-          payslipData={payslipData}
-          currency={config.currency}
-        />
-
-        <CompactSummary 
+        <ProfessionalPayslip 
           payslipData={payslipData}
           currency={config.currency}
           ytdValues={ytdValues}

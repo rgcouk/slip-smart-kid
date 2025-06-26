@@ -40,29 +40,33 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
   const canProceedToNext = canProceed();
 
   return (
-    <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-blue-100">
+    <div className="bg-white rounded-lg lg:rounded-xl shadow-sm border border-blue-100 overflow-hidden">
       <ProgressIndicator steps={steps} currentStep={currentStep} />
 
-      <div className="p-3 sm:p-4">
+      <div className="p-4 sm:p-6 lg:p-8 min-h-[600px] lg:min-h-[700px]">
         {CurrentStepComponent && (
-          <CurrentStepComponent
-            payslipData={payslipData}
-            setPayslipData={setPayslipData}
-            isParentMode={isParentMode}
-            selectedChild={selectedChild}
-          />
+          <div className="max-w-4xl mx-auto">
+            <CurrentStepComponent
+              payslipData={payslipData}
+              setPayslipData={setPayslipData}
+              isParentMode={isParentMode}
+              selectedChild={selectedChild}
+            />
+          </div>
         )}
       </div>
 
-      <StepNavigation
-        currentStep={currentStep}
-        totalSteps={5}
-        canProceed={canProceedToNext}
-        isLoading={isLoading}
-        onPrevStep={prevStep}
-        onNextStep={nextStep}
-        onSave={savePayslip}
-      />
+      <div className="border-t border-gray-100 bg-gray-50">
+        <StepNavigation
+          currentStep={currentStep}
+          totalSteps={5}
+          canProceed={canProceedToNext}
+          isLoading={isLoading}
+          onPrevStep={prevStep}
+          onNextStep={nextStep}
+          onSave={savePayslip}
+        />
+      </div>
     </div>
   );
 };

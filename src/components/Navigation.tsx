@@ -31,7 +31,7 @@ export const Navigation = () => {
   const MobileNav = () => (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="sm" className="md:hidden">
+        <Button variant="ghost" size="sm" className="md:hidden p-2">
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
@@ -41,7 +41,7 @@ export const Navigation = () => {
             <a
               key={item.href}
               href={item.href}
-              className="flex items-center space-x-2 text-lg font-medium hover:text-blue-600"
+              className="flex items-center space-x-2 text-lg font-medium hover:text-blue-600 p-2 rounded-md hover:bg-gray-100"
               onClick={() => setIsOpen(false)}
             >
               <item.icon className="h-5 w-5" />
@@ -52,12 +52,12 @@ export const Navigation = () => {
           {user && (
             <>
               <div className="border-t pt-4 mt-4">
-                <h3 className="font-semibold text-sm text-gray-600 mb-3">Account</h3>
+                <h3 className="font-semibold text-sm text-gray-600 mb-3 px-2">Account</h3>
                 {accountItems.map((item) => (
                   <a
                     key={item.href}
                     href={item.href}
-                    className="flex items-center space-x-2 text-lg font-medium hover:text-blue-600 mb-3"
+                    className="flex items-center space-x-2 text-lg font-medium hover:text-blue-600 mb-3 p-2 rounded-md hover:bg-gray-100"
                     onClick={() => setIsOpen(false)}
                   >
                     <item.icon className="h-5 w-5" />
@@ -102,7 +102,7 @@ export const Navigation = () => {
 
           {user && (
             <NavigationMenuItem>
-              <NavigationMenuTrigger>
+              <NavigationMenuTrigger className="bg-background">
                 <User className="h-4 w-4 mr-2" />
                 Account
               </NavigationMenuTrigger>
@@ -110,14 +110,14 @@ export const Navigation = () => {
                 <div className="w-48 p-2">
                   <NavigationMenuLink
                     href="/settings"
-                    className="block px-3 py-2 text-sm hover:bg-accent rounded-md"
+                    className="block px-3 py-2 text-sm hover:bg-accent rounded-md transition-colors"
                   >
                     <Settings className="h-4 w-4 mr-2 inline" />
                     Settings
                   </NavigationMenuLink>
                   <NavigationMenuLink
                     href="/subscription"
-                    className="block px-3 py-2 text-sm hover:bg-accent rounded-md"
+                    className="block px-3 py-2 text-sm hover:bg-accent rounded-md transition-colors"
                   >
                     <CreditCard className="h-4 w-4 mr-2 inline" />
                     Subscription

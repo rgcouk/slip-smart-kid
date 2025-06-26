@@ -40,11 +40,11 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
   const canProceedToNext = canProceed();
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-blue-100">
+    <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-blue-100">
       <ProgressIndicator steps={steps} currentStep={currentStep} />
 
       {/* Step Content */}
-      <div className="p-4">
+      <div className="p-3 sm:p-4">
         {CurrentStepComponent && (
           <CurrentStepComponent
             payslipData={payslipData}

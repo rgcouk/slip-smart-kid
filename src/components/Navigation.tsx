@@ -1,5 +1,4 @@
 
-
 import React, { useState } from 'react';
 import {
   NavigationMenu,
@@ -11,6 +10,7 @@ import {
 } from '@/components/ui/navigation-menu';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { Calculator, User, CreditCard, Settings, Menu, FileText, Users, LogOut } from 'lucide-react';
 
@@ -29,11 +29,10 @@ export const Navigation = ({ onSignOut }: NavigationProps) => {
 
   const userItems = [
     { href: '/my-payslips', label: 'My Payslips', icon: FileText },
+    { href: '/employees', label: 'Employees', icon: Users },
   ];
 
   const accountItems = user ? [
-    { href: '/employees', label: 'Employees', icon: Users },
-    { href: '/settings', label: 'Settings', icon: Settings },
     { href: '/subscription', label: 'Subscription', icon: CreditCard },
   ] : [];
 
@@ -99,12 +98,36 @@ export const Navigation = ({ onSignOut }: NavigationProps) => {
           )}
         </div>
         
-        {/* Sign Out button at the bottom */}
+        {/* Usage CTA Box */}
+        {user && (
+          <div className="border-t pt-4 mb-4">
+            <div className="bg-gradient-to-r from-blue-50 to-green-50 p-4 rounded-lg border border-blue-200">
+              <div className="text-sm font-medium text-gray-700 mb-2">Free Trial Usage</div>
+              <div className="flex items-center justify-between text-xs text-gray-600 mb-2">
+                <span>3 of 3 payslips used</span>
+                <span>7 days left</span>
+              </div>
+              <Progress value={100} className="h-2 mb-3" />
+              <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+                Upgrade Plan
+              </Button>
+            </div>
+          </div>
+        )}
+        
+        {/* User info and Sign Out at the bottom */}
         {user && (
           <div className="border-t pt-4 mt-auto">
             <div className="flex items-center gap-2 text-sm text-blue-700 mb-3 px-2">
               <User className="h-4 w-4" />
               <span>{user.email}</span>
+              <a
+                href="/settings"
+                className="ml-auto p-1 hover:bg-gray-100 rounded"
+                onClick={() => setIsOpen(false)}
+              >
+                <Settings className="h-4 w-4" />
+              </a>
             </div>
             <Button
               variant="outline"
@@ -150,6 +173,16 @@ export const Navigation = ({ onSignOut }: NavigationProps) => {
 
           <NavigationMenuItem>
             <NavigationMenuLink
+              href="/employees"
+              className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
+            >
+              <Users className="h-4 w-4 mr-2" />
+              Employees
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+
+          <NavigationMenuItem>
+            <NavigationMenuLink
               href="/pricing"
               className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
             >
@@ -167,20 +200,6 @@ export const Navigation = ({ onSignOut }: NavigationProps) => {
               <NavigationMenuContent>
                 <div className="w-48 p-2">
                   <NavigationMenuLink
-                    href="/employees"
-                    className="block px-3 py-2 text-sm hover:bg-accent rounded-md transition-colors"
-                  >
-                    <Users className="h-4 w-4 mr-2 inline" />
-                    Employees
-                  </NavigationMenuLink>
-                  <NavigationMenuLink
-                    href="/settings"
-                    className="block px-3 py-2 text-sm hover:bg-accent rounded-md transition-colors"
-                  >
-                    <Settings className="h-4 w-4 mr-2 inline" />
-                    Settings
-                  </NavigationMenuLink>
-                  <NavigationMenuLink
                     href="/subscription"
                     className="block px-3 py-2 text-sm hover:bg-accent rounded-md transition-colors"
                   >
@@ -196,4 +215,3 @@ export const Navigation = ({ onSignOut }: NavigationProps) => {
     </>
   );
 };
-

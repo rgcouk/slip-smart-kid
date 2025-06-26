@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { LocaleSelector } from '@/components/LocaleSelector';
 import { User, CreditCard, Mail, Settings as SettingsIcon } from 'lucide-react';
 
 const Settings = () => {
@@ -22,6 +23,9 @@ const Settings = () => {
         </div>
 
         <div className="grid gap-6">
+          {/* Regional Settings */}
+          <LocaleSelector />
+
           {/* Profile Settings */}
           <Card>
             <CardHeader>

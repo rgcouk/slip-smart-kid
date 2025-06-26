@@ -5,7 +5,6 @@ import { PayslipCreator } from '@/components/PayslipCreator';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { ChildProfiles } from '@/components/ChildProfiles';
-import { LocaleSelector } from '@/components/LocaleSelector';
 
 const App = () => {
   const [isParentMode, setIsParentMode] = useState(false);
@@ -22,8 +21,6 @@ const App = () => {
         </div>
 
         <div className="space-y-4 sm:space-y-6">
-          <LocaleSelector />
-
           <ParentModeToggle 
             isParentMode={isParentMode} 
             onToggle={setIsParentMode} 

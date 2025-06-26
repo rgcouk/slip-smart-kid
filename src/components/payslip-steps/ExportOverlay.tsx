@@ -37,12 +37,13 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
   const generatePreview = async () => {
     setIsGeneratingPreview(true);
     try {
-      console.log('Generating PDF preview for:', payslipData.name);
+      console.log('🔄 Generating PDF preview for:', payslipData.name);
       const blob = await generatePayslipBlob(payslipData, config.currency);
       setPdfBlob(blob);
       setShowPreview(true);
+      console.log('✅ Preview generated successfully');
     } catch (error) {
-      console.error('PDF preview generation failed:', error);
+      console.error('❌ PDF preview generation failed:', error);
       toast({
         title: "Preview Failed",
         description: "Failed to generate PDF preview. Please try again.",
@@ -54,27 +55,43 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
   };
 
   const handleDownload = async () => {
+    console.log('🚀 Download handler called');
+    console.log('Payslip data:', payslipData);
+    console.log('Currency:', config.currency);
+    
     setIsDownloading(true);
     setDownloadStatus('idle');
     
     try {
-      console.log('Starting PDF generation for:', payslipData.name);
+      console.log('📥 Starting PDF generation for download:', payslipData.name);
+      
+      // Check if the payslip element exists before starting
+      const payslipElement = document.querySelector('[data-payslip-preview]');
+      console.log('🔍 Checking for payslip element:', payslipElement ? 'Found' : 'Not found');
+      
+      if (!payslipElement) {
+        console.error('❌ No payslip element found before PDF generation');
+        throw new Error('Payslip preview element not found. Please refresh and try again.');
+      }
+      
       await generatePayslipPDF(payslipData, config.currency);
       
+      console.log('✅ PDF download completed successfully');
       setDownloadStatus('success');
       toast({
         title: "Download Complete",
         description: "Your payslip PDF has been downloaded successfully.",
       });
     } catch (error) {
-      console.error('PDF generation failed:', error);
+      console.error('💥 PDF download failed:', error);
       setDownloadStatus('error');
       toast({
         title: "Download Failed",
-        description: "Failed to generate the payslip PDF. Please try again.",
+        description: `Failed to generate the payslip PDF: ${error.message}`,
         variant: "destructive",
       });
     } finally {
+      console.log('🏁 Download process finished, setting isDownloading to false');
       setIsDownloading(false);
     }
   };
@@ -142,6 +159,7 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
   };
 
   useEffect(() => {
+    console.log('📂 ExportOverlay opened, isOpen:', isOpen, 'pdfBlob exists:', !!pdfBlob);
     if (isOpen && !pdfBlob) {
       generatePreview();
     }

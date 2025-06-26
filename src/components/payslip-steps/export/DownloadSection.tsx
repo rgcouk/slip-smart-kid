@@ -15,12 +15,20 @@ export const DownloadSection = ({
   downloadStatus,
   onDownload,
 }: DownloadSectionProps) => {
+  
+  const handleDownloadClick = () => {
+    console.log('🔘 Download button clicked');
+    console.log('Current download status:', downloadStatus);
+    console.log('Is downloading:', isDownloading);
+    onDownload();
+  };
+
   return (
     <div className="space-y-3">
       <Label className="text-sm font-medium">Download PDF</Label>
       <div className="flex items-center gap-3">
         <Button
-          onClick={onDownload}
+          onClick={handleDownloadClick}
           disabled={isDownloading}
           className="flex-1"
           variant="outline"

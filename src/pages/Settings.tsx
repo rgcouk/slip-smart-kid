@@ -23,9 +23,6 @@ const Settings = () => {
         </div>
 
         <div className="grid gap-6">
-          {/* Regional Settings */}
-          <LocaleSelector />
-
           {/* Profile Settings */}
           <Card>
             <CardHeader>
@@ -118,7 +115,12 @@ const Settings = () => {
                 Customize your SlipSim experience
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              {/* Regional Settings */}
+              <div className="space-y-4">
+                <LocaleSelector />
+              </div>
+              
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">Default Currency</p>

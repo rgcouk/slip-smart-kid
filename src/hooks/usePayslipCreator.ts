@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -52,6 +51,51 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
     companyName: 'SlipSim Company',
     deductions: []
   });
+
+  // Check for edit or duplicate mode on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get('edit');
+    const duplicateId = urlParams.get('duplicate');
+    
+    if (editId) {
+      const editData = localStorage.getItem('editPayslipData');
+      if (editData) {
+        try {
+          const parsedData = JSON.parse(editData);
+          setPayslipData(parsedData);
+          localStorage.removeItem('editPayslipData');
+          toast({
+            title: "Editing Payslip",
+            description: "Payslip data loaded for editing",
+          });
+        } catch (error) {
+          console.error('Error parsing edit data:', error);
+        }
+      }
+    }
+    
+    if (duplicateId) {
+      const duplicateData = localStorage.getItem('duplicatePayslipData');
+      if (duplicateData) {
+        try {
+          const parsedData = JSON.parse(duplicateData);
+          // Clear the ID and modify the name to indicate it's a duplicate
+          setPayslipData({
+            ...parsedData,
+            name: `${parsedData.name} (Copy)`
+          });
+          localStorage.removeItem('duplicatePayslipData');
+          toast({
+            title: "Duplicating Payslip",
+            description: "Payslip data loaded for duplication",
+          });
+        } catch (error) {
+          console.error('Error parsing duplicate data:', error);
+        }
+      }
+    }
+  }, [toast]);
 
   const nextStep = () => {
     if (currentStep < 5) setCurrentStep(currentStep + 1);
@@ -224,6 +268,9 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
           deductions: []
         });
         setCurrentStep(1);
+        
+        // Clear URL parameters
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
     } catch (error) {
       console.error('Unexpected error:', error);

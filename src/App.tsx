@@ -12,6 +12,7 @@ import Auth from "./pages/Auth";
 import Pricing from "./pages/Pricing";
 import Settings from "./pages/Settings";
 import Subscription from "./pages/Subscription";
+import MyPayslips from "./pages/MyPayslips";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,11 @@ const AppRouter = () => (
             <Route path="/app" element={
               <ProtectedRoute>
                 <App />
+              </ProtectedRoute>
+            } />
+            <Route path="/my-payslips" element={
+              <ProtectedRoute>
+                <MyPayslips />
               </ProtectedRoute>
             } />
             <Route path="/settings" element={

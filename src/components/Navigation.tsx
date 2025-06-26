@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useAuth } from '@/contexts/AuthContext';
-import { Calculator, User, CreditCard, Settings, Menu } from 'lucide-react';
+import { Calculator, User, CreditCard, Settings, Menu, FileText } from 'lucide-react';
 
 export const Navigation = () => {
   const { user } = useAuth();
@@ -19,6 +19,7 @@ export const Navigation = () => {
 
   const navigationItems = [
     { href: '/', label: 'Home', icon: Calculator },
+    { href: '/my-payslips', label: 'My Payslips', icon: FileText },
     { href: '/pricing', label: 'Pricing', icon: CreditCard },
   ];
 
@@ -87,6 +88,16 @@ export const Navigation = () => {
             >
               <Calculator className="h-4 w-4 mr-2" />
               Home
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+
+          <NavigationMenuItem>
+            <NavigationMenuLink
+              href="/my-payslips"
+              className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              My Payslips
             </NavigationMenuLink>
           </NavigationMenuItem>
 

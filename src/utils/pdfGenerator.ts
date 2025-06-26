@@ -21,14 +21,6 @@ export interface PayslipData {
   };
 }
 
-const validateCoordinate = (value: number, fallback: number = 0): number => {
-  if (isNaN(value) || !isFinite(value) || value < 0) {
-    console.warn(`Invalid coordinate detected: ${value}, using fallback: ${fallback}`);
-    return fallback;
-  }
-  return value;
-};
-
 export const generatePayslipPDF = async (payslipData: PayslipData, currency: string = '£'): Promise<void> => {
   try {
     // Find the payslip preview element
@@ -38,88 +30,54 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
       throw new Error('Payslip preview element not found');
     }
 
-    // Wait a moment for any animations or layouts to settle
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Wait for any animations or layouts to settle
+    await new Promise(resolve => setTimeout(resolve, 100));
 
-    // Create canvas from the payslip element with premium quality settings
+    // Create canvas with simpler settings
     const canvas = await html2canvas(payslipElement, {
-      scale: 2, // Reduced scale for better stability
+      scale: 1.5,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
-      width: payslipElement.scrollWidth,
-      height: payslipElement.scrollHeight,
       logging: false,
-      imageTimeout: 15000,
-      removeContainer: true,
-      foreignObjectRendering: true
+      removeContainer: true
     });
 
-    // Fixed dimensions for A4
+    // Simple A4 calculations
     const pageWidth = 210; // A4 width in mm
     const pageHeight = 297; // A4 height in mm
-    const margin = 15; // Safe margin
+    
+    // Calculate image dimensions to fit A4 with margins
+    const margin = 10;
     const maxWidth = pageWidth - (margin * 2);
     const maxHeight = pageHeight - (margin * 2);
-
-    // Calculate dimensions maintaining aspect ratio
-    const canvasAspectRatio = canvas.width / canvas.height;
+    
+    const imgAspectRatio = canvas.width / canvas.height;
     let imgWidth = maxWidth;
-    let imgHeight = maxWidth / canvasAspectRatio;
-
-    // If height exceeds page, scale down
+    let imgHeight = maxWidth / imgAspectRatio;
+    
+    // If too tall, scale down
     if (imgHeight > maxHeight) {
       imgHeight = maxHeight;
-      imgWidth = maxHeight * canvasAspectRatio;
+      imgWidth = maxHeight * imgAspectRatio;
     }
 
-    // Create PDF with high-quality settings
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
-      compress: false
-    });
+    // Create PDF
+    const pdf = new jsPDF('portrait', 'mm', 'a4');
     
-    // Convert canvas to high-quality image
-    const imgData = canvas.toDataURL('image/png', 1.0);
+    // Convert canvas to image
+    const imgData = canvas.toDataURL('image/png');
     
-    // Calculate safe positioning - center the image
-    const xOffset = (pageWidth - imgWidth) / 2;
-    const yOffset = margin;
-    
-    // Validate all coordinates
-    const safeX = validateCoordinate(xOffset, margin);
-    const safeY = validateCoordinate(yOffset, margin);
-    const safeWidth = validateCoordinate(imgWidth, maxWidth);
-    const safeHeight = validateCoordinate(imgHeight, maxHeight);
-    
-    console.log('PDF coordinates:', { 
-      safeX, 
-      safeY, 
-      safeWidth, 
-      safeHeight,
-      pageWidth,
-      pageHeight,
-      canvasWidth: canvas.width,
-      canvasHeight: canvas.height
-    });
-    
-    // Final validation before adding image
-    if (safeX >= 0 && safeY >= 0 && safeWidth > 0 && safeHeight > 0 && 
-        safeX + safeWidth <= pageWidth && safeY + safeHeight <= pageHeight) {
-      pdf.addImage(imgData, 'PNG', safeX, safeY, safeWidth, safeHeight, '', 'FAST');
-    } else {
-      throw new Error(`Invalid final coordinates: x=${safeX}, y=${safeY}, w=${safeWidth}, h=${safeHeight}`);
-    }
+    // Add image with simple positioning
+    pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
 
-    // Generate professional filename
+    // Generate filename
     const fileName = `payslip-${payslipData.name.replace(/\s+/g, '-').toLowerCase()}-${payslipData.period}.pdf`;
     
     // Download the PDF
     pdf.save(fileName);
     
-    console.log('Professional PDF generated successfully');
+    console.log('PDF generated successfully');
   } catch (error) {
     console.error('PDF generation failed:', error);
     throw error;
@@ -134,65 +92,35 @@ export const generatePayslipBlob = async (payslipData: PayslipData, currency: st
       throw new Error('Payslip preview element not found');
     }
 
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     const canvas = await html2canvas(payslipElement, {
-      scale: 2,
+      scale: 1.5,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
-      width: payslipElement.scrollWidth,
-      height: payslipElement.scrollHeight,
       logging: false,
-      imageTimeout: 15000,
-      removeContainer: true,
-      foreignObjectRendering: true
+      removeContainer: true
     });
 
-    // Fixed dimensions for A4
     const pageWidth = 210;
     const pageHeight = 297;
-    const margin = 15;
+    const margin = 10;
     const maxWidth = pageWidth - (margin * 2);
     const maxHeight = pageHeight - (margin * 2);
-
-    // Calculate dimensions maintaining aspect ratio
-    const canvasAspectRatio = canvas.width / canvas.height;
+    
+    const imgAspectRatio = canvas.width / canvas.height;
     let imgWidth = maxWidth;
-    let imgHeight = maxWidth / canvasAspectRatio;
-
-    // If height exceeds page, scale down
+    let imgHeight = maxWidth / imgAspectRatio;
+    
     if (imgHeight > maxHeight) {
       imgHeight = maxHeight;
-      imgWidth = maxHeight * canvasAspectRatio;
+      imgWidth = maxHeight * imgAspectRatio;
     }
 
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
-      compress: false
-    });
-    
-    const imgData = canvas.toDataURL('image/png', 1.0);
-    
-    // Calculate safe positioning - center the image
-    const xOffset = (pageWidth - imgWidth) / 2;
-    const yOffset = margin;
-    
-    // Validate all coordinates
-    const safeX = validateCoordinate(xOffset, margin);
-    const safeY = validateCoordinate(yOffset, margin);
-    const safeWidth = validateCoordinate(imgWidth, maxWidth);
-    const safeHeight = validateCoordinate(imgHeight, maxHeight);
-    
-    // Final validation before adding image
-    if (safeX >= 0 && safeY >= 0 && safeWidth > 0 && safeHeight > 0 && 
-        safeX + safeWidth <= pageWidth && safeY + safeHeight <= pageHeight) {
-      pdf.addImage(imgData, 'PNG', safeX, safeY, safeWidth, safeHeight, '', 'FAST');
-    } else {
-      throw new Error(`Invalid final coordinates: x=${safeX}, y=${safeY}, w=${safeWidth}, h=${safeHeight}`);
-    }
+    const pdf = new jsPDF('portrait', 'mm', 'a4');
+    const imgData = canvas.toDataURL('image/png');
+    pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
 
     return pdf.output('blob');
   } catch (error) {

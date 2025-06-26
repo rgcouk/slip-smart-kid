@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   NavigationMenu,
@@ -10,9 +11,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useAuth } from '@/contexts/AuthContext';
-import { Calculator, User, CreditCard, Settings, Menu, FileText, Users } from 'lucide-react';
+import { Calculator, User, CreditCard, Settings, Menu, FileText, Users, LogOut } from 'lucide-react';
 
-export const Navigation = () => {
+interface NavigationProps {
+  onSignOut: () => void;
+}
+
+export const Navigation = ({ onSignOut }: NavigationProps) => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -28,6 +33,11 @@ export const Navigation = () => {
     { href: '/subscription', label: 'Subscription', icon: CreditCard },
   ] : [];
 
+  const handleSignOutMobile = () => {
+    setIsOpen(false);
+    onSignOut();
+  };
+
   // Mobile Navigation
   const MobileNav = () => (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -36,8 +46,8 @@ export const Navigation = () => {
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-72">
-        <div className="flex flex-col space-y-4 mt-8">
+      <SheetContent side="left" className="w-72 flex flex-col">
+        <div className="flex flex-col space-y-4 mt-8 flex-1">
           {navigationItems.map((item) => (
             <a
               key={item.href}
@@ -69,6 +79,24 @@ export const Navigation = () => {
             </>
           )}
         </div>
+        
+        {/* Sign Out button at the bottom */}
+        {user && (
+          <div className="border-t pt-4 mt-auto">
+            <div className="flex items-center gap-2 text-sm text-blue-700 mb-3 px-2">
+              <User className="h-4 w-4" />
+              <span>{user.email}</span>
+            </div>
+            <Button
+              variant="outline"
+              onClick={handleSignOutMobile}
+              className="w-full flex items-center gap-2"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign Out
+            </Button>
+          </div>
+        )}
       </SheetContent>
     </Sheet>
   );

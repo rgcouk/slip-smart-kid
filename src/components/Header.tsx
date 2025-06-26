@@ -35,12 +35,12 @@ export const Header = () => {
             <span className="font-semibold text-blue-900">SlipSim</span>
           </div>
           
-          {user && <Navigation />}
+          {user && <Navigation onSignOut={handleSignOut} />}
         </div>
         
         <div className="flex items-center gap-3">
           {user && (
-            <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-3">
               <div className="flex items-center gap-2 text-sm text-blue-700">
                 <User className="h-4 w-4" />
                 <span>{user.email}</span>

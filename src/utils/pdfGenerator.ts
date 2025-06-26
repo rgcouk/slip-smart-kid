@@ -35,7 +35,7 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
 
     // Create canvas from the payslip element with premium quality settings
     const canvas = await html2canvas(payslipElement, {
-      scale: 4, // Ultra high scale for crisp text and borders
+      scale: 3, // Reduced scale to avoid coordinate issues
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
@@ -44,11 +44,11 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
       logging: false,
       imageTimeout: 15000,
       removeContainer: true,
-      foreignObjectRendering: true // Better text rendering
+      foreignObjectRendering: true
     });
 
-    // Calculate PDF dimensions for A4 (210 x 297mm)
-    const imgWidth = 210;
+    // Calculate PDF dimensions for A4 (210 x 297mm) with safer margins
+    const imgWidth = 190; // Reduced width to ensure margins
     const pageHeight = 297;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
@@ -57,17 +57,26 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
       orientation: 'portrait',
       unit: 'mm',
       format: 'a4',
-      compress: false // Don't compress for better quality
+      compress: false
     });
     
     // Convert canvas to high-quality image
     const imgData = canvas.toDataURL('image/png', 1.0);
     
-    // Center the content and ensure it fits on one page
-    const yOffset = Math.max(0, (pageHeight - imgHeight) / 6);
-    const finalHeight = Math.min(imgHeight, pageHeight - (yOffset * 2));
+    // Safe positioning calculations
+    const xOffset = 10; // 10mm left margin
+    const yOffset = Math.max(10, (pageHeight - imgHeight) / 8); // Minimum 10mm top margin
+    const finalHeight = Math.min(imgHeight, pageHeight - 20); // Leave 20mm total margin
     
-    pdf.addImage(imgData, 'PNG', 0, yOffset, imgWidth, finalHeight, '', 'FAST');
+    // Ensure coordinates are valid numbers
+    const safeX = Math.max(0, xOffset);
+    const safeY = Math.max(0, yOffset);
+    const safeWidth = Math.min(imgWidth, 190); // Max width with margins
+    const safeHeight = Math.min(finalHeight, pageHeight - safeY - 10); // Ensure bottom margin
+    
+    console.log('PDF coordinates:', { safeX, safeY, safeWidth, safeHeight });
+    
+    pdf.addImage(imgData, 'PNG', safeX, safeY, safeWidth, safeHeight, '', 'FAST');
 
     // Generate professional filename
     const fileName = `payslip-${payslipData.name.replace(/\s+/g, '-').toLowerCase()}-${payslipData.period}.pdf`;
@@ -93,7 +102,7 @@ export const generatePayslipBlob = async (payslipData: PayslipData, currency: st
     await new Promise(resolve => setTimeout(resolve, 500));
 
     const canvas = await html2canvas(payslipElement, {
-      scale: 4,
+      scale: 3,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
@@ -105,7 +114,7 @@ export const generatePayslipBlob = async (payslipData: PayslipData, currency: st
       foreignObjectRendering: true
     });
 
-    const imgWidth = 210;
+    const imgWidth = 190;
     const pageHeight = 297;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
@@ -118,10 +127,16 @@ export const generatePayslipBlob = async (payslipData: PayslipData, currency: st
     
     const imgData = canvas.toDataURL('image/png', 1.0);
     
-    const yOffset = Math.max(0, (pageHeight - imgHeight) / 6);
-    const finalHeight = Math.min(imgHeight, pageHeight - (yOffset * 2));
+    const xOffset = 10;
+    const yOffset = Math.max(10, (pageHeight - imgHeight) / 8);
+    const finalHeight = Math.min(imgHeight, pageHeight - 20);
     
-    pdf.addImage(imgData, 'PNG', 0, yOffset, imgWidth, finalHeight, '', 'FAST');
+    const safeX = Math.max(0, xOffset);
+    const safeY = Math.max(0, yOffset);
+    const safeWidth = Math.min(imgWidth, 190);
+    const safeHeight = Math.min(finalHeight, pageHeight - safeY - 10);
+    
+    pdf.addImage(imgData, 'PNG', safeX, safeY, safeWidth, safeHeight, '', 'FAST');
 
     return pdf.output('blob');
   } catch (error) {

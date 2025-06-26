@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -94,18 +95,27 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
 
       const netSalary = calculateNetSalary();
 
+      // Ensure deductions data is properly formatted for the database
+      const formattedDeductions = payslipData.deductions.map(deduction => ({
+        id: deduction.id,
+        name: deduction.name,
+        amount: Number(deduction.amount) || 0 // Ensure it's a valid number
+      }));
+
       const payslipRecord = {
         user_id: user.id,
         child_id: isParentMode && selectedChild ? selectedChild.id : null,
         employee_name: payslipData.name,
-        payroll_number: payslipData.payrollNumber,
+        payroll_number: payslipData.payrollNumber || '',
         company_name: payslipData.companyName,
         pay_period_start: payPeriodStart,
         pay_period_end: payPeriodEnd,
-        gross_salary: payslipData.grossPay,
-        deductions: payslipData.deductions,
-        net_salary: netSalary
+        gross_salary: Number(payslipData.grossPay) || 0,
+        deductions: formattedDeductions,
+        net_salary: Number(netSalary) || 0
       };
+
+      console.log('Saving payslip record:', payslipRecord);
 
       const { error } = await supabase
         .from('payslips')
@@ -115,7 +125,7 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
         console.error('Error saving payslip:', error);
         toast({
           title: "Error",
-          description: "Failed to save payslip. Please try again.",
+          description: `Failed to save payslip: ${error.message}`,
           variant: "destructive",
         });
       } else {

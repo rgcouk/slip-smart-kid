@@ -8,9 +8,34 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { LocaleSelector } from '@/components/LocaleSelector';
 import { User, CreditCard, Mail, Settings as SettingsIcon } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const Settings = () => {
   const { user } = useAuth();
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('first_name, last_name, email')
+        .eq('id', user.id)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return null;
+      }
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  const displayName = profile?.first_name && profile?.last_name 
+    ? `${profile.first_name} ${profile.last_name}`
+    : 'User';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex flex-col">
@@ -36,8 +61,12 @@ const Settings = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
+                <label className="text-sm font-medium text-gray-700">Name</label>
+                <p className="text-sm text-gray-600">{displayName}</p>
+              </div>
+              <div>
                 <label className="text-sm font-medium text-gray-700">Email</label>
-                <p className="text-sm text-gray-600">{user?.email}</p>
+                <p className="text-sm text-gray-600">{profile?.email || user?.email}</p>
               </div>
               <Button variant="outline">Edit Profile</Button>
             </CardContent>

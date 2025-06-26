@@ -5,10 +5,35 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Navigation } from '@/components/Navigation';
 import { useToast } from '@/hooks/use-toast';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export const Header = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('first_name, last_name')
+        .eq('id', user.id)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return null;
+      }
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  const displayName = profile?.first_name && profile?.last_name 
+    ? `${profile.first_name} ${profile.last_name}`
+    : user?.email;
 
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -43,7 +68,7 @@ export const Header = () => {
             <div className="hidden md:flex items-center gap-3">
               <div className="flex items-center gap-2 text-sm text-blue-700">
                 <User className="h-4 w-4" />
-                <span>{user.email}</span>
+                <span>{displayName}</span>
               </div>
               <Button
                 variant="outline"

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   NavigationMenu,
@@ -13,6 +12,8 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { Calculator, User, CreditCard, Settings, Menu, FileText, Users, LogOut } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface NavigationProps {
   onSignOut: () => void;
@@ -21,6 +22,29 @@ interface NavigationProps {
 export const Navigation = ({ onSignOut }: NavigationProps) => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('first_name, last_name')
+        .eq('id', user.id)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return null;
+      }
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  const displayName = profile?.first_name && profile?.last_name 
+    ? `${profile.first_name} ${profile.last_name}`
+    : user?.email;
 
   const navigationItems = [
     { href: '/', label: 'Home', icon: Calculator },
@@ -120,7 +144,7 @@ export const Navigation = ({ onSignOut }: NavigationProps) => {
           <div className="border-t pt-4 mt-auto">
             <div className="flex items-center gap-2 text-sm text-blue-700 mb-3 px-2">
               <User className="h-4 w-4" />
-              <span>{user.email}</span>
+              <span>{displayName}</span>
               <a
                 href="/settings"
                 className="ml-auto p-1 hover:bg-gray-100 rounded"

@@ -74,9 +74,9 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
         <PayslipFooter />
       </div>
 
-      {/* Professional PDF Template - Hidden, for PDF Export Only */}
+      {/* Professional PDF Template - Always visible but positioned absolutely off-screen */}
       <div 
-        className="hidden"
+        className="fixed top-0 left-[-9999px]"
         data-payslip-preview
         style={{ 
           width: '794px',
@@ -85,7 +85,10 @@ export const PreviewStep = ({ payslipData, isParentMode, selectedChild }: Previe
           fontFamily: 'Arial, sans-serif',
           fontSize: '12px',
           lineHeight: '1.4',
-          color: '#000'
+          color: '#000',
+          position: 'absolute',
+          opacity: 1,
+          pointerEvents: 'none'
         }}
       >
         {/* Professional Header */}

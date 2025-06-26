@@ -23,7 +23,6 @@ interface ExportOverlayProps {
 }
 
 export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayProps) => {
-  const [email, setEmail] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
   const [isEmailing, setIsEmailing] = useState(false);
   const [isGeneratingPreview, setIsGeneratingPreview] = useState(false);
@@ -96,21 +95,12 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
     }
   };
 
-  const handleEmailSend = async () => {
-    if (!email) {
-      toast({
-        title: "Email Required",
-        description: "Please enter an email address.",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const handleEmailSend = async (emailData: { to: string; subject: string; message: string }) => {
     setIsEmailing(true);
     setEmailStatus('idle');
     
     try {
-      console.log('Generating PDF for email to:', email);
+      console.log('Generating PDF for email to:', emailData.to);
       
       const pdfBlob = await generatePayslipBlob(payslipData, config.currency);
       const fileName = `payslip-${payslipData.name.replace(/\s+/g, '-').toLowerCase()}-${payslipData.period}.pdf`;
@@ -129,9 +119,8 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
       setEmailStatus('success');
       toast({
         title: "Email Sent",
-        description: `Payslip has been prepared for ${email}. PDF downloaded for reference.`,
+        description: `Payslip has been prepared for ${emailData.to}. PDF downloaded for reference.`,
       });
-      setEmail('');
     } catch (error) {
       console.error('Email preparation failed:', error);
       setEmailStatus('error');
@@ -148,7 +137,6 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
   const resetStatus = () => {
     setEmailStatus('idle');
     setDownloadStatus('idle');
-    setEmail('');
     setShowPreview(false);
     setPdfBlob(null);
   };
@@ -161,7 +149,10 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
   useEffect(() => {
     console.log('📂 ExportOverlay opened, isOpen:', isOpen, 'pdfBlob exists:', !!pdfBlob);
     if (isOpen && !pdfBlob) {
-      generatePreview();
+      // Add a delay to ensure the payslip preview is rendered and visible
+      setTimeout(() => {
+        generatePreview();
+      }, 100);
     }
   }, [isOpen]);
 
@@ -190,11 +181,9 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
           />
 
           <EmailSection
-            email={email}
-            isEmailing={isEmailing}
+            isEmailSending={isEmailing}
             emailStatus={emailStatus}
-            onEmailChange={setEmail}
-            onEmailSend={handleEmailSend}
+            onSendEmail={handleEmailSend}
           />
 
           <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded">

@@ -6,13 +6,11 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { ChildProfiles } from '@/components/ChildProfiles';
 import { ProgressIndicator } from '@/components/payslip-steps/ProgressIndicator';
-import { usePayslipCreator } from '@/hooks/usePayslipCreator';
 
 const App = () => {
   const [isParentMode, setIsParentMode] = useState(false);
   const [selectedChild, setSelectedChild] = useState(null);
-  
-  const { currentStep } = usePayslipCreator(isParentMode, selectedChild);
+  const [currentStep, setCurrentStep] = useState(1);
 
   const steps = [
     { number: 1, title: 'Employee Info' },
@@ -67,6 +65,7 @@ const App = () => {
             <PayslipCreator 
               isParentMode={isParentMode}
               selectedChild={selectedChild}
+              onStepChange={setCurrentStep}
             />
           </div>
         </div>

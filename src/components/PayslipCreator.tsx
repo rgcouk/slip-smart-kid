@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BasicInfoStep } from './payslip-steps/BasicInfoStep';
 import { CompanyInfoStep } from './payslip-steps/CompanyInfoStep';
 import { DeductionsStep } from './payslip-steps/DeductionsStep';
@@ -12,9 +12,10 @@ import { usePayslipCreator } from '@/hooks/usePayslipCreator';
 interface PayslipCreatorProps {
   isParentMode: boolean;
   selectedChild: any;
+  onStepChange?: (step: number) => void;
 }
 
-export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorProps) => {
+export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: PayslipCreatorProps) => {
   const {
     currentStep,
     isLoading,
@@ -25,6 +26,13 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
     canProceed,
     savePayslip
   } = usePayslipCreator(isParentMode, selectedChild);
+
+  // Notify parent component when step changes
+  useEffect(() => {
+    if (onStepChange) {
+      onStepChange(currentStep);
+    }
+  }, [currentStep, onStepChange]);
 
   const steps = [
     { number: 1, title: 'Employee Info', component: BasicInfoStep },

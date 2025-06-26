@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,7 +19,10 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { PayslipActions } from '@/components/payslips/PayslipActions';
 import { BulkActions } from '@/components/payslips/BulkActions';
-import { Search, Filter, Plus } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
+import type { Database } from '@/integrations/supabase/types';
+
+type PayslipRow = Database['public']['Tables']['payslips']['Row'];
 
 interface Payslip {
   id: string;
@@ -64,10 +68,10 @@ const MyPayslips = () => {
       if (error) throw error;
 
       // Transform the data to ensure deductions is properly typed
-      const transformedData: Payslip[] = (data || []).map(payslip => ({
+      const transformedData: Payslip[] = (data || []).map((payslip: PayslipRow) => ({
         ...payslip,
         deductions: Array.isArray(payslip.deductions) 
-          ? payslip.deductions as Array<{ id: string; name: string; amount: number; }>
+          ? (payslip.deductions as any[]).filter(d => d && typeof d === 'object' && 'id' in d && 'name' in d && 'amount' in d)
           : []
       }));
 
@@ -162,7 +166,6 @@ const MyPayslips = () => {
             </Button>
           </div>
 
-          {/* Search and Filter Controls */}
           <div className="flex gap-4 mb-4">
             <div className="relative flex-1">
               <Search className="h-4 w-4 absolute left-3 top-3 text-gray-400" />
@@ -195,7 +198,6 @@ const MyPayslips = () => {
           </div>
         </div>
 
-        {/* Bulk Actions */}
         {selectedPayslips.length > 0 && (
           <BulkActions
             selectedCount={selectedPayslips.length}
@@ -205,7 +207,6 @@ const MyPayslips = () => {
           />
         )}
 
-        {/* Payslips Table */}
         <Card>
           <CardContent className="p-0">
             {loading ? (

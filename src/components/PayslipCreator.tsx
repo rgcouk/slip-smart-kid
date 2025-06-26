@@ -27,7 +27,7 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
   } = usePayslipCreator(isParentMode, selectedChild);
 
   const steps = [
-    { number: 1, title: 'Basic Info', component: BasicInfoStep },
+    { number: 1, title: 'Employee Info', component: BasicInfoStep },
     { number: 2, title: 'Company', component: CompanyInfoStep },
     { number: 3, title: 'Deductions', component: DeductionsStep },
     { number: 4, title: 'Year to Date', component: YTDStep },
@@ -43,7 +43,6 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
     <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-blue-100">
       <ProgressIndicator steps={steps} currentStep={currentStep} />
 
-      {/* Step Content */}
       <div className="p-3 sm:p-4">
         {CurrentStepComponent && (
           <CurrentStepComponent

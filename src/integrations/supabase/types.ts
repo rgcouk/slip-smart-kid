@@ -44,6 +44,48 @@ export type Database = {
           },
         ]
       }
+      employees: {
+        Row: {
+          address: string | null
+          created_at: string
+          default_gross_salary: number | null
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          payroll_number: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          default_gross_salary?: number | null
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          payroll_number?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          default_gross_salary?: number | null
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          payroll_number?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payslips: {
         Row: {
           child_id: string | null

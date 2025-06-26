@@ -11,7 +11,7 @@ interface PaymentsDeductionsSectionProps {
   };
 }
 
-export const PaymentsDeductionsSection = ({ payslipData, currency }: PaymentsDeductionsSectionProps) => {
+export const PaymentsDeductionsSection = ({ payslipData, currency, ytdValues }: PaymentsDeductionsSectionProps) => {
   const totalDeductions = payslipData.deductions.reduce((sum: number, d: any) => sum + d.amount, 0);
 
   return (

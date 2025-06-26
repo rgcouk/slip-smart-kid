@@ -163,7 +163,6 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
       // Sanitize and validate all text inputs
       const sanitizedName = sanitizeTextInput(payslipData.name, 100);
       const sanitizedCompanyName = sanitizeTextInput(payslipData.companyName, 100);
-      const sanitizedPayrollNumber = sanitizeTextInput(payslipData.payrollNumber || '', 20);
 
       // Ensure deductions data is properly formatted and validated
       const formattedDeductions = payslipData.deductions.map(deduction => ({
@@ -182,11 +181,12 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
         return;
       }
 
+      // Note: payroll_number is not saved to database as it's not in the current schema
+      // It's kept in the frontend for display purposes only
       const payslipRecord = {
         user_id: user.id,
         child_id: isParentMode && selectedChild ? selectedChild.id : null,
         employee_name: sanitizedName,
-        payroll_number: sanitizedPayrollNumber,
         company_name: sanitizedCompanyName,
         pay_period_start: payPeriodStart,
         pay_period_end: payPeriodEnd,

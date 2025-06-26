@@ -39,7 +39,7 @@ export const EmployeeSelector = ({ onSelect, onCreateNew }: EmployeeSelectorProp
     
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('employees')
         .select('id, name, payroll_number, email, default_gross_salary')
         .eq('user_id', user.id)

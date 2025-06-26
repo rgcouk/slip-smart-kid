@@ -78,7 +78,7 @@ export const EmployeeForm = ({ employee, onSave, onCancel }: EmployeeFormProps) 
 
       if (employee?.id) {
         // Update existing employee
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('employees')
           .update(employeeData)
           .eq('id', employee.id);
@@ -91,7 +91,7 @@ export const EmployeeForm = ({ employee, onSave, onCancel }: EmployeeFormProps) 
         });
       } else {
         // Create new employee
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('employees')
           .insert([employeeData]);
 

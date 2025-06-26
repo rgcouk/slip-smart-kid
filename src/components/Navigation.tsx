@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   NavigationMenu,
@@ -11,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useAuth } from '@/contexts/AuthContext';
-import { Calculator, User, CreditCard, Settings, Menu, FileText } from 'lucide-react';
+import { Calculator, User, CreditCard, Settings, Menu, FileText, Users } from 'lucide-react';
 
 export const Navigation = () => {
   const { user } = useAuth();
@@ -24,6 +23,7 @@ export const Navigation = () => {
   ];
 
   const accountItems = user ? [
+    { href: '/employees', label: 'Employees', icon: Users },
     { href: '/settings', label: 'Settings', icon: Settings },
     { href: '/subscription', label: 'Subscription', icon: CreditCard },
   ] : [];
@@ -119,6 +119,13 @@ export const Navigation = () => {
               </NavigationMenuTrigger>
               <NavigationMenuContent>
                 <div className="w-48 p-2">
+                  <NavigationMenuLink
+                    href="/employees"
+                    className="block px-3 py-2 text-sm hover:bg-accent rounded-md transition-colors"
+                  >
+                    <Users className="h-4 w-4 mr-2 inline" />
+                    Employees
+                  </NavigationMenuLink>
                   <NavigationMenuLink
                     href="/settings"
                     className="block px-3 py-2 text-sm hover:bg-accent rounded-md transition-colors"

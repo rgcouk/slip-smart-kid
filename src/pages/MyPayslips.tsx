@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,7 +6,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -16,29 +15,27 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, Edit, Trash, Download, Plus, Filter } from 'lucide-react';
 import { PayslipActions } from '@/components/payslips/PayslipActions';
 import { BulkActions } from '@/components/payslips/BulkActions';
+import { Search, Filter, Plus } from 'lucide-react';
 
 interface Payslip {
   id: string;
   employee_name: string;
   company_name: string;
-  pay_period_start: string;
-  pay_period_end: string;
   gross_salary: number;
   net_salary: number;
-  deductions: Array<{ id: string; name: string; amount: number }>;
+  pay_period_start: string;
+  pay_period_end: string;
   created_at: string;
+  deductions: Array<{
+    id: string;
+    name: string;
+    amount: number;
+  }>;
+  child_id: string | null;
+  user_id: string;
   updated_at: string;
 }
 
@@ -49,36 +46,38 @@ const MyPayslips = () => {
   const [filteredPayslips, setFilteredPayslips] = useState<Payslip[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortField, setSortField] = useState<keyof Payslip>('created_at');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [selectedPayslips, setSelectedPayslips] = useState<string[]>([]);
-  const [dateFilter, setDateFilter] = useState<'all' | 'this_month' | 'last_month' | 'this_year'>('all');
-
-  useEffect(() => {
-    if (user) {
-      fetchPayslips();
-    }
-  }, [user]);
-
-  useEffect(() => {
-    filterAndSortPayslips();
-  }, [payslips, searchTerm, sortField, sortDirection, dateFilter]);
+  const [sortBy, setSortBy] = useState<'date' | 'employee' | 'company' | 'salary'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const fetchPayslips = async () => {
+    if (!user) return;
+    
+    setLoading(true);
     try {
       const { data, error } = await supabase
         .from('payslips')
         .select('*')
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setPayslips(data || []);
+
+      // Transform the data to ensure deductions is properly typed
+      const transformedData: Payslip[] = (data || []).map(payslip => ({
+        ...payslip,
+        deductions: Array.isArray(payslip.deductions) 
+          ? payslip.deductions as Array<{ id: string; name: string; amount: number; }>
+          : []
+      }));
+
+      setPayslips(transformedData);
+      setFilteredPayslips(transformedData);
     } catch (error) {
       console.error('Error fetching payslips:', error);
       toast({
         title: "Error",
-        description: "Failed to load payslips",
+        description: "Failed to fetch payslips",
         variant: "destructive",
       });
     } finally {
@@ -86,103 +85,63 @@ const MyPayslips = () => {
     }
   };
 
-  const filterAndSortPayslips = () => {
-    let filtered = [...payslips];
+  useEffect(() => {
+    fetchPayslips();
+  }, [user]);
 
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(payslip =>
-        payslip.employee_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        payslip.company_name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+  useEffect(() => {
+    let filtered = payslips.filter(payslip =>
+      payslip.employee_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      payslip.company_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-    // Date filter
-    if (dateFilter !== 'all') {
-      const now = new Date();
-      filtered = filtered.filter(payslip => {
-        const payslipDate = new Date(payslip.created_at);
-        
-        switch (dateFilter) {
-          case 'this_month':
-            return payslipDate.getMonth() === now.getMonth() && 
-                   payslipDate.getFullYear() === now.getFullYear();
-          case 'last_month':
-            const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1);
-            return payslipDate.getMonth() === lastMonth.getMonth() && 
-                   payslipDate.getFullYear() === lastMonth.getFullYear();
-          case 'this_year':
-            return payslipDate.getFullYear() === now.getFullYear();
-          default:
-            return true;
-        }
-      });
-    }
-
-    // Sort
+    // Sort payslips
     filtered.sort((a, b) => {
-      const aValue = a[sortField];
-      const bValue = b[sortField];
+      let comparison = 0;
       
-      if (sortDirection === 'asc') {
-        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-      } else {
-        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+      switch (sortBy) {
+        case 'date':
+          comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          break;
+        case 'employee':
+          comparison = a.employee_name.localeCompare(b.employee_name);
+          break;
+        case 'company':
+          comparison = a.company_name.localeCompare(b.company_name);
+          break;
+        case 'salary':
+          comparison = a.gross_salary - b.gross_salary;
+          break;
       }
+      
+      return sortOrder === 'asc' ? comparison : -comparison;
     });
 
     setFilteredPayslips(filtered);
-  };
+  }, [payslips, searchTerm, sortBy, sortOrder]);
 
-  const handleSort = (field: keyof Payslip) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
-    }
-  };
-
-  const handleSelectPayslip = (payslipId: string) => {
+  const handleSelectPayslip = (payslipId: string, checked: boolean) => {
     setSelectedPayslips(prev =>
-      prev.includes(payslipId)
-        ? prev.filter(id => id !== payslipId)
-        : [...prev, payslipId]
+      checked
+        ? [...prev, payslipId]
+        : prev.filter(id => id !== payslipId)
     );
   };
 
-  const handleSelectAll = () => {
-    if (selectedPayslips.length === filteredPayslips.length) {
-      setSelectedPayslips([]);
-    } else {
-      setSelectedPayslips(filteredPayslips.map(p => p.id));
-    }
+  const handleSelectAll = (checked: boolean) => {
+    setSelectedPayslips(checked ? filteredPayslips.map(p => p.id) : []);
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-GB', {
-      style: 'currency',
-      currency: 'GBP',
-    }).format(amount);
+  const clearSelection = () => {
+    setSelectedPayslips([]);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
-  };
-
-  if (loading) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex flex-col">
         <Header />
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-blue-600">Loading payslips...</p>
-          </div>
+          <p className="text-blue-600">Please sign in to view your payslips.</p>
         </div>
         <Footer />
       </div>
@@ -196,208 +155,120 @@ const MyPayslips = () => {
       <div className="container mx-auto px-4 py-6 flex-1">
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-blue-900">My Payslips</h1>
-              <p className="text-blue-600">Manage and view all your saved payslips</p>
-            </div>
-            <Button asChild>
-              <a href="/app" className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                Create New Payslip
-              </a>
+            <h1 className="text-3xl font-bold text-blue-900">My Payslips</h1>
+            <Button onClick={() => window.location.href = '/app'}>
+              <Plus className="h-4 w-4 mr-2" />
+              Create New Payslip
             </Button>
           </div>
 
-          {/* Search and Filters */}
-          <Card className="mb-6">
-            <CardContent className="p-4">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input
-                    placeholder="Search by employee or company name..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                
-                <div className="flex gap-2">
-                  <Select value={dateFilter} onValueChange={(value: any) => setDateFilter(value)}>
-                    <SelectTrigger className="w-40">
-                      <Filter className="h-4 w-4 mr-2" />
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Time</SelectItem>
-                      <SelectItem value="this_month">This Month</SelectItem>
-                      <SelectItem value="last_month">Last Month</SelectItem>
-                      <SelectItem value="this_year">This Year</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  
-                  <Select value={`${sortField}_${sortDirection}`} onValueChange={(value) => {
-                    const [field, direction] = value.split('_');
-                    setSortField(field as keyof Payslip);
-                    setSortDirection(direction as 'asc' | 'desc');
-                  }}>
-                    <SelectTrigger className="w-48">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="created_at_desc">Newest First</SelectItem>
-                      <SelectItem value="created_at_asc">Oldest First</SelectItem>
-                      <SelectItem value="employee_name_asc">Employee A-Z</SelectItem>
-                      <SelectItem value="employee_name_desc">Employee Z-A</SelectItem>
-                      <SelectItem value="company_name_asc">Company A-Z</SelectItem>
-                      <SelectItem value="company_name_desc">Company Z-A</SelectItem>
-                      <SelectItem value="gross_salary_desc">Highest Salary</SelectItem>
-                      <SelectItem value="gross_salary_asc">Lowest Salary</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Bulk Actions */}
-          {selectedPayslips.length > 0 && (
-            <BulkActions
-              selectedCount={selectedPayslips.length}
-              selectedPayslips={selectedPayslips}
-              onClearSelection={() => setSelectedPayslips([])}
-              onRefresh={fetchPayslips}
-            />
-          )}
+          {/* Search and Filter Controls */}
+          <div className="flex gap-4 mb-4">
+            <div className="relative flex-1">
+              <Search className="h-4 w-4 absolute left-3 top-3 text-gray-400" />
+              <Input
+                placeholder="Search by employee or company..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            <select
+              value={`${sortBy}-${sortOrder}`}
+              onChange={(e) => {
+                const [field, order] = e.target.value.split('-');
+                setSortBy(field as any);
+                setSortOrder(order as any);
+              }}
+              className="px-3 py-2 border border-gray-300 rounded-md"
+            >
+              <option value="date-desc">Newest First</option>
+              <option value="date-asc">Oldest First</option>
+              <option value="employee-asc">Employee A-Z</option>
+              <option value="employee-desc">Employee Z-A</option>
+              <option value="company-asc">Company A-Z</option>
+              <option value="company-desc">Company Z-A</option>
+              <option value="salary-desc">Highest Salary</option>
+              <option value="salary-asc">Lowest Salary</option>
+            </select>
+          </div>
         </div>
+
+        {/* Bulk Actions */}
+        {selectedPayslips.length > 0 && (
+          <BulkActions
+            selectedCount={selectedPayslips.length}
+            selectedPayslips={selectedPayslips}
+            onClearSelection={clearSelection}
+            onRefresh={fetchPayslips}
+          />
+        )}
 
         {/* Payslips Table */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Payslips ({filteredPayslips.length})</span>
-              {filteredPayslips.length > 0 && (
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={selectedPayslips.length === filteredPayslips.length}
-                    onCheckedChange={handleSelectAll}
-                  />
-                  <span className="text-sm text-gray-600">Select All</span>
-                </div>
-              )}
-            </CardTitle>
-          </CardHeader>
           <CardContent className="p-0">
-            {filteredPayslips.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-gray-400 mb-4">
-                  <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No payslips found</h3>
+            {loading ? (
+              <div className="p-8 text-center">
+                <p className="text-gray-500">Loading payslips...</p>
+              </div>
+            ) : filteredPayslips.length === 0 ? (
+              <div className="p-8 text-center">
                 <p className="text-gray-500 mb-4">
-                  {searchTerm || dateFilter !== 'all' 
-                    ? "Try adjusting your search or filters"
-                    : "Get started by creating your first payslip"
-                  }
+                  {searchTerm ? 'No payslips found matching your search.' : 'No payslips created yet.'}
                 </p>
-                <Button asChild>
-                  <a href="/app">Create Your First Payslip</a>
-                </Button>
+                {!searchTerm && (
+                  <Button onClick={() => window.location.href = '/app'}>
+                    Create Your First Payslip
+                  </Button>
+                )}
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[50px]">
+                      <Checkbox
+                        checked={selectedPayslips.length === filteredPayslips.length}
+                        onCheckedChange={handleSelectAll}
+                      />
+                    </TableHead>
+                    <TableHead>Employee</TableHead>
+                    <TableHead>Company</TableHead>
+                    <TableHead>Pay Period</TableHead>
+                    <TableHead>Gross Salary</TableHead>
+                    <TableHead>Net Salary</TableHead>
+                    <TableHead>Created</TableHead>
+                    <TableHead className="w-[100px]">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredPayslips.map((payslip) => (
+                    <TableRow key={payslip.id}>
+                      <TableCell>
                         <Checkbox
-                          checked={selectedPayslips.length === filteredPayslips.length}
-                          onCheckedChange={handleSelectAll}
+                          checked={selectedPayslips.includes(payslip.id)}
+                          onCheckedChange={(checked) => handleSelectPayslip(payslip.id, checked as boolean)}
                         />
-                      </TableHead>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-gray-50"
-                        onClick={() => handleSort('employee_name')}
-                      >
-                        Employee
-                        {sortField === 'employee_name' && (
-                          <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-                        )}
-                      </TableHead>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-gray-50"
-                        onClick={() => handleSort('company_name')}
-                      >
-                        Company
-                        {sortField === 'company_name' && (
-                          <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-                        )}
-                      </TableHead>
-                      <TableHead>Pay Period</TableHead>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-gray-50"
-                        onClick={() => handleSort('gross_salary')}
-                      >
-                        Gross Salary
-                        {sortField === 'gross_salary' && (
-                          <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-                        )}
-                      </TableHead>
-                      <TableHead>Net Salary</TableHead>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-gray-50"
-                        onClick={() => handleSort('created_at')}
-                      >
-                        Created
-                        {sortField === 'created_at' && (
-                          <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-                        )}
-                      </TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      </TableCell>
+                      <TableCell className="font-medium">{payslip.employee_name}</TableCell>
+                      <TableCell>{payslip.company_name}</TableCell>
+                      <TableCell>
+                        {new Date(payslip.pay_period_start).toLocaleDateString()} - {new Date(payslip.pay_period_end).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>£{payslip.gross_salary.toFixed(2)}</TableCell>
+                      <TableCell>£{payslip.net_salary.toFixed(2)}</TableCell>
+                      <TableCell>{new Date(payslip.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <PayslipActions
+                          payslip={payslip}
+                          onRefresh={fetchPayslips}
+                        />
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredPayslips.map((payslip) => (
-                      <TableRow key={payslip.id} className="hover:bg-gray-50">
-                        <TableCell>
-                          <Checkbox
-                            checked={selectedPayslips.includes(payslip.id)}
-                            onCheckedChange={() => handleSelectPayslip(payslip.id)}
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {payslip.employee_name}
-                        </TableCell>
-                        <TableCell>{payslip.company_name}</TableCell>
-                        <TableCell>
-                          <div className="text-sm">
-                            {formatDate(payslip.pay_period_start)} - {formatDate(payslip.pay_period_end)}
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {formatCurrency(payslip.gross_salary)}
-                        </TableCell>
-                        <TableCell className="font-medium text-green-600">
-                          {formatCurrency(payslip.net_salary)}
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm text-gray-500">
-                            {formatDate(payslip.created_at)}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <PayslipActions 
-                            payslip={payslip}
-                            onRefresh={fetchPayslips}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                  ))}
+                </TableBody>
+              </Table>
             )}
           </CardContent>
         </Card>

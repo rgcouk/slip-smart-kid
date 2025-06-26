@@ -48,9 +48,9 @@ export const ProgressIndicator = ({ steps, currentStep }: ProgressIndicatorProps
         </div>
       </div>
 
-      {/* Desktop Progress Indicator (Vertical Sidebar) */}
-      <div className="hidden lg:block fixed left-8 top-1/2 transform -translate-y-1/2 z-10">
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 w-64">
+      {/* Desktop Progress Indicator (Sidebar) */}
+      <div className="hidden lg:block">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-4">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Progress</h3>
           <div className="space-y-3">
             {steps.map((step, index) => {

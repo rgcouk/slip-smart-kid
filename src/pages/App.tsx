@@ -5,10 +5,22 @@ import { PayslipCreator } from '@/components/PayslipCreator';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { ChildProfiles } from '@/components/ChildProfiles';
+import { ProgressIndicator } from '@/components/payslip-steps/ProgressIndicator';
+import { usePayslipCreator } from '@/hooks/usePayslipCreator';
 
 const App = () => {
   const [isParentMode, setIsParentMode] = useState(false);
   const [selectedChild, setSelectedChild] = useState(null);
+  
+  const { currentStep } = usePayslipCreator(isParentMode, selectedChild);
+
+  const steps = [
+    { number: 1, title: 'Employee Info' },
+    { number: 2, title: 'Company' },
+    { number: 3, title: 'Deductions' },
+    { number: 4, title: 'Year to Date' },
+    { number: 5, title: 'Preview' }
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex flex-col">
@@ -23,10 +35,10 @@ const App = () => {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8">
-          {/* Left Sidebar - Controls */}
+          {/* Left Sidebar - Progress Indicator */}
           <div className="lg:col-span-3 space-y-4 sm:space-y-6">
             <div className="bg-white rounded-lg lg:rounded-xl shadow-sm border border-blue-100 p-4 lg:p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Settings</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Mode Settings</h2>
               <div className="space-y-4">
                 <ParentModeToggle 
                   isParentMode={isParentMode} 
@@ -44,15 +56,9 @@ const App = () => {
               </div>
             </div>
 
-            {/* Additional info panel for larger screens */}
-            <div className="hidden lg:block bg-blue-50 rounded-xl border border-blue-200 p-6">
-              <h3 className="font-semibold text-blue-900 mb-3">💡 Quick Tips</h3>
-              <ul className="text-sm text-blue-700 space-y-2">
-                <li>• Fill out each step completely</li>
-                <li>• Review your payslip before saving</li>
-                <li>• Export as PDF when finished</li>
-                {isParentMode && <li>• Use this as a learning tool</li>}
-              </ul>
+            {/* Progress Indicator for larger screens */}
+            <div className="hidden lg:block">
+              <ProgressIndicator steps={steps} currentStep={currentStep} />
             </div>
           </div>
 

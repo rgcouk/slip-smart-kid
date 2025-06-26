@@ -52,6 +52,7 @@ export const MobileNavContent = ({ onSignOut, setIsOpen }: MobileNavContentProps
   ];
 
   const accountItems = user ? [
+    { href: '/settings', label: 'Settings', icon: Settings },
     { href: '/subscription', label: 'Subscription', icon: CreditCard },
   ] : [];
 

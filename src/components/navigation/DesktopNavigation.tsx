@@ -8,7 +8,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
-import { Calculator, User, CreditCard, FileText, Users } from 'lucide-react';
+import { Calculator, User, CreditCard, FileText, Users, Settings } from 'lucide-react';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface DesktopNavigationProps {
@@ -67,6 +67,13 @@ export const DesktopNavigation = ({ user }: DesktopNavigationProps) => {
             </NavigationMenuTrigger>
             <NavigationMenuContent>
               <div className="w-48 p-2">
+                <NavigationMenuLink
+                  href="/settings"
+                  className="block px-3 py-2 text-sm hover:bg-accent rounded-md transition-colors"
+                >
+                  <Settings className="h-4 w-4 mr-2 inline" />
+                  Settings
+                </NavigationMenuLink>
                 <NavigationMenuLink
                   href="/subscription"
                   className="block px-3 py-2 text-sm hover:bg-accent rounded-md transition-colors"

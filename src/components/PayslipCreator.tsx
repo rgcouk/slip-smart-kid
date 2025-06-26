@@ -41,7 +41,10 @@ export const PayslipCreator = ({ isParentMode, selectedChild }: PayslipCreatorPr
 
   return (
     <div className="bg-white rounded-lg lg:rounded-xl shadow-sm border border-blue-100 overflow-hidden">
-      <ProgressIndicator steps={steps} currentStep={currentStep} />
+      {/* Mobile Progress Indicator only */}
+      <div className="lg:hidden">
+        <ProgressIndicator steps={steps} currentStep={currentStep} />
+      </div>
 
       <div className="p-4 sm:p-6 lg:p-8 min-h-[600px] lg:min-h-[700px]">
         {CurrentStepComponent && (

@@ -4,6 +4,11 @@ import React from 'react';
 interface PaymentsDeductionsSectionProps {
   payslipData: any;
   currency: string;
+  ytdValues?: {
+    grossPay: number;
+    totalDeductions: number;
+    netPay: number;
+  };
 }
 
 export const PaymentsDeductionsSection = ({ payslipData, currency }: PaymentsDeductionsSectionProps) => {

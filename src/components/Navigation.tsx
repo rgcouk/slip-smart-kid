@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import {
   NavigationMenu,
@@ -23,8 +24,11 @@ export const Navigation = ({ onSignOut }: NavigationProps) => {
 
   const navigationItems = [
     { href: '/', label: 'Home', icon: Calculator },
-    { href: '/my-payslips', label: 'My Payslips', icon: FileText },
     { href: '/pricing', label: 'Pricing', icon: CreditCard },
+  ];
+
+  const userItems = [
+    { href: '/my-payslips', label: 'My Payslips', icon: FileText },
   ];
 
   const accountItems = user ? [
@@ -63,6 +67,21 @@ export const Navigation = ({ onSignOut }: NavigationProps) => {
           {user && (
             <>
               <div className="border-t pt-4 mt-4">
+                <h3 className="font-semibold text-sm text-gray-600 mb-3 px-2">My Content</h3>
+                {userItems.map((item) => (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    className="flex items-center space-x-2 text-lg font-medium hover:text-blue-600 mb-3 p-2 rounded-md hover:bg-gray-100"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <item.icon className="h-5 w-5" />
+                    <span>{item.label}</span>
+                  </a>
+                ))}
+              </div>
+
+              <div className="border-t pt-4">
                 <h3 className="font-semibold text-sm text-gray-600 mb-3 px-2">Account</h3>
                 {accountItems.map((item) => (
                   <a
@@ -177,3 +196,4 @@ export const Navigation = ({ onSignOut }: NavigationProps) => {
     </>
   );
 };
+

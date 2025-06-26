@@ -3,6 +3,15 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { 
+  isValidFinancialAmount, 
+  isValidEmployeeName, 
+  isValidCompanyName,
+  isValidPayrollNumber,
+  validateDeductionsArray,
+  isValidDateRange,
+  sanitizeTextInput
+} from '@/utils/validation';
 
 interface PayslipData {
   name: string;
@@ -52,21 +61,56 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  const canProceed = (): boolean => {
-    switch (currentStep) {
+  const validateStep = (step: number): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    
+    switch (step) {
       case 1:
-        return Boolean(payslipData.name && payslipData.period && payslipData.grossPay > 0);
+        if (!payslipData.name.trim()) {
+          errors.push('Employee name is required');
+        } else if (!isValidEmployeeName(payslipData.name)) {
+          errors.push('Employee name contains invalid characters');
+        }
+        
+        if (!payslipData.period) {
+          errors.push('Pay period is required');
+        }
+        
+        if (payslipData.grossPay <= 0) {
+          errors.push('Gross pay must be greater than 0');
+        } else if (!isValidFinancialAmount(payslipData.grossPay)) {
+          errors.push('Invalid gross pay amount');
+        }
+        
+        if (payslipData.payrollNumber && !isValidPayrollNumber(payslipData.payrollNumber)) {
+          errors.push('Payroll number contains invalid characters');
+        }
+        break;
+        
       case 2:
-        return Boolean(payslipData.companyName);
+        if (!payslipData.companyName.trim()) {
+          errors.push('Company name is required');
+        } else if (!isValidCompanyName(payslipData.companyName)) {
+          errors.push('Company name contains invalid characters');
+        }
+        break;
+        
       case 3:
-        return true;
-      case 4:
-        return true;
-      case 5:
-        return true;
-      default:
-        return false;
+        if (!validateDeductionsArray(payslipData.deductions)) {
+          errors.push('Invalid deductions data');
+        }
+        break;
     }
+    
+    return { isValid: errors.length === 0, errors };
+  };
+
+  const canProceed = (): boolean => {
+    const validation = validateStep(currentStep);
+    if (!validation.isValid) {
+      console.log('Validation errors:', validation.errors);
+    }
+    return validation.isValid;
   };
 
   const calculateNetSalary = () => {
@@ -84,6 +128,17 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
       return;
     }
 
+    // Final validation before saving
+    const finalValidation = validateStep(1);
+    if (!finalValidation.isValid) {
+      toast({
+        title: "Validation Error",
+        description: finalValidation.errors.join(', '),
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     
     try {
@@ -93,21 +148,46 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
       const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
       const payPeriodEnd = `${year}-${month}-${lastDay.toString().padStart(2, '0')}`;
 
+      // Validate date range
+      if (!isValidDateRange(payPeriodStart, payPeriodEnd)) {
+        toast({
+          title: "Error",
+          description: "Invalid pay period dates",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const netSalary = calculateNetSalary();
 
-      // Ensure deductions data is properly formatted for the database
+      // Sanitize and validate all text inputs
+      const sanitizedName = sanitizeTextInput(payslipData.name, 100);
+      const sanitizedCompanyName = sanitizeTextInput(payslipData.companyName, 100);
+      const sanitizedPayrollNumber = sanitizeTextInput(payslipData.payrollNumber || '', 20);
+
+      // Ensure deductions data is properly formatted and validated
       const formattedDeductions = payslipData.deductions.map(deduction => ({
-        id: deduction.id,
-        name: deduction.name,
-        amount: Number(deduction.amount) || 0 // Ensure it's a valid number
+        id: sanitizeTextInput(deduction.id, 50),
+        name: sanitizeTextInput(deduction.name, 50),
+        amount: Number(deduction.amount) || 0
       }));
+
+      // Final validation of formatted deductions
+      if (!validateDeductionsArray(formattedDeductions)) {
+        toast({
+          title: "Error",
+          description: "Invalid deductions data format",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const payslipRecord = {
         user_id: user.id,
         child_id: isParentMode && selectedChild ? selectedChild.id : null,
-        employee_name: payslipData.name,
-        payroll_number: payslipData.payrollNumber || '',
-        company_name: payslipData.companyName,
+        employee_name: sanitizedName,
+        payroll_number: sanitizedPayrollNumber,
+        company_name: sanitizedCompanyName,
         pay_period_start: payPeriodStart,
         pay_period_end: payPeriodEnd,
         gross_salary: Number(payslipData.grossPay) || 0,
@@ -115,7 +195,7 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
         net_salary: Number(netSalary) || 0
       };
 
-      console.log('Saving payslip record:', payslipRecord);
+      console.log('Saving validated payslip record:', payslipRecord);
 
       const { error } = await supabase
         .from('payslips')
@@ -165,6 +245,7 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
     nextStep,
     prevStep,
     canProceed,
-    savePayslip
+    savePayslip,
+    validateStep
   };
 };

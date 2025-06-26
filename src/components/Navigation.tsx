@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   NavigationMenu,
@@ -145,13 +146,22 @@ export const Navigation = ({ onSignOut }: NavigationProps) => {
             <div className="flex items-center gap-2 text-sm text-blue-700 mb-3 px-2">
               <User className="h-4 w-4" />
               <span>{displayName}</span>
-              <a
-                href="/settings"
-                className="ml-auto p-1 hover:bg-gray-100 rounded"
-                onClick={() => setIsOpen(false)}
-              >
-                <Settings className="h-4 w-4" />
-              </a>
+              <div className="ml-auto flex items-center gap-1">
+                <a
+                  href="/settings"
+                  className="p-1 hover:bg-gray-100 rounded"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Settings className="h-4 w-4" />
+                </a>
+                <button
+                  onClick={handleSignOutMobile}
+                  className="p-1 hover:bg-gray-100 rounded text-red-600 hover:text-red-700"
+                  title="Sign Out"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </div>
             </div>
             <Button
               variant="outline"

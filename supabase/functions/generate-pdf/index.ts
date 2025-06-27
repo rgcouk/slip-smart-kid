@@ -44,145 +44,63 @@ const createPayslipTemplate = () => {
   return {
     schemas: [
       {
-        // Header Section
+        // Header
         title: {
           type: "text",
-          position: { x: 10, y: 10 },
-          width: 80,
-          height: 12,
+          position: { x: 20, y: 15 },
+          width: 100,
+          height: 15,
           fontSize: 24,
-          fontColor: "#333333",
-          fontName: "Helvetica",
+          fontColor: "#000000",
+          fontName: "Helvetica-Bold",
           alignment: "left"
         },
-        generatedDate: {
+        
+        // Employee Details
+        employeeSection: {
           type: "text",
-          position: { x: 130, y: 10 },
-          width: 60,
-          height: 8,
+          position: { x: 20, y: 40 },
+          width: 80,
+          height: 60,
           fontSize: 10,
-          fontColor: "#666666",
-          fontName: "Helvetica",
-          alignment: "right"
-        },
-        
-        // Employee Details Section
-        employeeLabel: {
-          type: "text",
-          position: { x: 10, y: 35 },
-          width: 80,
-          height: 8,
-          fontSize: 12,
-          fontColor: "#333333",
-          fontName: "Helvetica-Bold",
-          alignment: "left"
-        },
-        employeeName: {
-          type: "text",
-          position: { x: 10, y: 45 },
-          width: 80,
-          height: 8,
-          fontSize: 11,
-          fontColor: "#333333",
-          fontName: "Helvetica",
-          alignment: "left"
-        },
-        payPeriod: {
-          type: "text",
-          position: { x: 10, y: 55 },
-          width: 80,
-          height: 8,
-          fontSize: 11,
-          fontColor: "#333333",
+          fontColor: "#000000",
           fontName: "Helvetica",
           alignment: "left"
         },
         
-        // Company Details Section
-        companyLabel: {
-          type: "text",
-          position: { x: 110, y: 35 },
+        // Company Details
+        companySection: {
+          type: "text", 
+          position: { x: 110, y: 40 },
           width: 80,
-          height: 8,
-          fontSize: 12,
-          fontColor: "#333333",
-          fontName: "Helvetica-Bold",
-          alignment: "left"
-        },
-        companyName: {
-          type: "text",
-          position: { x: 110, y: 45 },
-          width: 80,
-          height: 8,
-          fontSize: 11,
-          fontColor: "#333333",
+          height: 60,
+          fontSize: 10,
+          fontColor: "#000000",
           fontName: "Helvetica",
           alignment: "left"
         },
-        companyAddress: {
+        
+        // Payments Table
+        paymentsTable: {
           type: "text",
-          position: { x: 110, y: 55 },
-          width: 80,
-          height: 8,
+          position: { x: 20, y: 110 },
+          width: 170,
+          height: 50,
           fontSize: 9,
-          fontColor: "#666666",
+          fontColor: "#000000", 
           fontName: "Helvetica",
           alignment: "left"
         },
         
-        // Payments Section
-        paymentsLabel: {
+        // Summary
+        summary: {
           type: "text",
-          position: { x: 10, y: 80 },
-          width: 80,
-          height: 8,
-          fontSize: 12,
-          fontColor: "#333333",
-          fontName: "Helvetica-Bold",
-          alignment: "left"
-        },
-        paymentsContent: {
-          type: "text",
-          position: { x: 10, y: 90 },
-          width: 80,
+          position: { x: 20, y: 170 },
+          width: 170,
           height: 40,
-          fontSize: 10,
-          fontColor: "#333333",
-          fontName: "Helvetica",
-          alignment: "left"
-        },
-        
-        // Deductions Section
-        deductionsLabel: {
-          type: "text",
-          position: { x: 110, y: 80 },
-          width: 80,
-          height: 8,
-          fontSize: 12,
-          fontColor: "#333333",
-          fontName: "Helvetica-Bold",
-          alignment: "left"
-        },
-        deductionsContent: {
-          type: "text",
-          position: { x: 110, y: 90 },
-          width: 80,
-          height: 40,
-          fontSize: 10,
-          fontColor: "#333333",
-          fontName: "Helvetica",
-          alignment: "left"
-        },
-        
-        // Summary Section
-        summaryBox: {
-          type: "text",
-          position: { x: 10, y: 140 },
-          width: 180,
-          height: 30,
           fontSize: 11,
-          fontColor: "#333333",
-          fontName: "Helvetica",
+          fontColor: "#000000",
+          fontName: "Helvetica-Bold",
           alignment: "left",
           backgroundColor: "#f8f9fa"
         },
@@ -190,10 +108,10 @@ const createPayslipTemplate = () => {
         // Footer
         footer: {
           type: "text",
-          position: { x: 10, y: 180 },
-          width: 180,
-          height: 20,
-          fontSize: 9,
+          position: { x: 20, y: 220 },
+          width: 170,
+          height: 30,
+          fontSize: 8,
           fontColor: "#666666",
           fontName: "Helvetica",
           alignment: "center"
@@ -212,7 +130,7 @@ const formatPeriod = (data: PayslipData) => {
   } else if (data.period) {
     const [year, month] = data.period.split('-');
     const date = new Date(parseInt(year), parseInt(month) - 1);
-    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    return date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
   }
   return 'Unknown Period';
 };
@@ -221,69 +139,77 @@ const generatePayslipPDF = async (data: PayslipData, currency: string = '£') =>
   const totalDeductions = data.deductions.reduce((sum, d) => sum + d.amount, 0);
   const netPay = data.ytdOverride?.netPay ?? (data.grossPay - totalDeductions);
   
-  // Format payments content
-  let paymentsText = '';
-  data.paymentEntries.forEach(entry => {
-    paymentsText += `${entry.description}\n`;
-    if (entry.type === 'hourly' && entry.quantity && entry.rate) {
-      paymentsText += `  ${entry.quantity} hrs × ${currency}${entry.rate.toFixed(2)}\n`;
-    } else if (entry.type === 'overtime' && entry.quantity && entry.rate) {
-      paymentsText += `  ${entry.quantity} hrs × ${currency}${entry.rate.toFixed(2)} (OT)\n`;
-    }
-    paymentsText += `  ${currency}${entry.amount.toFixed(2)}\n\n`;
-  });
-  paymentsText += `Total Payments: ${currency}${data.grossPay.toFixed(2)}`;
-  
-  // Format deductions content
-  let deductionsText = '';
-  if (data.deductions.length > 0) {
-    data.deductions.forEach(deduction => {
-      deductionsText += `${deduction.name}\n${currency}${deduction.amount.toFixed(2)}\n\n`;
-    });
-  } else {
-    deductionsText = 'No deductions\n';
-  }
-  deductionsText += `Total Deductions: ${currency}${totalDeductions.toFixed(2)}`;
-  
-  // Format summary
-  const summaryText = `Gross Pay: ${currency}${data.grossPay.toFixed(2)}
-Total Deductions: -${currency}${totalDeductions.toFixed(2)}
+  // Build employee section
+  const employeeText = `EMPLOYEE DETAILS
+Name: ${data.name}
+Pay Period: ${formatPeriod(data)}
+${data.payrollNumber ? `Payroll No: ${data.payrollNumber}` : ''}
+${data.contractualHours ? `Hours/Week: ${data.contractualHours}` : ''}`;
 
-NET PAY: ${currency}${netPay.toFixed(2)}`;
+  // Build company section  
+  const companyText = `COMPANY DETAILS
+${data.companyName}
+${data.companyAddress || ''}
+${data.companyPhone ? `Tel: ${data.companyPhone}` : ''}
+${data.companyEmail ? `Email: ${data.companyEmail}` : ''}`;
+
+  // Build payments table
+  let paymentsTable = `PAYMENTS & DEDUCTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Description                           This Period     Year to Date
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PAYMENTS:
+`;
+
+  // Add payment entries
+  data.paymentEntries.forEach(entry => {
+    const ytdAmount = entry.amount * (data.period ? parseInt(data.period.split('-')[1]) : 1);
+    paymentsTable += `${entry.description.padEnd(35)} ${currency}${entry.amount.toFixed(2).padStart(10)} ${currency}${ytdAmount.toFixed(2).padStart(10)}\n`;
+  });
+
+  paymentsTable += `\nDEDUCTIONS:\n`;
   
-  // Footer text
+  // Add deductions
+  data.deductions.forEach(deduction => {
+    const ytdAmount = deduction.amount * (data.period ? parseInt(data.period.split('-')[1]) : 1);
+    paymentsTable += `${deduction.name.padEnd(35)} ${currency}${deduction.amount.toFixed(2).padStart(10)} ${currency}${ytdAmount.toFixed(2).padStart(10)}\n`;
+  });
+
+  // Build summary
+  const summaryText = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TOTAL GROSS PAY:                      ${currency}${data.grossPay.toFixed(2).padStart(10)}
+TOTAL DEDUCTIONS:                     ${currency}${totalDeductions.toFixed(2).padStart(10)}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NET PAY:                              ${currency}${netPay.toFixed(2).padStart(10)}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+
   const footerText = `This payslip is computer generated and does not require a signature.
 For queries, please contact the HR department.
 
-Powered by SlipSim • Professional Payroll Solutions`;
-  
+Generated on ${new Date().toLocaleDateString('en-GB')} | Powered by SlipSim`;
+
   const template = createPayslipTemplate();
   
   const inputs = [
     {
       title: "PAYSLIP",
-      generatedDate: `Generated: ${new Date().toLocaleDateString('en-GB')}${data.payrollNumber ? `\nPayroll No: ${data.payrollNumber}` : ''}`,
-      employeeLabel: "Employee Details",
-      employeeName: `Name: ${data.name}`,
-      payPeriod: `Pay Period: ${formatPeriod(data)}${data.contractualHours ? `\nContractual Hours: ${data.contractualHours}/week` : ''}`,
-      companyLabel: "Company Details",
-      companyName: `Company: ${data.companyName}`,
-      companyAddress: `${data.companyAddress || ''}${data.companyPhone ? `\nPhone: ${data.companyPhone}` : ''}${data.companyEmail ? `\nEmail: ${data.companyEmail}` : ''}`,
-      paymentsLabel: "Payments",
-      paymentsContent: paymentsText,
-      deductionsLabel: "Deductions",
-      deductionsContent: deductionsText,
-      summaryBox: summaryText,
+      employeeSection: employeeText,
+      companySection: companyText,
+      paymentsTable: paymentsTable,
+      summary: summaryText,
       footer: footerText
     }
   ];
   
   try {
+    console.log('Generating PDF with pdfme...');
     const pdfBuffer = await generate({
       template,
       inputs
     });
     
+    console.log('PDF generated successfully, buffer length:', pdfBuffer.byteLength);
     return new Uint8Array(pdfBuffer);
   } catch (error) {
     console.error('PDFme generation error:', error);
@@ -307,11 +233,11 @@ serve(async (req) => {
       );
     }
 
-    console.log('Generating PDF with pdfme for:', payslipData.name);
+    console.log('Generating PDF for:', payslipData.name);
     
     const pdfBuffer = await generatePayslipPDF(payslipData, currency);
     
-    console.log('PDF generated successfully with pdfme, size:', pdfBuffer.length);
+    console.log('PDF generated successfully, size:', pdfBuffer.length);
 
     return new Response(pdfBuffer, {
       headers: {

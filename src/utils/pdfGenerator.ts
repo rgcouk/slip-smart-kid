@@ -57,7 +57,7 @@ const validatePDFInputs = (payslipData: PayslipData): void => {
 
 export const generatePayslipPDF = async (payslipData: PayslipData, currency: string = '£'): Promise<void> => {
   try {
-    console.log('🟢 Starting Puppeteer PDF generation for:', payslipData.name);
+    console.log('🟢 Starting PDF generation for:', payslipData.name);
     
     // Validate inputs
     validatePDFInputs(payslipData);
@@ -79,36 +79,42 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
       throw new Error(`PDF generation failed: ${error.message}`);
     }
 
-    // The Edge Function returns the PDF as a blob
-    if (data) {
-      const safeName = sanitizedData.name.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase();
-      const safePeriod = sanitizedData.payPeriodStart ? 
-        sanitizedData.payPeriodStart.replace(/[^a-zA-Z0-9-]/g, '-') :
-        sanitizedData.period?.replace(/[^a-zA-Z0-9-]/g, '-') || 'unknown';
-      const fileName = `payslip-${safeName}-${safePeriod}.pdf`;
-      
-      // Create download link
-      const blob = new Blob([data], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      
-      console.log('🎉 Puppeteer PDF generation completed successfully!');
+    // Check if we received valid PDF data
+    if (!data || !(data instanceof ArrayBuffer) && !(data instanceof Uint8Array)) {
+      console.error('❌ Invalid PDF data received:', typeof data, data);
+      throw new Error('Invalid PDF data received from server');
     }
+
+    console.log('✅ PDF data received, size:', data.byteLength || data.length);
+
+    // Create blob and download
+    const safeName = sanitizedData.name.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase();
+    const safePeriod = sanitizedData.payPeriodStart ? 
+      sanitizedData.payPeriodStart.replace(/[^a-zA-Z0-9-]/g, '-') :
+      sanitizedData.period?.replace(/[^a-zA-Z0-9-]/g, '-') || 'unknown';
+    const fileName = `payslip-${safeName}-${safePeriod}.pdf`;
+    
+    // Create download link
+    const blob = new Blob([data], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    console.log('🎉 PDF generation completed successfully!');
   } catch (error) {
-    console.error('💥 Puppeteer PDF generation failed:', error);
+    console.error('💥 PDF generation failed:', error);
     throw new Error(`PDF generation failed: ${error.message}`);
   }
 };
 
 export const generatePayslipBlob = async (payslipData: PayslipData, currency: string = '£'): Promise<Blob> => {
   try {
-    console.log('🟢 Starting Puppeteer PDF blob generation for:', payslipData.name);
+    console.log('🟢 Starting PDF blob generation for:', payslipData.name);
     
     // Validate inputs
     validatePDFInputs(payslipData);
@@ -129,16 +135,17 @@ export const generatePayslipBlob = async (payslipData: PayslipData, currency: st
       throw new Error(`PDF generation failed: ${error.message}`);
     }
 
-    if (!data) {
-      throw new Error('No PDF data received from Edge Function');
+    if (!data || !(data instanceof ArrayBuffer) && !(data instanceof Uint8Array)) {
+      console.error('❌ Invalid PDF data received:', typeof data, data);
+      throw new Error('Invalid PDF data received from server');
     }
 
     const blob = new Blob([data], { type: 'application/pdf' });
-    console.log('✅ Puppeteer PDF blob generated successfully, size:', blob.size);
+    console.log('✅ PDF blob generated successfully, size:', blob.size);
 
     return blob;
   } catch (error) {
-    console.error('💥 Puppeteer PDF blob generation failed:', error);
+    console.error('💥 PDF blob generation failed:', error);
     throw new Error(`PDF generation failed: ${error.message}`);
   }
 };

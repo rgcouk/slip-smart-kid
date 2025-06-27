@@ -210,7 +210,7 @@ Generated on ${new Date().toLocaleDateString('en-GB')} | Powered by SlipSim`;
     });
     
     console.log('PDF generated successfully, buffer length:', pdfBuffer.byteLength);
-    return new Uint8Array(pdfBuffer);
+    return pdfBuffer; // Return ArrayBuffer directly
   } catch (error) {
     console.error('PDFme generation error:', error);
     throw new Error(`PDF generation failed: ${error.message}`);
@@ -237,8 +237,9 @@ serve(async (req) => {
     
     const pdfBuffer = await generatePayslipPDF(payslipData, currency);
     
-    console.log('PDF generated successfully, size:', pdfBuffer.length);
+    console.log('PDF generated successfully, returning buffer with size:', pdfBuffer.byteLength);
 
+    // Return the PDF as binary data with proper headers
     return new Response(pdfBuffer, {
       headers: {
         ...corsHeaders,

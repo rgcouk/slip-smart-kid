@@ -66,28 +66,31 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
     const sanitizedData = sanitizePayslipData(payslipData);
     console.log('✅ Data validated and sanitized');
     
-    // Call the Edge Function
-    const { data, error } = await supabase.functions.invoke('generate-pdf', {
+    // Call the Edge Function with proper response handling
+    const response = await supabase.functions.invoke('generate-pdf', {
       body: {
         payslipData: sanitizedData,
         currency
+      },
+      headers: {
+        'Content-Type': 'application/json'
       }
     });
 
-    if (error) {
-      console.error('❌ Edge function error:', error);
-      throw new Error(`PDF generation failed: ${error.message}`);
+    if (response.error) {
+      console.error('❌ Edge function error:', response.error);
+      throw new Error(`PDF generation failed: ${response.error.message}`);
     }
 
-    // Check if we received valid PDF data
-    if (!data || !(data instanceof ArrayBuffer) && !(data instanceof Uint8Array)) {
-      console.error('❌ Invalid PDF data received:', typeof data, data);
+    // The response.data should be an ArrayBuffer
+    const pdfData = response.data;
+    
+    if (!pdfData || !(pdfData instanceof ArrayBuffer)) {
+      console.error('❌ Invalid PDF data received:', typeof pdfData, pdfData);
       throw new Error('Invalid PDF data received from server');
     }
 
-    // Get the size safely for both ArrayBuffer and Uint8Array
-    const dataSize = data instanceof ArrayBuffer ? data.byteLength : data.length;
-    console.log('✅ PDF data received, size:', dataSize);
+    console.log('✅ PDF data received, size:', pdfData.byteLength);
 
     // Create blob and download
     const safeName = sanitizedData.name.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase();
@@ -97,7 +100,7 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
     const fileName = `payslip-${safeName}-${safePeriod}.pdf`;
     
     // Create download link
-    const blob = new Blob([data], { type: 'application/pdf' });
+    const blob = new Blob([pdfData], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -124,25 +127,30 @@ export const generatePayslipBlob = async (payslipData: PayslipData, currency: st
     // Sanitize data
     const sanitizedData = sanitizePayslipData(payslipData);
     
-    // Call the Edge Function
-    const { data, error } = await supabase.functions.invoke('generate-pdf', {
+    // Call the Edge Function with proper response handling
+    const response = await supabase.functions.invoke('generate-pdf', {
       body: {
         payslipData: sanitizedData,
         currency
+      },
+      headers: {
+        'Content-Type': 'application/json'
       }
     });
 
-    if (error) {
-      console.error('❌ Edge function error:', error);
-      throw new Error(`PDF generation failed: ${error.message}`);
+    if (response.error) {
+      console.error('❌ Edge function error:', response.error);
+      throw new Error(`PDF generation failed: ${response.error.message}`);
     }
 
-    if (!data || !(data instanceof ArrayBuffer) && !(data instanceof Uint8Array)) {
-      console.error('❌ Invalid PDF data received:', typeof data, data);
+    const pdfData = response.data;
+    
+    if (!pdfData || !(pdfData instanceof ArrayBuffer)) {
+      console.error('❌ Invalid PDF data received:', typeof pdfData, pdfData);
       throw new Error('Invalid PDF data received from server');
     }
 
-    const blob = new Blob([data], { type: 'application/pdf' });
+    const blob = new Blob([pdfData], { type: 'application/pdf' });
     console.log('✅ PDF blob generated successfully, size:', blob.size);
 
     return blob;

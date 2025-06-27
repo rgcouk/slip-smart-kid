@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,6 +22,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Edit, Download, Copy, Trash, MoreHorizontal, Eye } from 'lucide-react';
 import { generatePayslipPDF } from '@/utils/pdfGenerator';
 import { useLocale } from '@/hooks/useLocale';
+import { DeductionEntry } from '@/types/payslip';
 
 interface PayslipActionsProps {
   payslip: {
@@ -45,6 +45,17 @@ export const PayslipActions = ({ payslip, onRefresh }: PayslipActionsProps) => {
   const { toast } = useToast();
   const { config } = useLocale();
 
+  // Transform database deductions to DeductionEntry format
+  const transformDeductions = (dbDeductions: Array<{ id: string; name: string; amount: number }>): DeductionEntry[] => {
+    return dbDeductions.map(deduction => ({
+      id: deduction.id,
+      name: deduction.name,
+      type: 'fixed' as const, // Assume fixed type for existing deductions
+      value: deduction.amount,
+      amount: deduction.amount
+    }));
+  };
+
   const handleEdit = () => {
     // Store payslip data in localStorage for editing
     localStorage.setItem('editPayslipData', JSON.stringify({
@@ -61,7 +72,7 @@ export const PayslipActions = ({ payslip, onRefresh }: PayslipActionsProps) => {
         type: 'fixed' as const,
         amount: payslip.gross_salary
       }],
-      deductions: payslip.deductions || []
+      deductions: transformDeductions(payslip.deductions || [])
     }));
     
     // Navigate to the app with edit mode
@@ -85,7 +96,7 @@ export const PayslipActions = ({ payslip, onRefresh }: PayslipActionsProps) => {
           type: 'fixed' as const,
           amount: payslip.gross_salary
         }],
-        deductions: payslip.deductions || [],
+        deductions: transformDeductions(payslip.deductions || []),
         // Add mock company details for PDF generation
         companyAddress: "123 Business Street, Business City, BC1 2BC",
         companyPhone: "+44 123 456 7890",
@@ -126,7 +137,7 @@ export const PayslipActions = ({ payslip, onRefresh }: PayslipActionsProps) => {
         type: 'fixed' as const,
         amount: payslip.gross_salary
       }],
-      deductions: payslip.deductions || []
+      deductions: transformDeductions(payslip.deductions || [])
     }));
     
     window.location.href = `/app?duplicate=${payslip.id}`;

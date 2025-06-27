@@ -224,7 +224,48 @@ serve(async (req) => {
   }
 
   try {
-    const { payslipData, currency = '£' } = await req.json();
+    console.log('Request method:', req.method);
+    console.log('Content-Type:', req.headers.get('content-type'));
+    
+    // Check if request has a body
+    const contentLength = req.headers.get('content-length');
+    console.log('Content-Length:', contentLength);
+    
+    if (!contentLength || contentLength === '0') {
+      console.error('Empty request body received');
+      return new Response(
+        JSON.stringify({ error: 'Request body is empty' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Get the raw request text first
+    const requestText = await req.text();
+    console.log('Raw request text length:', requestText.length);
+    console.log('Raw request text preview:', requestText.substring(0, 100));
+    
+    if (!requestText.trim()) {
+      console.error('Empty request body content');
+      return new Response(
+        JSON.stringify({ error: 'Request body content is empty' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Try to parse JSON
+    let parsedData;
+    try {
+      parsedData = JSON.parse(requestText);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      console.error('Failed to parse:', requestText.substring(0, 200));
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON in request body', details: parseError.message }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { payslipData, currency = '£' } = parsedData;
     
     if (!payslipData) {
       return new Response(

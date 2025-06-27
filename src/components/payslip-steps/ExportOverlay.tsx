@@ -158,11 +158,11 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto" aria-describedby="export-dialog-description">
         <DialogHeader>
           <DialogTitle>Export Payslip</DialogTitle>
-          <DialogDescription>
-            Preview and export your payslip for {payslipData.name}
+          <DialogDescription id="export-dialog-description">
+            Preview and export your payslip for {payslipData.name}. You can download the PDF or prepare it for email delivery.
           </DialogDescription>
         </DialogHeader>
 

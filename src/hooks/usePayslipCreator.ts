@@ -188,7 +188,8 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
 
   const canProceed = (): boolean => {
     const validation = validateStep(currentStep);
-    if (!validation.isValid) {
+    if (!validation.isValid && process.env.NODE_ENV === 'development') {
+      // Only log validation errors in development mode to reduce console noise
       console.log('Validation errors:', validation.errors);
     }
     return validation.isValid;

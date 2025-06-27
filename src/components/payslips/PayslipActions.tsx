@@ -53,6 +53,14 @@ export const PayslipActions = ({ payslip, onRefresh }: PayslipActionsProps) => {
       grossPay: payslip.gross_salary,
       companyName: payslip.company_name,
       name: payslip.employee_name,
+      payPeriodStart: payslip.pay_period_start,
+      payPeriodEnd: payslip.pay_period_end,
+      paymentEntries: [{
+        id: '1',
+        description: 'Basic Salary',
+        type: 'fixed' as const,
+        amount: payslip.gross_salary
+      }],
       deductions: payslip.deductions || []
     }));
     
@@ -67,8 +75,16 @@ export const PayslipActions = ({ payslip, onRefresh }: PayslipActionsProps) => {
       const payslipData = {
         name: payslip.employee_name,
         period: `${payslip.pay_period_start.substring(0, 7)}`,
+        payPeriodStart: payslip.pay_period_start,
+        payPeriodEnd: payslip.pay_period_end,
         grossPay: payslip.gross_salary,
         companyName: payslip.company_name,
+        paymentEntries: [{
+          id: '1',
+          description: 'Basic Salary',
+          type: 'fixed' as const,
+          amount: payslip.gross_salary
+        }],
         deductions: payslip.deductions || [],
         // Add mock company details for PDF generation
         companyAddress: "123 Business Street, Business City, BC1 2BC",
@@ -102,6 +118,14 @@ export const PayslipActions = ({ payslip, onRefresh }: PayslipActionsProps) => {
       grossPay: payslip.gross_salary,
       companyName: payslip.company_name,
       name: payslip.employee_name,
+      payPeriodStart: payslip.pay_period_start,
+      payPeriodEnd: payslip.pay_period_end,
+      paymentEntries: [{
+        id: '1',
+        description: 'Basic Salary',
+        type: 'fixed' as const,
+        amount: payslip.gross_salary
+      }],
       deductions: payslip.deductions || []
     }));
     

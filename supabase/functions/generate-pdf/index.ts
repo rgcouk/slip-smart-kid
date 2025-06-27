@@ -153,11 +153,11 @@ ${data.companyAddress || ''}
 ${data.companyPhone ? `Tel: ${data.companyPhone}` : ''}
 ${data.companyEmail ? `Email: ${data.companyEmail}` : ''}`;
 
-  // Build payments table
+  // Build payments table using standard ASCII characters
   let paymentsTable = `PAYMENTS & DEDUCTIONS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+_________________________________________________________________
 Description                           This Period     Year to Date
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+_________________________________________________________________
 
 PAYMENTS:
 `;
@@ -176,13 +176,13 @@ PAYMENTS:
     paymentsTable += `${deduction.name.padEnd(35)} ${currency}${deduction.amount.toFixed(2).padStart(10)} ${currency}${ytdAmount.toFixed(2).padStart(10)}\n`;
   });
 
-  // Build summary
-  const summaryText = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Build summary using standard ASCII characters
+  const summaryText = `_________________________________________________________________
 TOTAL GROSS PAY:                      ${currency}${data.grossPay.toFixed(2).padStart(10)}
 TOTAL DEDUCTIONS:                     ${currency}${totalDeductions.toFixed(2).padStart(10)}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+_________________________________________________________________
 NET PAY:                              ${currency}${netPay.toFixed(2).padStart(10)}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+_________________________________________________________________`;
 
   const footerText = `This payslip is computer generated and does not require a signature.
 For queries, please contact the HR department.

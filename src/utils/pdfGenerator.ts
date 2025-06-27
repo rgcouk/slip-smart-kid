@@ -85,7 +85,9 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
       throw new Error('Invalid PDF data received from server');
     }
 
-    console.log('✅ PDF data received, size:', data.byteLength || data.length);
+    // Get the size safely for both ArrayBuffer and Uint8Array
+    const dataSize = data instanceof ArrayBuffer ? data.byteLength : data.length;
+    console.log('✅ PDF data received, size:', dataSize);
 
     // Create blob and download
     const safeName = sanitizedData.name.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase();

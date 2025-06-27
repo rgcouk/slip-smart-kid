@@ -7,6 +7,15 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+interface PaymentEntry {
+  id: string;
+  description: string;
+  type: 'hourly' | 'fixed' | 'overtime' | 'bonus';
+  quantity?: number;
+  rate?: number;
+  amount: number;
+}
+
 interface PayslipData {
   name: string;
   companyName: string;
@@ -16,8 +25,13 @@ interface PayslipData {
   companyRegistration?: string;
   companyLogo?: string;
   grossPay: number;
+  contractualHours?: number;
+  hourlyRate?: number;
+  paymentEntries: PaymentEntry[];
   deductions: Array<{ id: string; name: string; amount: number }>;
-  period: string;
+  period?: string;
+  payPeriodStart?: string;
+  payPeriodEnd?: string;
   payrollNumber?: string;
   ytdOverride?: {
     grossPay: number;
@@ -30,11 +44,17 @@ const generatePayslipHTML = (data: PayslipData, currency: string = '£') => {
   const totalDeductions = data.deductions.reduce((sum, d) => sum + d.amount, 0);
   const netPay = data.ytdOverride?.netPay ?? (data.grossPay - totalDeductions);
   
-  const formatPeriod = (period: string) => {
-    if (!period) return '';
-    const [year, month] = period.split('-');
-    const date = new Date(parseInt(year), parseInt(month) - 1);
-    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const formatPeriod = (data: PayslipData) => {
+    if (data.payPeriodStart && data.payPeriodEnd) {
+      const start = new Date(data.payPeriodStart);
+      const end = new Date(data.payPeriodEnd);
+      return `${start.toLocaleDateString('en-GB')} - ${end.toLocaleDateString('en-GB')}`;
+    } else if (data.period) {
+      const [year, month] = data.period.split('-');
+      const date = new Date(parseInt(year), parseInt(month) - 1);
+      return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    }
+    return 'Unknown Period';
   };
 
   return `
@@ -179,6 +199,12 @@ const generatePayslipHTML = (data: PayslipData, currency: string = '£') => {
           font-size: 12px;
         }
         
+        .payment-detail {
+          font-size: 9px;
+          color: #888;
+          margin-left: 10px;
+        }
+        
         @media print {
           body { margin: 0; padding: 0; }
           .payslip { border: none; box-shadow: none; }
@@ -190,7 +216,7 @@ const generatePayslipHTML = (data: PayslipData, currency: string = '£') => {
         <div class="header">
           <div class="company-info">
             <h1>PAYSLIP</h1>
-            <p>Pay Period: ${formatPeriod(data.period)}</p>
+            <p>Pay Period: ${formatPeriod(data)}</p>
           </div>
           <div class="period-info">
             <p><strong>Generated:</strong> ${new Date().toLocaleDateString('en-GB')}</p>
@@ -207,8 +233,13 @@ const generatePayslipHTML = (data: PayslipData, currency: string = '£') => {
             </div>
             <div class="info-row">
               <span>Pay Period:</span>
-              <span>${formatPeriod(data.period)}</span>
+              <span>${formatPeriod(data)}</span>
             </div>
+            ${data.contractualHours ? `
+            <div class="info-row">
+              <span>Contractual Hours:</span>
+              <span>${data.contractualHours}/week</span>
+            </div>` : ''}
           </div>
           
           <div class="company-details">
@@ -239,10 +270,19 @@ const generatePayslipHTML = (data: PayslipData, currency: string = '£') => {
           <div class="payments-grid">
             <div class="payments">
               <div class="section-title">Payments</div>
-              <div class="payment-item">
-                <span>Gross Salary</span>
-                <span>${currency}${data.grossPay.toFixed(2)}</span>
-              </div>
+              ${data.paymentEntries.map(entry => `
+                <div class="payment-item">
+                  <div>
+                    <div>${entry.description}</div>
+                    ${entry.type === 'hourly' && entry.quantity && entry.rate ? 
+                      `<div class="payment-detail">${entry.quantity} hrs × ${currency}${entry.rate.toFixed(2)}</div>` : 
+                      entry.type === 'overtime' && entry.quantity && entry.rate ?
+                      `<div class="payment-detail">${entry.quantity} hrs × ${currency}${entry.rate.toFixed(2)} (OT)</div>` : ''
+                    }
+                  </div>
+                  <span>${currency}${entry.amount.toFixed(2)}</span>
+                </div>
+              `).join('')}
               <div class="payment-item">
                 <span><strong>Total Payments</strong></span>
                 <span><strong>${currency}${data.grossPay.toFixed(2)}</strong></span>
@@ -251,12 +291,12 @@ const generatePayslipHTML = (data: PayslipData, currency: string = '£') => {
             
             <div class="deductions">
               <div class="section-title">Deductions</div>
-              ${data.deductions.map(deduction => `
+              ${data.deductions.length > 0 ? data.deductions.map(deduction => `
                 <div class="deduction-item">
                   <span>${deduction.name}</span>
                   <span>${currency}${deduction.amount.toFixed(2)}</span>
                 </div>
-              `).join('')}
+              `).join('') : '<div class="deduction-item">No deductions</div>'}
               <div class="deduction-item">
                 <span><strong>Total Deductions</strong></span>
                 <span><strong>${currency}${totalDeductions.toFixed(2)}</strong></span>
@@ -346,7 +386,7 @@ serve(async (req) => {
       headers: {
         ...corsHeaders,
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="payslip-${payslipData.name.replace(/\s+/g, '-').toLowerCase()}-${payslipData.period}.pdf"`
+        'Content-Disposition': `attachment; filename="payslip-${payslipData.name.replace(/\s+/g, '-').toLowerCase()}-${payslipData.payPeriodStart || payslipData.period || 'unknown'}.pdf"`
       },
     });
 

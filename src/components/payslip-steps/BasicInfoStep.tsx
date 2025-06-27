@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { EmployeeSelector } from '@/components/employees/EmployeeSelector';
 import { EmployeeForm } from '@/components/employees/EmployeeForm';
+import { PaymentEntriesSection } from './PaymentEntriesSection';
+import { PayslipData } from '@/types/payslip';
 
 interface BasicInfoStepProps {
-  payslipData: any;
-  setPayslipData: (data: any) => void;
+  payslipData: PayslipData;
+  setPayslipData: (data: PayslipData | ((prev: PayslipData) => PayslipData)) => void;
   isParentMode: boolean;
   selectedChild?: any;
 }
@@ -26,13 +28,19 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: Bas
   const [showEmployeeForm, setShowEmployeeForm] = useState(false);
 
   const handleEmployeeSelect = (employee: Employee) => {
-    setPayslipData({
-      ...payslipData,
+    setPayslipData(prev => ({
+      ...prev,
+      name: employee.name,
       employeeName: employee.name,
       payrollNumber: employee.payroll_number || '',
-      grossPay: employee.default_gross_salary || payslipData.grossPay || 0,
-      selectedEmployeeId: employee.id
-    });
+      selectedEmployeeId: employee.id,
+      paymentEntries: [{
+        id: '1',
+        description: 'Basic Salary',
+        type: 'fixed',
+        amount: employee.default_gross_salary || 0
+      }]
+    }));
   };
 
   const handleCreateNewEmployee = () => {
@@ -41,7 +49,6 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: Bas
 
   const handleEmployeeFormSave = () => {
     setShowEmployeeForm(false);
-    // The employee form will handle the save, we just close the dialog
   };
 
   const handleEmployeeFormCancel = () => {
@@ -52,7 +59,7 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: Bas
     <div className="space-y-6">
       <div className="text-center mb-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-2">Employee Information</h2>
-        <p className="text-gray-600">Enter employee details for this payslip</p>
+        <p className="text-gray-600">Enter employee details and payment information</p>
       </div>
 
       <div className="space-y-4">
@@ -73,8 +80,12 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: Bas
             <Label htmlFor="employeeName">Employee Name *</Label>
             <Input
               id="employeeName"
-              value={payslipData.employeeName || ''}
-              onChange={(e) => setPayslipData({ ...payslipData, employeeName: e.target.value })}
+              value={payslipData.name || ''}
+              onChange={(e) => setPayslipData(prev => ({ 
+                ...prev, 
+                name: e.target.value,
+                employeeName: e.target.value 
+              }))}
               placeholder="Enter employee name"
               required
             />
@@ -85,7 +96,7 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: Bas
             <Input
               id="payrollNumber"
               value={payslipData.payrollNumber || ''}
-              onChange={(e) => setPayslipData({ ...payslipData, payrollNumber: e.target.value })}
+              onChange={(e) => setPayslipData(prev => ({ ...prev, payrollNumber: e.target.value }))}
               placeholder="EMP001234"
             />
           </div>
@@ -98,7 +109,7 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: Bas
               id="payPeriodStart"
               type="date"
               value={payslipData.payPeriodStart || ''}
-              onChange={(e) => setPayslipData({ ...payslipData, payPeriodStart: e.target.value })}
+              onChange={(e) => setPayslipData(prev => ({ ...prev, payPeriodStart: e.target.value }))}
               required
             />
           </div>
@@ -109,33 +120,62 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: Bas
               id="payPeriodEnd"
               type="date"
               value={payslipData.payPeriodEnd || ''}
-              onChange={(e) => setPayslipData({ ...payslipData, payPeriodEnd: e.target.value })}
+              onChange={(e) => setPayslipData(prev => ({ ...prev, payPeriodEnd: e.target.value }))}
               required
             />
           </div>
         </div>
 
-        <div>
-          <Label htmlFor="grossPay">Gross Pay *</Label>
-          <Input
-            id="grossPay"
-            type="number"
-            step="0.01"
-            min="0"
-            value={payslipData.grossPay || ''}
-            onChange={(e) => setPayslipData({ ...payslipData, grossPay: parseFloat(e.target.value) || 0 })}
-            placeholder="3000.00"
-            required
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="contractualHours">Contractual Hours/Week</Label>
+            <Input
+              id="contractualHours"
+              type="number"
+              step="0.5"
+              min="0"
+              value={payslipData.contractualHours || ''}
+              onChange={(e) => setPayslipData(prev => ({ ...prev, contractualHours: parseFloat(e.target.value) || 0 }))}
+              placeholder="40"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="hourlyRate">Hourly Rate (£)</Label>
+            <Input
+              id="hourlyRate"
+              type="number"
+              step="0.01"
+              min="0"
+              value={payslipData.hourlyRate || ''}
+              onChange={(e) => setPayslipData(prev => ({ ...prev, hourlyRate: parseFloat(e.target.value) || 0 }))}
+              placeholder="15.00"
+            />
+          </div>
+        </div>
+
+        {/* Payment Entries Section */}
+        <PaymentEntriesSection 
+          paymentEntries={payslipData.paymentEntries}
+          onEntriesChange={(entries) => setPayslipData(prev => ({ ...prev, paymentEntries: entries }))}
+        />
+
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex justify-between items-center">
+            <span className="font-medium text-blue-800">Total Gross Pay:</span>
+            <span className="text-lg font-bold text-blue-900">
+              £{payslipData.grossPay.toFixed(2)}
+            </span>
+          </div>
         </div>
 
         {isParentMode && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h3 className="text-blue-800 font-medium mb-2">💡 Learning Moment</h3>
             <p className="text-blue-700 text-sm">
-              A payslip shows how much money someone earned during a specific time period. 
-              The "pay period" is the time when the work was done, and "gross pay" is the total amount 
-              before any deductions (like taxes) are taken out.
+              A payslip shows different types of payments like basic salary, overtime, and bonuses. 
+              The "gross pay" is the total amount before any deductions (like taxes) are taken out.
+              Payment entries help break down exactly what someone earned during the pay period.
             </p>
           </div>
         )}

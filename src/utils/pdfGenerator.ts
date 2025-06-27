@@ -1,25 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { sanitizeTextInput } from './validation';
-
-export interface PayslipData {
-  name: string;
-  companyName: string;
-  companyAddress?: string;
-  companyPhone?: string;
-  companyEmail?: string;
-  companyRegistration?: string;
-  companyLogo?: string;
-  grossPay: number;
-  deductions: Array<{ id: string; name: string; amount: number }>;
-  period: string;
-  payrollNumber?: string;
-  ytdOverride?: {
-    grossPay: number;
-    totalDeductions: number;
-    netPay: number;
-  };
-}
+import { PayslipData } from '@/types/payslip';
 
 // Sanitize payslip data for PDF generation
 const sanitizePayslipData = (data: PayslipData): PayslipData => {
@@ -32,11 +14,20 @@ const sanitizePayslipData = (data: PayslipData): PayslipData => {
     companyEmail: data.companyEmail ? sanitizeTextInput(data.companyEmail, 100) : undefined,
     companyRegistration: data.companyRegistration ? sanitizeTextInput(data.companyRegistration, 50) : undefined,
     payrollNumber: data.payrollNumber ? sanitizeTextInput(data.payrollNumber, 20) : undefined,
-    period: sanitizeTextInput(data.period, 20),
+    paymentEntries: data.paymentEntries.map(entry => ({
+      ...entry,
+      id: sanitizeTextInput(entry.id, 50),
+      description: sanitizeTextInput(entry.description, 100),
+      amount: Number(entry.amount) || 0,
+      quantity: entry.quantity ? Number(entry.quantity) || 0 : undefined,
+      rate: entry.rate ? Number(entry.rate) || 0 : undefined
+    })),
     deductions: data.deductions.map(d => ({
       id: sanitizeTextInput(d.id, 50),
       name: sanitizeTextInput(d.name, 50),
-      amount: Number(d.amount) || 0
+      amount: Number(d.amount) || 0,
+      type: d.type,
+      value: Number(d.value) || 0
     }))
   };
 };
@@ -53,6 +44,10 @@ const validatePDFInputs = (payslipData: PayslipData): void => {
   
   if (typeof payslipData.grossPay !== 'number' || payslipData.grossPay < 0) {
     throw new Error('Invalid gross pay amount for PDF generation');
+  }
+  
+  if (!Array.isArray(payslipData.paymentEntries) || payslipData.paymentEntries.length === 0) {
+    throw new Error('At least one payment entry is required for PDF generation');
   }
   
   if (!Array.isArray(payslipData.deductions)) {
@@ -87,7 +82,9 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
     // The Edge Function returns the PDF as a blob
     if (data) {
       const safeName = sanitizedData.name.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase();
-      const safePeriod = sanitizedData.period.replace(/[^a-zA-Z0-9-]/g, '-');
+      const safePeriod = sanitizedData.payPeriodStart ? 
+        sanitizedData.payPeriodStart.replace(/[^a-zA-Z0-9-]/g, '-') :
+        sanitizedData.period?.replace(/[^a-zA-Z0-9-]/g, '-') || 'unknown';
       const fileName = `payslip-${safeName}-${safePeriod}.pdf`;
       
       // Create download link

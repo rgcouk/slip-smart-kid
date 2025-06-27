@@ -1,7 +1,9 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { PayslipData, PaymentEntry } from '@/types/payslip';
 import { 
   isValidFinancialAmount, 
   isValidEmployeeName, 
@@ -11,31 +13,6 @@ import {
   isValidDateRange,
   sanitizeTextInput
 } from '@/utils/validation';
-
-interface PayslipData {
-  name: string;
-  payrollNumber: string;
-  period: string;
-  grossPay: number;
-  companyName: string;
-  companyAddress?: string;
-  companyPhone?: string;
-  companyEmail?: string;
-  companyRegistration?: string;
-  companyLogo?: string;
-  ytdOverride?: {
-    grossPay: number;
-    totalDeductions: number;
-    netPay: number;
-  };
-  deductions: Array<{
-    id: string;
-    name: string;
-    type: 'percentage' | 'fixed';
-    value: number;
-    amount: number;
-  }>;
-}
 
 export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -47,10 +24,55 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
     name: '',
     payrollNumber: '',
     period: '',
+    payPeriodStart: '',
+    payPeriodEnd: '',
     grossPay: 0,
+    contractualHours: 40,
+    hourlyRate: 0,
+    paymentEntries: [{
+      id: '1',
+      description: 'Basic Salary',
+      type: 'fixed',
+      amount: 0
+    }],
     companyName: 'SlipSim Company',
     deductions: []
   });
+
+  // Helper function to sync period formats
+  const syncPeriodFormats = (data: PayslipData) => {
+    if (data.payPeriodStart && data.payPeriodEnd && !data.period) {
+      const startDate = new Date(data.payPeriodStart);
+      data.period = `${startDate.getFullYear()}-${(startDate.getMonth() + 1).toString().padStart(2, '0')}`;
+    } else if (data.period && (!data.payPeriodStart || !data.payPeriodEnd)) {
+      const [year, month] = data.period.split('-');
+      data.payPeriodStart = `${year}-${month}-01`;
+      const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
+      data.payPeriodEnd = `${year}-${month}-${lastDay.toString().padStart(2, '0')}`;
+    }
+    
+    // Ensure name field is consistent
+    if (data.employeeName && !data.name) {
+      data.name = data.employeeName;
+    } else if (data.name && !data.employeeName) {
+      data.employeeName = data.name;
+    }
+    
+    return data;
+  };
+
+  // Calculate gross pay from payment entries
+  const calculateGrossPay = (entries: PaymentEntry[]) => {
+    return entries.reduce((total, entry) => total + entry.amount, 0);
+  };
+
+  // Update gross pay when payment entries change
+  useEffect(() => {
+    const totalGross = calculateGrossPay(payslipData.paymentEntries);
+    if (totalGross !== payslipData.grossPay) {
+      setPayslipData(prev => ({ ...prev, grossPay: totalGross }));
+    }
+  }, [payslipData.paymentEntries]);
 
   // Check for edit or duplicate mode on component mount
   useEffect(() => {
@@ -63,7 +85,7 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
       if (editData) {
         try {
           const parsedData = JSON.parse(editData);
-          setPayslipData(parsedData);
+          setPayslipData(syncPeriodFormats(parsedData));
           localStorage.removeItem('editPayslipData');
           toast({
             title: "Editing Payslip",
@@ -80,11 +102,10 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
       if (duplicateData) {
         try {
           const parsedData = JSON.parse(duplicateData);
-          // Clear the ID and modify the name to indicate it's a duplicate
-          setPayslipData({
+          setPayslipData(syncPeriodFormats({
             ...parsedData,
             name: `${parsedData.name} (Copy)`
-          });
+          }));
           localStorage.removeItem('duplicatePayslipData');
           toast({
             title: "Duplicating Payslip",
@@ -110,18 +131,20 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
     
     switch (step) {
       case 1:
-        if (!payslipData.name.trim()) {
+        if (!payslipData.name?.trim()) {
           errors.push('Employee name is required');
         } else if (!isValidEmployeeName(payslipData.name)) {
           errors.push('Employee name contains invalid characters');
         }
         
-        if (!payslipData.period) {
-          errors.push('Pay period is required');
+        if (!payslipData.payPeriodStart || !payslipData.payPeriodEnd) {
+          errors.push('Pay period dates are required');
+        } else if (!isValidDateRange(payslipData.payPeriodStart, payslipData.payPeriodEnd)) {
+          errors.push('Invalid pay period date range');
         }
         
         if (payslipData.grossPay <= 0) {
-          errors.push('Gross pay must be greater than 0');
+          errors.push('Total gross pay must be greater than 0');
         } else if (!isValidFinancialAmount(payslipData.grossPay)) {
           errors.push('Invalid gross pay amount');
         }
@@ -129,10 +152,24 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
         if (payslipData.payrollNumber && !isValidPayrollNumber(payslipData.payrollNumber)) {
           errors.push('Payroll number contains invalid characters');
         }
+
+        // Validate payment entries
+        if (!payslipData.paymentEntries || payslipData.paymentEntries.length === 0) {
+          errors.push('At least one payment entry is required');
+        } else {
+          payslipData.paymentEntries.forEach((entry, index) => {
+            if (!entry.description?.trim()) {
+              errors.push(`Payment entry ${index + 1} requires a description`);
+            }
+            if (entry.amount <= 0) {
+              errors.push(`Payment entry ${index + 1} must have an amount greater than 0`);
+            }
+          });
+        }
         break;
         
       case 2:
-        if (!payslipData.companyName.trim()) {
+        if (!payslipData.companyName?.trim()) {
           errors.push('Company name is required');
         } else if (!isValidCompanyName(payslipData.companyName)) {
           errors.push('Company name contains invalid characters');
@@ -186,55 +223,28 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
     setIsLoading(true);
     
     try {
-      // Parse period to get start and end dates
-      const [year, month] = payslipData.period.split('-');
-      const payPeriodStart = `${year}-${month}-01`;
-      const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
-      const payPeriodEnd = `${year}-${month}-${lastDay.toString().padStart(2, '0')}`;
-
-      // Validate date range
-      if (!isValidDateRange(payPeriodStart, payPeriodEnd)) {
-        toast({
-          title: "Error",
-          description: "Invalid pay period dates",
-          variant: "destructive",
-        });
-        return;
-      }
-
+      const syncedData = syncPeriodFormats({ ...payslipData });
       const netSalary = calculateNetSalary();
 
       // Sanitize and validate all text inputs
-      const sanitizedName = sanitizeTextInput(payslipData.name, 100);
-      const sanitizedCompanyName = sanitizeTextInput(payslipData.companyName, 100);
+      const sanitizedName = sanitizeTextInput(syncedData.name, 100);
+      const sanitizedCompanyName = sanitizeTextInput(syncedData.companyName, 100);
 
       // Ensure deductions data is properly formatted and validated
-      const formattedDeductions = payslipData.deductions.map(deduction => ({
+      const formattedDeductions = syncedData.deductions.map(deduction => ({
         id: sanitizeTextInput(deduction.id, 50),
         name: sanitizeTextInput(deduction.name, 50),
         amount: Number(deduction.amount) || 0
       }));
 
-      // Final validation of formatted deductions
-      if (!validateDeductionsArray(formattedDeductions)) {
-        toast({
-          title: "Error",
-          description: "Invalid deductions data format",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Note: payroll_number is not saved to database as it's not in the current schema
-      // It's kept in the frontend for display purposes only
       const payslipRecord = {
         user_id: user.id,
         child_id: isParentMode && selectedChild ? selectedChild.id : null,
         employee_name: sanitizedName,
         company_name: sanitizedCompanyName,
-        pay_period_start: payPeriodStart,
-        pay_period_end: payPeriodEnd,
-        gross_salary: Number(payslipData.grossPay) || 0,
+        pay_period_start: syncedData.payPeriodStart,
+        pay_period_end: syncedData.payPeriodEnd,
+        gross_salary: Number(syncedData.grossPay) || 0,
         deductions: formattedDeductions,
         net_salary: Number(netSalary) || 0
       };
@@ -263,7 +273,17 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
           name: '',
           payrollNumber: '',
           period: '',
+          payPeriodStart: '',
+          payPeriodEnd: '',
           grossPay: 0,
+          contractualHours: 40,
+          hourlyRate: 0,
+          paymentEntries: [{
+            id: '1',
+            description: 'Basic Salary',
+            type: 'fixed',
+            amount: 0
+          }],
           companyName: 'SlipSim Company',
           deductions: []
         });
@@ -288,11 +308,18 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
     currentStep,
     isLoading,
     payslipData,
-    setPayslipData,
+    setPayslipData: (data: PayslipData | ((prev: PayslipData) => PayslipData)) => {
+      if (typeof data === 'function') {
+        setPayslipData(prev => syncPeriodFormats(data(prev)));
+      } else {
+        setPayslipData(syncPeriodFormats(data));
+      }
+    },
     nextStep,
     prevStep,
     canProceed,
     savePayslip,
-    validateStep
+    validateStep,
+    calculateGrossPay
   };
 };

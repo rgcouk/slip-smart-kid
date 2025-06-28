@@ -55,7 +55,7 @@ const validatePDFInputs = (payslipData: PayslipData): void => {
   }
 };
 
-// Enhanced PDF generation with better error handling and performance
+// Enhanced PDF generation with better error handling
 export const generatePayslipPDF = async (payslipData: PayslipData, currency: string = '£'): Promise<void> => {
   try {
     console.log('🟢 Starting PDF generation for:', payslipData.name);
@@ -67,31 +67,37 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
     const sanitizedData = sanitizePayslipData(payslipData);
     console.log('✅ Data validated and sanitized');
     
-    // Prepare request payload
-    const requestPayload = {
+    // Prepare request payload with explicit JSON stringification
+    const requestPayload = JSON.stringify({
       payslipData: sanitizedData,
       currency
-    };
+    });
     
-    console.log('📤 Sending request to edge function...');
+    console.log('📤 Sending request payload size:', requestPayload.length, 'bytes');
     
-    // Call the Edge Function with optimized error handling
+    // Call the Edge Function with improved error handling
     const response = await supabase.functions.invoke('generate-pdf', {
       body: requestPayload,
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/pdf'
       }
     });
 
     console.log('📥 Response received:', {
       hasError: !!response.error,
       hasData: !!response.data,
-      dataType: typeof response.data
+      dataType: typeof response.data,
+      errorMessage: response.error?.message
     });
 
     if (response.error) {
-      console.error('❌ Edge function error:', response.error);
-      throw new Error(`PDF generation failed: ${response.error.message || 'Unknown error'}`);
+      console.error('❌ Edge function error details:', response.error);
+      throw new Error(`PDF generation failed: ${response.error.message || 'Unknown server error'}`);
+    }
+
+    if (!response.data) {
+      throw new Error('No PDF data received from server');
     }
 
     // Handle different response data types
@@ -100,7 +106,6 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
     if (response.data instanceof ArrayBuffer) {
       pdfData = response.data;
     } else if (typeof response.data === 'string') {
-      // If it's a base64 string, decode it
       try {
         const binaryString = atob(response.data);
         const bytes = new Uint8Array(binaryString.length);
@@ -121,7 +126,7 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
       throw new Error('Empty PDF data received from server');
     }
 
-    console.log('✅ PDF data processed, size:', pdfData.byteLength);
+    console.log('✅ PDF data processed, size:', pdfData.byteLength, 'bytes');
 
     // Generate safe filename
     const safeName = sanitizedData.name.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase();
@@ -149,7 +154,8 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
     console.log('🎉 PDF download initiated successfully!');
   } catch (error) {
     console.error('💥 PDF generation failed:', error);
-    throw new Error(`PDF generation failed: ${error.message}`);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    throw new Error(`PDF generation failed: ${errorMessage}`);
   }
 };
 
@@ -164,23 +170,30 @@ export const generatePayslipBlob = async (payslipData: PayslipData, currency: st
     // Sanitize data
     const sanitizedData = sanitizePayslipData(payslipData);
     
-    // Prepare request payload
-    const requestPayload = {
+    // Prepare request payload with explicit JSON stringification
+    const requestPayload = JSON.stringify({
       payslipData: sanitizedData,
       currency
-    };
+    });
+    
+    console.log('📤 Sending blob request payload size:', requestPayload.length, 'bytes');
     
     // Call the Edge Function
     const response = await supabase.functions.invoke('generate-pdf', {
       body: requestPayload,
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/pdf'
       }
     });
 
     if (response.error) {
-      console.error('❌ Edge function error:', response.error);
-      throw new Error(`PDF generation failed: ${response.error.message || 'Unknown error'}`);
+      console.error('❌ Edge function error details:', response.error);
+      throw new Error(`PDF generation failed: ${response.error.message || 'Unknown server error'}`);
+    }
+
+    if (!response.data) {
+      throw new Error('No PDF data received from server');
     }
 
     // Handle different response data types
@@ -208,11 +221,12 @@ export const generatePayslipBlob = async (payslipData: PayslipData, currency: st
     }
 
     const blob = new Blob([pdfData], { type: 'application/pdf' });
-    console.log('✅ PDF blob generated successfully, size:', blob.size);
+    console.log('✅ PDF blob generated successfully, size:', blob.size, 'bytes');
 
     return blob;
   } catch (error) {
     console.error('💥 PDF blob generation failed:', error);
-    throw new Error(`PDF generation failed: ${error.message}`);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    throw new Error(`PDF generation failed: ${errorMessage}`);
   }
 };

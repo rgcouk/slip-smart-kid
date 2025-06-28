@@ -228,23 +228,35 @@ serve(async (req) => {
     console.log('Request method:', req.method);
     console.log('Content-Type:', req.headers.get('content-type'));
     
-    // Parse request body with proper error handling
+    // Parse request body with improved error handling
     let requestBody;
     try {
       const bodyText = await req.text();
       console.log('Request body length:', bodyText.length);
       
       if (!bodyText || bodyText.trim() === '') {
-        throw new Error('Request body is empty');
+        console.error('❌ Empty request body received');
+        return new Response(
+          JSON.stringify({ 
+            error: 'Request body is empty', 
+            details: 'No payslip data provided',
+            received: req.headers.get('content-length') + ' bytes'
+          }),
+          { 
+            status: 400, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        );
       }
       
       requestBody = JSON.parse(bodyText);
       console.log('✅ Request body parsed successfully');
+      console.log('Received data keys:', Object.keys(requestBody));
     } catch (parseError) {
       console.error('❌ Request parsing failed:', parseError.message);
       return new Response(
         JSON.stringify({ 
-          error: 'Invalid request format', 
+          error: 'Invalid JSON format', 
           details: parseError.message,
           received: req.headers.get('content-length') + ' bytes'
         }),
@@ -258,14 +270,30 @@ serve(async (req) => {
     const { payslipData, currency = '£' } = requestBody;
     
     if (!payslipData) {
-      console.error('❌ Missing payslip data');
+      console.error('❌ Missing payslip data in request');
       return new Response(
-        JSON.stringify({ error: 'Payslip data is required' }),
+        JSON.stringify({ 
+          error: 'Payslip data is required',
+          details: 'The payslipData field is missing from the request body'
+        }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('🎯 Generating PDF for:', payslipData.name);
+    if (!payslipData.name) {
+      console.error('❌ Missing employee name in payslip data');
+      return new Response(
+        JSON.stringify({ 
+          error: 'Employee name is required',
+          details: 'The payslipData.name field is missing'
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('🎯 Generating PDF for employee:', payslipData.name);
+    console.log('Company:', payslipData.companyName);
+    console.log('Payment entries count:', payslipData.paymentEntries?.length || 0);
     
     const pdfBuffer = await generatePayslipPDF(payslipData, currency);
     

@@ -210,7 +210,7 @@ Generated on ${new Date().toLocaleDateString('en-GB')} | Powered by SlipSim`;
     });
     
     console.log('PDF generated successfully, buffer length:', pdfBuffer.byteLength);
-    return pdfBuffer; // Return ArrayBuffer directly
+    return pdfBuffer;
   } catch (error) {
     console.error('PDFme generation error:', error);
     throw new Error(`PDF generation failed: ${error.message}`);
@@ -224,61 +224,52 @@ serve(async (req) => {
   }
 
   try {
+    console.log('🔄 Processing PDF generation request');
     console.log('Request method:', req.method);
     console.log('Content-Type:', req.headers.get('content-type'));
     
-    // Check if request has a body
-    const contentLength = req.headers.get('content-length');
-    console.log('Content-Length:', contentLength);
-    
-    if (!contentLength || contentLength === '0') {
-      console.error('Empty request body received');
-      return new Response(
-        JSON.stringify({ error: 'Request body is empty' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Get the raw request text first
-    const requestText = await req.text();
-    console.log('Raw request text length:', requestText.length);
-    console.log('Raw request text preview:', requestText.substring(0, 100));
-    
-    if (!requestText.trim()) {
-      console.error('Empty request body content');
-      return new Response(
-        JSON.stringify({ error: 'Request body content is empty' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Try to parse JSON
-    let parsedData;
+    // Parse request body with proper error handling
+    let requestBody;
     try {
-      parsedData = JSON.parse(requestText);
+      const bodyText = await req.text();
+      console.log('Request body length:', bodyText.length);
+      
+      if (!bodyText || bodyText.trim() === '') {
+        throw new Error('Request body is empty');
+      }
+      
+      requestBody = JSON.parse(bodyText);
+      console.log('✅ Request body parsed successfully');
     } catch (parseError) {
-      console.error('JSON parse error:', parseError);
-      console.error('Failed to parse:', requestText.substring(0, 200));
+      console.error('❌ Request parsing failed:', parseError.message);
       return new Response(
-        JSON.stringify({ error: 'Invalid JSON in request body', details: parseError.message }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ 
+          error: 'Invalid request format', 
+          details: parseError.message,
+          received: req.headers.get('content-length') + ' bytes'
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
       );
     }
 
-    const { payslipData, currency = '£' } = parsedData;
+    const { payslipData, currency = '£' } = requestBody;
     
     if (!payslipData) {
+      console.error('❌ Missing payslip data');
       return new Response(
         JSON.stringify({ error: 'Payslip data is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Generating PDF for:', payslipData.name);
+    console.log('🎯 Generating PDF for:', payslipData.name);
     
     const pdfBuffer = await generatePayslipPDF(payslipData, currency);
     
-    console.log('PDF generated successfully, returning buffer with size:', pdfBuffer.byteLength);
+    console.log('✅ PDF generated successfully, returning buffer with size:', pdfBuffer.byteLength);
 
     // Return the PDF as binary data with proper headers
     return new Response(pdfBuffer, {
@@ -290,10 +281,17 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('PDF generation failed:', error);
+    console.error('💥 PDF generation failed:', error);
     return new Response(
-      JSON.stringify({ error: 'PDF generation failed', details: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ 
+        error: 'PDF generation failed', 
+        details: error.message,
+        stack: error.stack 
+      }),
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
     );
   }
 });

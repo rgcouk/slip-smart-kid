@@ -55,6 +55,7 @@ const validatePDFInputs = (payslipData: PayslipData): void => {
   }
 };
 
+// Enhanced PDF generation with better error handling and performance
 export const generatePayslipPDF = async (payslipData: PayslipData, currency: string = '£'): Promise<void> => {
   try {
     console.log('🟢 Starting PDF generation for:', payslipData.name);
@@ -66,57 +67,93 @@ export const generatePayslipPDF = async (payslipData: PayslipData, currency: str
     const sanitizedData = sanitizePayslipData(payslipData);
     console.log('✅ Data validated and sanitized');
     
-    // Call the Edge Function with proper response handling
+    // Prepare request payload
+    const requestPayload = {
+      payslipData: sanitizedData,
+      currency
+    };
+    
+    console.log('📤 Sending request to edge function...');
+    
+    // Call the Edge Function with optimized error handling
     const response = await supabase.functions.invoke('generate-pdf', {
-      body: {
-        payslipData: sanitizedData,
-        currency
-      },
+      body: requestPayload,
       headers: {
         'Content-Type': 'application/json'
       }
     });
 
+    console.log('📥 Response received:', {
+      hasError: !!response.error,
+      hasData: !!response.data,
+      dataType: typeof response.data
+    });
+
     if (response.error) {
       console.error('❌ Edge function error:', response.error);
-      throw new Error(`PDF generation failed: ${response.error.message}`);
+      throw new Error(`PDF generation failed: ${response.error.message || 'Unknown error'}`);
     }
 
-    // The response.data should be an ArrayBuffer
-    const pdfData = response.data;
+    // Handle different response data types
+    let pdfData: ArrayBuffer;
     
-    if (!pdfData || !(pdfData instanceof ArrayBuffer)) {
-      console.error('❌ Invalid PDF data received:', typeof pdfData, pdfData);
-      throw new Error('Invalid PDF data received from server');
+    if (response.data instanceof ArrayBuffer) {
+      pdfData = response.data;
+    } else if (typeof response.data === 'string') {
+      // If it's a base64 string, decode it
+      try {
+        const binaryString = atob(response.data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        pdfData = bytes.buffer;
+      } catch (decodeError) {
+        console.error('❌ Failed to decode PDF data:', decodeError);
+        throw new Error('Invalid PDF data format received');
+      }
+    } else {
+      console.error('❌ Unexpected PDF data type:', typeof response.data);
+      throw new Error(`Unexpected PDF data type: ${typeof response.data}`);
     }
 
-    console.log('✅ PDF data received, size:', pdfData.byteLength);
+    if (!pdfData || pdfData.byteLength === 0) {
+      throw new Error('Empty PDF data received from server');
+    }
 
-    // Create blob and download
+    console.log('✅ PDF data processed, size:', pdfData.byteLength);
+
+    // Generate safe filename
     const safeName = sanitizedData.name.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase();
     const safePeriod = sanitizedData.payPeriodStart ? 
       sanitizedData.payPeriodStart.replace(/[^a-zA-Z0-9-]/g, '-') :
       sanitizedData.period?.replace(/[^a-zA-Z0-9-]/g, '-') || 'unknown';
     const fileName = `payslip-${safeName}-${safePeriod}.pdf`;
     
-    // Create download link
+    // Create and trigger download
     const blob = new Blob([pdfData], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
+    
     const link = document.createElement('a');
     link.href = url;
     link.download = fileName;
+    link.style.display = 'none';
+    
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
     
-    console.log('🎉 PDF generation completed successfully!');
+    // Clean up URL to prevent memory leaks
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    
+    console.log('🎉 PDF download initiated successfully!');
   } catch (error) {
     console.error('💥 PDF generation failed:', error);
     throw new Error(`PDF generation failed: ${error.message}`);
   }
 };
 
+// Optimized blob generation for preview
 export const generatePayslipBlob = async (payslipData: PayslipData, currency: string = '£'): Promise<Blob> => {
   try {
     console.log('🟢 Starting PDF blob generation for:', payslipData.name);
@@ -127,12 +164,15 @@ export const generatePayslipBlob = async (payslipData: PayslipData, currency: st
     // Sanitize data
     const sanitizedData = sanitizePayslipData(payslipData);
     
-    // Call the Edge Function with proper response handling
+    // Prepare request payload
+    const requestPayload = {
+      payslipData: sanitizedData,
+      currency
+    };
+    
+    // Call the Edge Function
     const response = await supabase.functions.invoke('generate-pdf', {
-      body: {
-        payslipData: sanitizedData,
-        currency
-      },
+      body: requestPayload,
       headers: {
         'Content-Type': 'application/json'
       }
@@ -140,14 +180,31 @@ export const generatePayslipBlob = async (payslipData: PayslipData, currency: st
 
     if (response.error) {
       console.error('❌ Edge function error:', response.error);
-      throw new Error(`PDF generation failed: ${response.error.message}`);
+      throw new Error(`PDF generation failed: ${response.error.message || 'Unknown error'}`);
     }
 
-    const pdfData = response.data;
+    // Handle different response data types
+    let pdfData: ArrayBuffer;
     
-    if (!pdfData || !(pdfData instanceof ArrayBuffer)) {
-      console.error('❌ Invalid PDF data received:', typeof pdfData, pdfData);
-      throw new Error('Invalid PDF data received from server');
+    if (response.data instanceof ArrayBuffer) {
+      pdfData = response.data;
+    } else if (typeof response.data === 'string') {
+      try {
+        const binaryString = atob(response.data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        pdfData = bytes.buffer;
+      } catch (decodeError) {
+        throw new Error('Invalid PDF data format received');
+      }
+    } else {
+      throw new Error(`Unexpected PDF data type: ${typeof response.data}`);
+    }
+
+    if (!pdfData || pdfData.byteLength === 0) {
+      throw new Error('Empty PDF data received from server');
     }
 
     const blob = new Blob([pdfData], { type: 'application/pdf' });

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -22,7 +22,7 @@ interface ExportOverlayProps {
   payslipData: any;
 }
 
-export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayProps) => {
+export const ExportOverlay = React.memo(({ isOpen, onClose, payslipData }: ExportOverlayProps) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isEmailing, setIsEmailing] = useState(false);
   const [isGeneratingPreview, setIsGeneratingPreview] = useState(false);
@@ -33,10 +33,15 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
   const { toast } = useToast();
   const { config } = useLocale();
 
-  const generatePreview = async () => {
+  // Memoize employee name for filename generation
+  const employeeName = useMemo(() => payslipData?.name || 'Unknown', [payslipData?.name]);
+
+  const generatePreview = useCallback(async () => {
+    if (!payslipData) return;
+    
     setIsGeneratingPreview(true);
     try {
-      console.log('🔄 Generating PDF preview for:', payslipData.name);
+      console.log('🔄 Generating PDF preview for:', employeeName);
       const blob = await generatePayslipBlob(payslipData, config.currency);
       setPdfBlob(blob);
       setShowPreview(true);
@@ -51,9 +56,11 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
     } finally {
       setIsGeneratingPreview(false);
     }
-  };
+  }, [payslipData, config.currency, employeeName, toast]);
 
-  const handleDownload = async () => {
+  const handleDownload = useCallback(async () => {
+    if (!payslipData) return;
+    
     console.log('🚀 Download handler called');
     console.log('Payslip data:', payslipData);
     console.log('Currency:', config.currency);
@@ -62,16 +69,7 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
     setDownloadStatus('idle');
     
     try {
-      console.log('📥 Starting PDF generation for download:', payslipData.name);
-      
-      // Check if the payslip element exists before starting
-      const payslipElement = document.querySelector('[data-payslip-preview]');
-      console.log('🔍 Checking for payslip element:', payslipElement ? 'Found' : 'Not found');
-      
-      if (!payslipElement) {
-        console.error('❌ No payslip element found before PDF generation');
-        throw new Error('Payslip preview element not found. Please refresh and try again.');
-      }
+      console.log('📥 Starting PDF generation for download:', employeeName);
       
       await generatePayslipPDF(payslipData, config.currency);
       
@@ -93,9 +91,11 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
       console.log('🏁 Download process finished, setting isDownloading to false');
       setIsDownloading(false);
     }
-  };
+  }, [payslipData, config.currency, employeeName, toast]);
 
-  const handleEmailSend = async (emailData: { to: string; subject: string; message: string }) => {
+  const handleEmailSend = useCallback(async (emailData: { to: string; subject: string; message: string }) => {
+    if (!payslipData) return;
+    
     setIsEmailing(true);
     setEmailStatus('idle');
     
@@ -103,7 +103,7 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
       console.log('Generating PDF for email to:', emailData.to);
       
       const pdfBlob = await generatePayslipBlob(payslipData, config.currency);
-      const fileName = `payslip-${payslipData.name.replace(/\s+/g, '-').toLowerCase()}-${payslipData.period}.pdf`;
+      const fileName = `payslip-${employeeName.replace(/\s+/g, '-').toLowerCase()}-${payslipData.period}.pdf`;
       
       const url = URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
@@ -132,29 +132,32 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
     } finally {
       setIsEmailing(false);
     }
-  };
+  }, [payslipData, config.currency, employeeName, toast]);
 
-  const resetStatus = () => {
+  const resetStatus = useCallback(() => {
     setEmailStatus('idle');
     setDownloadStatus('idle');
     setShowPreview(false);
     setPdfBlob(null);
-  };
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     resetStatus();
     onClose();
-  };
+  }, [resetStatus, onClose]);
 
+  // Auto-generate preview when overlay opens
   useEffect(() => {
     console.log('📂 ExportOverlay opened, isOpen:', isOpen, 'pdfBlob exists:', !!pdfBlob);
-    if (isOpen && !pdfBlob) {
-      // Add a delay to ensure the payslip preview is rendered and visible
-      setTimeout(() => {
+    if (isOpen && !pdfBlob && payslipData) {
+      // Add a small delay to ensure UI is ready
+      const timeoutId = setTimeout(() => {
         generatePreview();
       }, 100);
+      
+      return () => clearTimeout(timeoutId);
     }
-  }, [isOpen]);
+  }, [isOpen, pdfBlob, payslipData, generatePreview]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -162,7 +165,7 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
         <DialogHeader>
           <DialogTitle>Export Payslip</DialogTitle>
           <DialogDescription id="export-dialog-description">
-            Preview and export your payslip for {payslipData.name}. You can download the PDF or prepare it for email delivery.
+            Preview and export your payslip for {employeeName}. You can download the PDF or prepare it for email delivery.
           </DialogDescription>
         </DialogHeader>
 
@@ -200,4 +203,6 @@ export const ExportOverlay = ({ isOpen, onClose, payslipData }: ExportOverlayPro
       </DialogContent>
     </Dialog>
   );
-};
+});
+
+ExportOverlay.displayName = 'ExportOverlay';

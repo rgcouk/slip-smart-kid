@@ -1,11 +1,8 @@
 
 import React, { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { EmployeeSelector } from '@/components/employees/EmployeeSelector';
-import { EmployeeForm } from '@/components/employees/EmployeeForm';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ChevronDown, Plus, GripVertical, Trash2 } from 'lucide-react';
 import { PaymentEntriesSection } from './PaymentEntriesSection';
 import { PayslipData } from '@/types/payslip';
 
@@ -16,155 +13,119 @@ interface BasicInfoStepProps {
   selectedChild?: any;
 }
 
-interface Employee {
-  id: string;
-  name: string;
-  payroll_number?: string;
-  email?: string;
-  default_gross_salary?: number;
-}
-
 export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: BasicInfoStepProps) => {
-  const [showEmployeeForm, setShowEmployeeForm] = useState(false);
+  const [entriesExpanded, setEntriesExpanded] = useState(true);
 
-  const handleEmployeeSelect = (employee: Employee) => {
+  const addTemplateEntry = (template: 'basic' | 'hourly' | 'overtime' | 'bonus') => {
+    const newEntry = {
+      id: Date.now().toString(),
+      description: template === 'basic' ? 'Basic Salary' : 
+                  template === 'hourly' ? 'Hourly Pay' :
+                  template === 'overtime' ? 'Overtime Pay' : 'Performance Bonus',
+      type: template === 'hourly' || template === 'overtime' ? 'hourly' as const : 'fixed' as const,
+      quantity: template === 'hourly' ? 40 : template === 'overtime' ? 8 : undefined,
+      rate: template === 'hourly' ? 15 : template === 'overtime' ? 22.5 : undefined,
+      amount: template === 'basic' ? 3000 : 
+              template === 'hourly' ? 600 :
+              template === 'overtime' ? 180 : 500
+    };
+
     setPayslipData(prev => ({
       ...prev,
-      name: employee.name,
-      employeeName: employee.name,
-      payrollNumber: employee.payroll_number || '',
-      selectedEmployeeId: employee.id,
-      paymentEntries: [{
-        id: '1',
-        description: 'Basic Salary',
-        type: 'fixed',
-        amount: employee.default_gross_salary || 0
-      }]
+      paymentEntries: [...prev.paymentEntries, newEntry]
     }));
   };
 
-  const handleCreateNewEmployee = () => {
-    setShowEmployeeForm(true);
-  };
-
-  const handleEmployeeFormSave = () => {
-    setShowEmployeeForm(false);
-  };
-
-  const handleEmployeeFormCancel = () => {
-    setShowEmployeeForm(false);
-  };
+  const totalEarnings = payslipData.paymentEntries.reduce((sum, entry) => sum + entry.amount, 0);
 
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Employee Information</h2>
-        <p className="text-gray-600">Enter employee details and payment information</p>
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Earnings</h2>
+        <p className="text-gray-600">Configure payment entries and earnings</p>
       </div>
 
       <div className="space-y-4">
-        {/* Employee Selection */}
-        <div className="space-y-2">
-          <Label>Select Employee</Label>
-          <EmployeeSelector
-            onSelect={handleEmployeeSelect}
-            onCreateNew={handleCreateNewEmployee}
-          />
-          <p className="text-sm text-gray-500">
-            Select from saved employees or add details manually below
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="employeeName">Employee Name *</Label>
-            <Input
-              id="employeeName"
-              value={payslipData.name || ''}
-              onChange={(e) => setPayslipData(prev => ({ 
-                ...prev, 
-                name: e.target.value,
-                employeeName: e.target.value 
-              }))}
-              placeholder="Enter employee name"
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="payrollNumber">Payroll Number</Label>
-            <Input
-              id="payrollNumber"
-              value={payslipData.payrollNumber || ''}
-              onChange={(e) => setPayslipData(prev => ({ ...prev, payrollNumber: e.target.value }))}
-              placeholder="EMP001234"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="payPeriodStart">Pay Period Start *</Label>
-            <Input
-              id="payPeriodStart"
-              type="date"
-              value={payslipData.payPeriodStart || ''}
-              onChange={(e) => setPayslipData(prev => ({ ...prev, payPeriodStart: e.target.value }))}
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="payPeriodEnd">Pay Period End *</Label>
-            <Input
-              id="payPeriodEnd"
-              type="date"
-              value={payslipData.payPeriodEnd || ''}
-              onChange={(e) => setPayslipData(prev => ({ ...prev, payPeriodEnd: e.target.value }))}
-              required
-            />
+        {/* Quick Template Buttons */}
+        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+          <h3 className="text-lg font-medium text-gray-900 mb-3">Quick Add Templates</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => addTemplateEntry('basic')}
+              className="min-h-[48px] text-sm"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Basic Salary
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => addTemplateEntry('hourly')}
+              className="min-h-[48px] text-sm"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Hourly Pay
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => addTemplateEntry('overtime')}
+              className="min-h-[48px] text-sm"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Overtime
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => addTemplateEntry('bonus')}
+              className="min-h-[48px] text-sm"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Bonus
+            </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="contractualHours">Contractual Hours/Week</Label>
-            <Input
-              id="contractualHours"
-              type="number"
-              step="0.5"
-              min="0"
-              value={payslipData.contractualHours || ''}
-              onChange={(e) => setPayslipData(prev => ({ ...prev, contractualHours: parseFloat(e.target.value) || 0 }))}
-              placeholder="40"
-            />
-          </div>
+        {/* Payment Entries with Collapsible Design */}
+        <Collapsible open={entriesExpanded} onOpenChange={setEntriesExpanded}>
+          <CollapsibleTrigger className="w-full">
+            <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <GripVertical className="h-5 w-5 text-gray-400" />
+                  <h3 className="text-lg font-medium text-gray-900">Payment Entries</h3>
+                  <span className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full">
+                    {payslipData.paymentEntries.length} entries
+                  </span>
+                </div>
+                <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${entriesExpanded ? 'rotate-180' : ''}`} />
+              </div>
+              {!entriesExpanded && (
+                <div className="mt-2 text-sm text-gray-600">
+                  Total: £{totalEarnings.toFixed(2)}
+                </div>
+              )}
+            </div>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="bg-white border border-gray-200 rounded-lg p-4 mt-2">
+              <PaymentEntriesSection 
+                paymentEntries={payslipData.paymentEntries}
+                onEntriesChange={(entries) => setPayslipData(prev => ({ ...prev, paymentEntries: entries }))}
+              />
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
 
-          <div>
-            <Label htmlFor="hourlyRate">Hourly Rate (£)</Label>
-            <Input
-              id="hourlyRate"
-              type="number"
-              step="0.01"
-              min="0"
-              value={payslipData.hourlyRate || ''}
-              onChange={(e) => setPayslipData(prev => ({ ...prev, hourlyRate: parseFloat(e.target.value) || 0 }))}
-              placeholder="15.00"
-            />
-          </div>
-        </div>
-
-        {/* Payment Entries Section */}
-        <PaymentEntriesSection 
-          paymentEntries={payslipData.paymentEntries}
-          onEntriesChange={(entries) => setPayslipData(prev => ({ ...prev, paymentEntries: entries }))}
-        />
-
+        {/* Total Summary */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex justify-between items-center">
-            <span className="font-medium text-blue-800">Total Gross Pay:</span>
-            <span className="text-lg font-bold text-blue-900">
-              £{payslipData.grossPay.toFixed(2)}
+            <span className="font-medium text-blue-800">Total Gross Earnings:</span>
+            <span className="text-xl font-bold text-blue-900">
+              £{totalEarnings.toFixed(2)}
             </span>
           </div>
         </div>
@@ -173,26 +134,14 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: Bas
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h3 className="text-blue-800 font-medium mb-2">💡 Learning Moment</h3>
             <p className="text-blue-700 text-sm">
-              A payslip shows different types of payments like basic salary, overtime, and bonuses. 
-              The "gross pay" is the total amount before any deductions (like taxes) are taken out.
-              Payment entries help break down exactly what someone earned during the pay period.
+              Earnings are all the different ways someone gets paid at work. This includes their regular salary, 
+              extra pay for working overtime, bonuses for good performance, and any other money they earn. 
+              All these different types of payment are added together to get the "gross earnings" - 
+              that's the total amount before any deductions are taken out.
             </p>
           </div>
         )}
       </div>
-
-      {/* Employee Form Dialog */}
-      <Dialog open={showEmployeeForm} onOpenChange={setShowEmployeeForm}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Add New Employee</DialogTitle>
-          </DialogHeader>
-          <EmployeeForm
-            onSave={handleEmployeeFormSave}
-            onCancel={handleEmployeeFormCancel}
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

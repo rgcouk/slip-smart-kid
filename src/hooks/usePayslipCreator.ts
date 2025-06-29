@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -39,6 +38,42 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
     template: 'default',
     deductions: []
   });
+
+  // Auto-save to localStorage
+  useEffect(() => {
+    const autoSaveData = {
+      ...payslipData,
+      currentStep,
+      lastSaved: new Date().toISOString()
+    };
+    localStorage.setItem('payslipAutoSave', JSON.stringify(autoSaveData));
+  }, [payslipData, currentStep]);
+
+  // Load auto-saved data on mount
+  useEffect(() => {
+    const autoSavedData = localStorage.getItem('payslipAutoSave');
+    if (autoSavedData) {
+      try {
+        const parsed = JSON.parse(autoSavedData);
+        const { currentStep: savedStep, lastSaved, ...savedPayslipData } = parsed;
+        
+        // Only restore if saved within last 24 hours
+        const lastSavedDate = new Date(lastSaved);
+        const hoursSinceSave = (Date.now() - lastSavedDate.getTime()) / (1000 * 60 * 60);
+        
+        if (hoursSinceSave < 24) {
+          setPayslipData(syncPeriodFormats(savedPayslipData));
+          setCurrentStep(savedStep || 1);
+          toast({
+            title: "Data Restored",
+            description: "Your previous work has been restored.",
+          });
+        }
+      } catch (error) {
+        console.error('Error loading auto-saved data:', error);
+      }
+    }
+  }, []);
 
   // Helper function to sync period formats
   const syncPeriodFormats = (data: PayslipData) => {
@@ -131,30 +166,29 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
     const errors: string[] = [];
     
     switch (step) {
-      case 1:
+      case 1: // Business Setup
+        if (!payslipData.companyName?.trim()) {
+          errors.push('Company name is required');
+        } else if (!isValidCompanyName(payslipData.companyName)) {
+          errors.push('Company name contains invalid characters');
+        }
+        
         if (!payslipData.name?.trim()) {
           errors.push('Employee name is required');
         } else if (!isValidEmployeeName(payslipData.name)) {
           errors.push('Employee name contains invalid characters');
         }
+        break;
         
+      case 2: // Pay Period
         if (!payslipData.payPeriodStart || !payslipData.payPeriodEnd) {
           errors.push('Pay period dates are required');
         } else if (!isValidDateRange(payslipData.payPeriodStart, payslipData.payPeriodEnd)) {
           errors.push('Invalid pay period date range');
         }
+        break;
         
-        if (payslipData.grossPay <= 0) {
-          errors.push('Total gross pay must be greater than 0');
-        } else if (!isValidFinancialAmount(payslipData.grossPay)) {
-          errors.push('Invalid gross pay amount');
-        }
-        
-        if (payslipData.payrollNumber && !isValidPayrollNumber(payslipData.payrollNumber)) {
-          errors.push('Payroll number contains invalid characters');
-        }
-
-        // Validate payment entries
+      case 3: // Earnings
         if (!payslipData.paymentEntries || payslipData.paymentEntries.length === 0) {
           errors.push('At least one payment entry is required');
         } else {
@@ -167,17 +201,13 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
             }
           });
         }
-        break;
         
-      case 2:
-        if (!payslipData.companyName?.trim()) {
-          errors.push('Company name is required');
-        } else if (!isValidCompanyName(payslipData.companyName)) {
-          errors.push('Company name contains invalid characters');
+        if (payslipData.grossPay <= 0) {
+          errors.push('Total gross pay must be greater than 0');
         }
         break;
         
-      case 3:
+      case 4: // Deductions
         if (!validateDeductionsArray(payslipData.deductions)) {
           errors.push('Invalid deductions data');
         }
@@ -190,7 +220,6 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
   const canProceed = (): boolean => {
     const validation = validateStep(currentStep);
     if (!validation.isValid && process.env.NODE_ENV === 'development') {
-      // Only log validation errors in development mode to reduce console noise
       console.log('Validation errors:', validation.errors);
     }
     return validation.isValid;

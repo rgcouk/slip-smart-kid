@@ -1,11 +1,10 @@
-
 import React, { useEffect } from 'react';
+import { Check } from 'lucide-react';
+import { BusinessSetupStep } from './payslip-steps/BusinessSetupStep';
+import { PeriodSelectionStep } from './payslip-steps/PeriodSelectionStep';
 import { BasicInfoStep } from './payslip-steps/BasicInfoStep';
-import { CompanyInfoStep } from './payslip-steps/CompanyInfoStep';
 import { DeductionsStep } from './payslip-steps/DeductionsStep';
-import { YTDStep } from './payslip-steps/YTDStep';
 import { PreviewStep } from './payslip-steps/PreviewStep';
-import { ProgressIndicator } from './payslip-steps/ProgressIndicator';
 import { StepNavigation } from './payslip-steps/StepNavigation';
 import { usePayslipCreator } from '@/hooks/usePayslipCreator';
 
@@ -35,11 +34,11 @@ export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: Pa
   }, [currentStep, onStepChange]);
 
   const steps = [
-    { number: 1, title: 'Employee Info', component: BasicInfoStep },
-    { number: 2, title: 'Company', component: CompanyInfoStep },
-    { number: 3, title: 'Deductions', component: DeductionsStep },
-    { number: 4, title: 'Year to Date', component: YTDStep },
-    { number: 5, title: 'Preview & Export', component: PreviewStep }
+    { number: 1, title: 'Business Setup', component: BusinessSetupStep },
+    { number: 2, title: 'Pay Period', component: PeriodSelectionStep },
+    { number: 3, title: 'Earnings', component: BasicInfoStep },
+    { number: 4, title: 'Deductions', component: DeductionsStep },
+    { number: 5, title: 'Review & Export', component: PreviewStep }
   ];
 
   const currentStepData = steps.find(step => step.number === currentStep);
@@ -49,9 +48,65 @@ export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: Pa
 
   return (
     <div className="bg-white rounded-lg lg:rounded-xl shadow-sm border border-blue-100 overflow-hidden">
-      {/* Mobile Progress Indicator only */}
-      <div className="lg:hidden">
-        <ProgressIndicator steps={steps} currentStep={currentStep} />
+      {/* Enhanced Progress Indicator */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+        <div className="p-4">
+          {/* Mobile Progress Bar */}
+          <div className="lg:hidden mb-4">
+            <div className="flex justify-between text-sm text-gray-600 mb-2">
+              <span>Step {currentStep} of {steps.length}</span>
+              <span>{Math.round((currentStep / steps.length) * 100)}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-in-out" 
+                style={{ width: `${(currentStep / steps.length) * 100}%` }}
+              />
+            </div>
+            <div className="mt-2 text-center">
+              <span className="text-lg font-semibold text-blue-800">{currentStepData?.title}</span>
+            </div>
+          </div>
+
+          {/* Desktop Progress Steps */}
+          <div className="hidden lg:flex items-center justify-between">
+            {steps.map((step, index) => (
+              <React.Fragment key={step.number}>
+                <div className={`flex items-center gap-3 ${
+                  currentStep >= step.number ? 'text-blue-600' : 'text-gray-400'
+                }`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 ${
+                    currentStep > step.number 
+                      ? 'bg-green-600 text-white shadow-lg' 
+                      : currentStep === step.number
+                      ? 'bg-blue-600 text-white shadow-lg ring-4 ring-blue-200'
+                      : 'bg-gray-200 text-gray-500'
+                  }`}>
+                    {currentStep > step.number ? (
+                      <Check className="h-5 w-5" />
+                    ) : (
+                      step.number
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">{step.title}</span>
+                    {currentStep === step.number && (
+                      <span className="text-xs text-blue-500">Current</span>
+                    )}
+                    {currentStep > step.number && (
+                      <span className="text-xs text-green-600">Complete</span>
+                    )}
+                  </div>
+                </div>
+                {index < steps.length - 1 && (
+                  <div className={`flex-1 h-1 mx-4 rounded transition-all duration-300 ${
+                    currentStep > step.number ? 'bg-green-600' : 'bg-gray-200'
+                  }`} />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="p-4 sm:p-6 lg:p-8 min-h-[600px] lg:min-h-[700px]">

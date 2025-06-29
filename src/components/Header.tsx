@@ -52,12 +52,14 @@ export const Header = () => {
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-blue-100">
+    <header className="bg-slate-900/80 backdrop-blur-sm shadow-lg border-b border-white/10">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <Calculator className="h-6 w-6 text-blue-600" />
-            <span className="font-semibold text-blue-900">SlipSim</span>
+            <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <Calculator className="h-5 w-5 text-white" />
+            </div>
+            <span className="font-semibold text-white text-xl">SlipSim</span>
           </div>
           
           {user && <Navigation onSignOut={handleSignOut} />}
@@ -66,7 +68,7 @@ export const Header = () => {
         <div className="flex items-center gap-3">
           {user && (
             <div className="hidden md:flex items-center gap-3">
-              <div className="flex items-center gap-2 text-sm text-blue-700">
+              <div className="flex items-center gap-2 text-sm text-slate-300">
                 <User className="h-4 w-4" />
                 <span>{displayName}</span>
               </div>
@@ -74,7 +76,7 @@ export const Header = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleSignOut}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-transparent border-white/20 text-white hover:bg-white/10"
               >
                 <LogOut className="h-4 w-4" />
                 Sign Out

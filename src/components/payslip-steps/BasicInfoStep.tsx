@@ -41,20 +41,20 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: Bas
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Earnings</h2>
-        <p className="text-gray-600">Configure payment entries and earnings</p>
+        <h2 className="text-xl font-semibold text-white mb-2">Earnings</h2>
+        <p className="text-slate-300">Configure payment entries and earnings</p>
       </div>
 
       <div className="space-y-4">
         {/* Quick Template Buttons */}
-        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-          <h3 className="text-lg font-medium text-gray-900 mb-3">Quick Add Templates</h3>
+        <div className="metric-card">
+          <h3 className="text-lg font-medium text-white mb-3">Quick Add Templates</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => addTemplateEntry('basic')}
-              className="min-h-[48px] text-sm"
+              className="min-h-[48px] text-sm bg-transparent border-white/20 text-white hover:bg-white/10"
             >
               <Plus className="h-4 w-4 mr-2" />
               Basic Salary
@@ -63,7 +63,7 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: Bas
               type="button"
               variant="outline"
               onClick={() => addTemplateEntry('hourly')}
-              className="min-h-[48px] text-sm"
+              className="min-h-[48px] text-sm bg-transparent border-white/20 text-white hover:bg-white/10"
             >
               <Plus className="h-4 w-4 mr-2" />
               Hourly Pay
@@ -72,7 +72,7 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: Bas
               type="button"
               variant="outline"
               onClick={() => addTemplateEntry('overtime')}
-              className="min-h-[48px] text-sm"
+              className="min-h-[48px] text-sm bg-transparent border-white/20 text-white hover:bg-white/10"
             >
               <Plus className="h-4 w-4 mr-2" />
               Overtime
@@ -81,7 +81,7 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: Bas
               type="button"
               variant="outline"
               onClick={() => addTemplateEntry('bonus')}
-              className="min-h-[48px] text-sm"
+              className="min-h-[48px] text-sm bg-transparent border-white/20 text-white hover:bg-white/10"
             >
               <Plus className="h-4 w-4 mr-2" />
               Bonus
@@ -92,26 +92,26 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: Bas
         {/* Payment Entries with Collapsible Design */}
         <Collapsible open={entriesExpanded} onOpenChange={setEntriesExpanded}>
           <CollapsibleTrigger className="w-full">
-            <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div className="metric-card hover:bg-card/90 transition-all">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <GripVertical className="h-5 w-5 text-gray-400" />
-                  <h3 className="text-lg font-medium text-gray-900">Payment Entries</h3>
-                  <span className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full">
+                  <GripVertical className="h-5 w-5 text-slate-400" />
+                  <h3 className="text-lg font-medium text-white">Payment Entries</h3>
+                  <span className="bg-purple-500/20 text-purple-300 text-sm px-2 py-1 rounded-full">
                     {payslipData.paymentEntries.length} entries
                   </span>
                 </div>
-                <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${entriesExpanded ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`h-5 w-5 text-slate-400 transition-transform ${entriesExpanded ? 'rotate-180' : ''}`} />
               </div>
               {!entriesExpanded && (
-                <div className="mt-2 text-sm text-gray-600">
+                <div className="mt-2 text-sm text-slate-300">
                   Total: £{totalEarnings.toFixed(2)}
                 </div>
               )}
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="bg-white border border-gray-200 rounded-lg p-4 mt-2">
+            <div className="metric-card mt-2">
               <PaymentEntriesSection 
                 paymentEntries={payslipData.paymentEntries}
                 onEntriesChange={(entries) => setPayslipData(prev => ({ ...prev, paymentEntries: entries }))}
@@ -121,19 +121,19 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: Bas
         </Collapsible>
 
         {/* Total Summary */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-xl p-4">
           <div className="flex justify-between items-center">
-            <span className="font-medium text-blue-800">Total Gross Earnings:</span>
-            <span className="text-xl font-bold text-blue-900">
+            <span className="font-medium text-purple-200">Total Gross Earnings:</span>
+            <span className="text-xl font-bold text-white">
               £{totalEarnings.toFixed(2)}
             </span>
           </div>
         </div>
 
         {isParentMode && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="text-blue-800 font-medium mb-2">💡 Learning Moment</h3>
-            <p className="text-blue-700 text-sm">
+          <div className="bg-blue-500/20 border border-blue-500/30 rounded-xl p-4">
+            <h3 className="text-blue-200 font-medium mb-2">💡 Learning Moment</h3>
+            <p className="text-blue-100 text-sm">
               Earnings are all the different ways someone gets paid at work. This includes their regular salary, 
               extra pay for working overtime, bonuses for good performance, and any other money they earn. 
               All these different types of payment are added together to get the "gross earnings" - 

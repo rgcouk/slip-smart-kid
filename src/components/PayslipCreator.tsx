@@ -39,7 +39,7 @@ export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: Pa
     { number: 2, title: 'Company', component: CompanyInfoStep },
     { number: 3, title: 'Deductions', component: DeductionsStep },
     { number: 4, title: 'Year to Date', component: YTDStep },
-    { number: 5, title: 'Preview', component: PreviewStep }
+    { number: 5, title: 'Preview & Export', component: PreviewStep }
   ];
 
   const currentStepData = steps.find(step => step.number === currentStep);

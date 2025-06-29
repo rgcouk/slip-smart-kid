@@ -25,14 +25,22 @@ export const PreviewStep = React.memo(({ payslipData, isParentMode, selectedChil
   // Use optimized calculations hook
   const { totalDeductions, netPay, ytdValues } = usePayslipCalculations(payslipData);
 
-  return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="text-center mb-4 sm:mb-6">
-        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Payslip Preview</h2>
-        <p className="text-sm sm:text-base text-gray-600">Review your payslip before export</p>
-      </div>
+  // Determine which template to render
+  const renderPayslipTemplate = () => {
+    if (payslipData.template === 'professional') {
+      return (
+        <ProfessionalPayslipTemplate
+          payslipData={payslipData}
+          currency={config.currency}
+          ytdValues={ytdValues}
+          totalDeductions={totalDeductions}
+          netPay={netPay}
+        />
+      );
+    }
 
-      {/* Mobile-friendly Payslip Preview - For Screen Display */}
+    // Default template (current design)
+    return (
       <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-3 sm:p-6 mx-auto max-w-4xl">
         <PayslipHeader 
           period={payslipData.period}
@@ -59,15 +67,20 @@ export const PreviewStep = React.memo(({ payslipData, isParentMode, selectedChil
 
         <PayslipFooter />
       </div>
+    );
+  };
 
-      {/* Professional PDF Template - Hidden but available for PDF generation */}
-      <ProfessionalPayslipTemplate
-        payslipData={payslipData}
-        currency={config.currency}
-        ytdValues={ytdValues}
-        totalDeductions={totalDeductions}
-        netPay={netPay}
-      />
+  return (
+    <div className="space-y-4 sm:space-y-6">
+      <div className="text-center mb-4 sm:mb-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Payslip Preview</h2>
+        <p className="text-sm sm:text-base text-gray-600">
+          Review your {payslipData.template === 'professional' ? 'professional' : 'default'} payslip before export
+        </p>
+      </div>
+
+      {/* Template-based Payslip Preview */}
+      {renderPayslipTemplate()}
 
       <ExportActions 
         onExportClick={() => setIsExportOverlayOpen(true)}

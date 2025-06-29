@@ -36,6 +36,7 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
       amount: 0
     }],
     companyName: 'SlipSim Company',
+    template: 'default',
     deductions: []
   });
 
@@ -286,6 +287,7 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
             amount: 0
           }],
           companyName: 'SlipSim Company',
+          template: 'default',
           deductions: []
         });
         setCurrentStep(1);

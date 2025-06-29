@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Upload, Building2, X } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Upload, Building2, X, Palette } from 'lucide-react';
 
 interface CompanyInfoStepProps {
   payslipData: any;
@@ -47,12 +48,62 @@ export const CompanyInfoStep = ({ payslipData, setPayslipData, isParentMode }: C
     });
   };
 
+  const handleTemplateChange = (template: 'default' | 'professional') => {
+    setPayslipData({
+      ...payslipData,
+      template
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-2">Company Information</h2>
-        <p className="text-gray-600">Add your company details and logo</p>
+        <p className="text-gray-600">Add your company details, logo, and choose a template</p>
       </div>
+
+      {/* Template Selection */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Palette className="h-5 w-5" />
+            Payslip Template
+          </CardTitle>
+          <CardDescription>
+            Choose the design style for your payslips
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RadioGroup
+            value={payslipData.template || 'default'}
+            onValueChange={handleTemplateChange}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          >
+            <div className="flex items-center space-x-2 border rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
+              <RadioGroupItem value="default" id="default" />
+              <div className="flex-1">
+                <Label htmlFor="default" className="font-medium cursor-pointer">
+                  Default Theme
+                </Label>
+                <p className="text-sm text-gray-500">
+                  Modern, colorful design with clear sections
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2 border rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
+              <RadioGroupItem value="professional" id="professional" />
+              <div className="flex-1">
+                <Label htmlFor="professional" className="font-medium cursor-pointer">
+                  Professional Theme
+                </Label>
+                <p className="text-sm text-gray-500">
+                  Clean, formal design for business use
+                </p>
+              </div>
+            </div>
+          </RadioGroup>
+        </CardContent>
+      </Card>
 
       {/* Company Logo Upload */}
       <Card>
@@ -186,8 +237,8 @@ export const CompanyInfoStep = ({ payslipData, setPayslipData, isParentMode }: C
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <h3 className="font-medium text-green-800 mb-2">💼 Learning Moment</h3>
           <p className="text-sm text-green-700">
-            Company information on payslips is important for record keeping and legal requirements. 
-            It helps identify where the payment came from and provides contact details if needed!
+            Company information and templates on payslips are important for record keeping and legal requirements. 
+            Different templates can help match your company's branding and look more professional!
           </p>
         </div>
       )}

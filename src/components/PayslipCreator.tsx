@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { BusinessSetupStep } from './payslip-steps/BusinessSetupStep';
@@ -17,8 +18,7 @@ interface PayslipCreatorProps {
 }
 
 export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: PayslipCreatorProps) => {
-  const { payslipData, setPayslipData, canProceedToNextStep } = usePayslipCreator(selectedChild);
-  const [currentStep, setCurrentStep] = useState(1);
+  const { payslipData, setPayslipData, canProceed, currentStep, nextStep, prevStep, savePayslip, isLoading } = usePayslipCreator(isParentMode, selectedChild);
 
   useEffect(() => {
     if (onStepChange) {
@@ -73,7 +73,9 @@ export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: Pa
         return (
           <PreviewStep
             payslipData={payslipData}
+            setPayslipData={setPayslipData}
             isParentMode={isParentMode}
+            selectedChild={selectedChild}
           />
         );
       default:
@@ -82,7 +84,7 @@ export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: Pa
   };
 
   return (
-    <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-lg">
+    <div className="bg-white border border-gray-200 rounded-xl shadow-lg">
       {/* Mobile Progress Indicator */}
       <div className="lg:hidden border-b border-gray-200">
         <ProgressIndicator steps={steps} currentStep={currentStep} />
@@ -98,9 +100,11 @@ export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: Pa
         <StepNavigation
           currentStep={currentStep}
           totalSteps={5}
-          onPrevious={() => setCurrentStep(Math.max(1, currentStep - 1))}
-          onNext={() => setCurrentStep(Math.min(5, currentStep + 1))}
-          isNextDisabled={!canProceedToNextStep()}
+          canProceed={canProceed()}
+          isLoading={isLoading}
+          onPrevStep={prevStep}
+          onNextStep={nextStep}
+          onSave={savePayslip}
         />
       </div>
     </div>

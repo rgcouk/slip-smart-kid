@@ -127,164 +127,175 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
-      <Header />
-      
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-16 text-center">
-        <div className="max-w-4xl mx-auto">
-          <Badge className="mb-4" variant="secondary">
-            Professional Payslip Generator
-          </Badge>
-          <h1 className="text-5xl md:text-6xl font-bold text-blue-900 mb-6">
-            Create Professional Payslips in Minutes
-          </h1>
-          <p className="text-xl text-blue-600 mb-8 max-w-2xl mx-auto">
-            Whether you're running a business or teaching kids about money, SlipSim makes creating professional payslips simple and fast.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="text-lg px-8 py-3" asChild>
-              <a href={user ? "/app" : "/auth"}>
-                {user ? "Go to App" : "Get Started Free"}
-              </a>
-            </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-3" asChild>
-              <a href="/pricing">View Pricing</a>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
-            Why Choose SlipSim?
-          </h2>
-          <p className="text-lg text-blue-600 max-w-2xl mx-auto">
-            Everything you need to create professional payslips quickly and easily
-          </p>
-        </div>
+    <div className="min-h-screen bg-white">
+      {/* Dark Header/Hero Section */}
+      <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        <Header />
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <Card key={index} className="text-center border-0 shadow-lg">
-              <CardHeader>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <feature.icon className="h-6 w-6 text-blue-600" />
-                </div>
-                <CardTitle className="text-xl">{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base">
-                  {feature.description}
-                </CardDescription>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
+        {/* Hero Section */}
+        <section className="container mx-auto px-4 py-16 lg:py-24 text-center">
+          <div className="max-w-4xl mx-auto">
+            <Badge className="mb-6 bg-purple-500/20 text-purple-200 border-purple-400/30 hover:bg-purple-500/30" variant="secondary">
+              Professional Payslip Generator
+            </Badge>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+              Create Professional 
+              <span className="block gradient-text">Payslips in Minutes</span>
+            </h1>
+            <p className="text-lg md:text-xl text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Whether you're running a business or teaching kids about money, SlipSim makes creating professional payslips simple and fast.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="text-lg px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 border-0 shadow-lg hover:shadow-xl transition-all duration-300" asChild>
+                <a href={user ? "/app" : "/auth"}>
+                  {user ? "Go to App" : "Get Started Free"}
+                </a>
+              </Button>
+              <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-white/20 text-white hover:bg-white/10 hover:border-white/40 transition-all duration-300" asChild>
+                <a href="/pricing">View Pricing</a>
+              </Button>
+            </div>
+          </div>
+        </section>
+      </div>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
-            Simple, Transparent Pricing
-          </h2>
-          <p className="text-lg text-blue-600 max-w-2xl mx-auto">
-            Choose the perfect plan for your needs. Upgrade or downgrade at any time.
-          </p>
-        </div>
+      {/* White Content Sections */}
+      <div className="bg-white">
+        {/* Features Section */}
+        <section className="container mx-auto px-4 py-16 lg:py-24">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
+              Why Choose SlipSim?
+            </h2>
+            <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto">
+              Everything you need to create professional payslips quickly and easily
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <Card key={index} className="text-center border-0 shadow-sm hover:shadow-lg transition-all duration-300 bg-white">
+                <CardHeader className="pb-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <feature.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="text-xl font-semibold text-slate-900">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-base text-slate-600 leading-relaxed">
+                    {feature.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {plans.map((plan) => (
-            <Card key={plan.name} className={`relative ${plan.popular ? 'border-blue-500 border-2' : ''}`}>
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-blue-500 text-white">
-                    Most Popular
-                  </Badge>
-                </div>
-              )}
-              
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                <CardDescription>{plan.description}</CardDescription>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold text-blue-900">{plan.price}</span>
-                  <span className="text-gray-600">{plan.period}</span>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <ul className="space-y-3 mb-6">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      <span className="text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                
-                <Button 
-                  className={`w-full ${plan.popular ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
-                  variant={plan.popular ? 'default' : 'outline'}
-                  asChild
-                >
-                  <a href={user ? "/subscription" : "/auth"}>
-                    {user ? "Upgrade Now" : "Get Started"}
-                  </a>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
+        {/* Pricing Section */}
+        <section id="pricing" className="bg-slate-50 py-16 lg:py-24">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
+                Simple, Transparent Pricing
+              </h2>
+              <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto">
+                Choose the perfect plan for your needs. Upgrade or downgrade at any time.
+              </p>
+            </div>
 
-      {/* FAQ Section */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
-            Frequently Asked Questions
-          </h2>
-          <p className="text-lg text-blue-600 max-w-2xl mx-auto">
-            Got questions? We've got answers.
-          </p>
-        </div>
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {plans.map((plan) => (
+                <Card key={plan.name} className={`relative bg-white shadow-sm hover:shadow-lg transition-all duration-300 ${plan.popular ? 'ring-2 ring-purple-500 scale-105' : ''}`}>
+                  {plan.popular && (
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                      <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 px-4 py-1">
+                        Most Popular
+                      </Badge>
+                    </div>
+                  )}
+                  
+                  <CardHeader className="text-center pb-4">
+                    <CardTitle className="text-2xl font-bold text-slate-900">{plan.name}</CardTitle>
+                    <CardDescription className="text-slate-600">{plan.description}</CardDescription>
+                    <div className="mt-6">
+                      <span className="text-4xl lg:text-5xl font-bold text-slate-900">{plan.price}</span>
+                      <span className="text-slate-600 text-lg">{plan.period}</span>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <ul className="space-y-4 mb-8">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-center gap-3">
+                          <Check className="h-5 w-5 text-green-600 flex-shrink-0" />
+                          <span className="text-slate-700">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    
+                    <Button 
+                      className={`w-full h-12 font-medium transition-all duration-300 ${plan.popular ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 shadow-lg' : 'bg-slate-900 hover:bg-slate-800 text-white'}`}
+                      variant={plan.popular ? 'default' : 'default'}
+                      asChild
+                    >
+                      <a href={user ? "/subscription" : "/auth"}>
+                        {user ? "Upgrade Now" : "Get Started"}
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
 
-        <div className="max-w-3xl mx-auto space-y-4">
-          {faqs.map((faq, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center justify-between cursor-pointer">
-                  {faq.question}
-                  <ChevronDown className="h-5 w-5" />
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">{faq.answer}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
+        {/* FAQ Section */}
+        <section className="container mx-auto px-4 py-16 lg:py-24">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto">
+              Got questions? We've got answers.
+            </p>
+          </div>
 
-      {/* CTA Section */}
-      <section className="container mx-auto px-4 py-16 text-center">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
-            Ready to Get Started?
-          </h2>
-          <p className="text-lg text-blue-600 mb-8">
-            Join thousands of users who trust SlipSim for their payslip needs.
-          </p>
-          <Button size="lg" className="text-lg px-8 py-3" asChild>
-            <a href={user ? "/app" : "/auth"}>
-              {user ? "Go to App" : "Start Creating Payslips"}
-            </a>
-          </Button>
-        </div>
-      </section>
+          <div className="max-w-4xl mx-auto space-y-4">
+            {faqs.map((faq, index) => (
+              <Card key={index} className="bg-white shadow-sm hover:shadow-md transition-all duration-300">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg font-semibold text-slate-900 flex items-center justify-between cursor-pointer">
+                    {faq.question}
+                    <ChevronDown className="h-5 w-5 text-slate-400" />
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <p className="text-slate-600 leading-relaxed">{faq.answer}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="bg-slate-50 py-16 lg:py-24">
+          <div className="container mx-auto px-4 text-center">
+            <div className="max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
+                Ready to Get Started?
+              </h2>
+              <p className="text-lg md:text-xl text-slate-600 mb-8">
+                Join thousands of users who trust SlipSim for their payslip needs.
+              </p>
+              <Button size="lg" className="text-lg px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 border-0 shadow-lg hover:shadow-xl transition-all duration-300" asChild>
+                <a href={user ? "/app" : "/auth"}>
+                  {user ? "Go to App" : "Start Creating Payslips"}
+                </a>
+              </Button>
+            </div>
+          </div>
+        </section>
+      </div>
       
       <Footer />
     </div>

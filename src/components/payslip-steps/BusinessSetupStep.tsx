@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -61,7 +60,7 @@ export const BusinessSetupStep = ({ payslipData, setPayslipData, isParentMode }:
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Business Setup</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Business Setup</h2>
         <p className="text-gray-600">Configure your company and employee information</p>
       </div>
 
@@ -69,11 +68,13 @@ export const BusinessSetupStep = ({ payslipData, setPayslipData, isParentMode }:
         {/* Company Details Section */}
         <Collapsible open={companyExpanded} onOpenChange={setCompanyExpanded}>
           <CollapsibleTrigger className="w-full">
-            <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Building2 className="h-5 w-5 text-blue-600" />
-                  <h3 className="text-lg font-medium text-gray-900">Company Details</h3>
+                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <Building2 className="h-5 w-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">Company Details</h3>
                 </div>
                 <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${companyExpanded ? 'rotate-180' : ''}`} />
               </div>
@@ -85,7 +86,7 @@ export const BusinessSetupStep = ({ payslipData, setPayslipData, isParentMode }:
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="bg-white border border-gray-200 rounded-lg p-4 mt-2 space-y-4">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 mt-2 shadow-sm space-y-4">
               <div>
                 <Label htmlFor="companyName">Company Name *</Label>
                 <Input
@@ -171,11 +172,13 @@ export const BusinessSetupStep = ({ payslipData, setPayslipData, isParentMode }:
         {/* Employee Details Section */}
         <Collapsible open={employeeExpanded} onOpenChange={setEmployeeExpanded}>
           <CollapsibleTrigger className="w-full">
-            <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <User className="h-5 w-5 text-blue-600" />
-                  <h3 className="text-lg font-medium text-gray-900">Employee Details</h3>
+                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <User className="h-5 w-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">Employee Details</h3>
                 </div>
                 <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${employeeExpanded ? 'rotate-180' : ''}`} />
               </div>
@@ -187,7 +190,7 @@ export const BusinessSetupStep = ({ payslipData, setPayslipData, isParentMode }:
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="bg-white border border-gray-200 rounded-lg p-4 mt-2 space-y-4">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 mt-2 shadow-sm space-y-4">
               <div className="space-y-2">
                 <Label>Select Employee</Label>
                 <EmployeeSelector
@@ -261,8 +264,9 @@ export const BusinessSetupStep = ({ payslipData, setPayslipData, isParentMode }:
           </CollapsibleContent>
         </Collapsible>
 
+        {/* Learning Moment */}
         {isParentMode && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
             <h3 className="text-blue-800 font-medium mb-2">💡 Learning Moment</h3>
             <p className="text-blue-700 text-sm">
               Every payslip needs both company and employee information. The company details show who is paying, 

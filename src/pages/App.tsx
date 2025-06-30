@@ -35,8 +35,8 @@ const App = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8">
           {/* Left Sidebar - Controls */}
           <div className="lg:col-span-3 space-y-4 sm:space-y-6">
-            <div className="glass-card p-4 lg:p-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Settings</h2>
+            <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-lg p-4 lg:p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Settings</h2>
               <div className="space-y-4">
                 <ParentModeToggle 
                   isParentMode={isParentMode} 
@@ -44,7 +44,7 @@ const App = () => {
                 />
 
                 {isParentMode && (
-                  <div className="pt-4 border-t border-white/10">
+                  <div className="pt-4 border-t border-gray-200">
                     <ChildProfiles 
                       selectedChild={selectedChild}
                       onSelectChild={setSelectedChild}
@@ -56,8 +56,8 @@ const App = () => {
 
             {/* Progress Indicator for larger screens */}
             <div className="hidden lg:block">
-              <div className="glass-card p-4 lg:p-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Progress</h2>
+              <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-lg p-4 lg:p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Progress</h2>
                 <ProgressIndicator steps={steps} currentStep={currentStep} />
               </div>
             </div>

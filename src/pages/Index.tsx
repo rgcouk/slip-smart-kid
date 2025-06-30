@@ -1,76 +1,64 @@
-
 import React from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Calculator, 
-  FileText, 
-  Download, 
-  Shield, 
-  Clock, 
-  Users,
-  Check,
-  ChevronDown,
-  ArrowRight,
-  Star,
-  TrendingUp
-} from 'lucide-react';
+import { Calculator, FileText, Download, Shield, Clock, Users, Check, ChevronDown, ArrowRight, Star, TrendingUp } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-
 const Index = () => {
-  const { user } = useAuth();
-
-  const features = [
-    {
-      icon: Calculator,
-      title: 'Easy Payslip Creation',
-      description: 'Create professional payslips in minutes with our intuitive step-by-step process.',
-      color: 'bg-blue-500'
-    },
-    {
-      icon: FileText,
-      title: 'Professional Templates',
-      description: 'Choose from beautifully designed templates that look professional and comply with standards.',
-      color: 'bg-purple-500'
-    },
-    {
-      icon: Download,
-      title: 'PDF Export',
-      description: 'Export your payslips as high-quality PDF files for easy sharing and record-keeping.',
-      color: 'bg-green-500'
-    },
-    {
-      icon: Shield,
-      title: 'Secure & Private',
-      description: 'Your data is encrypted and secure. We never share your information with third parties.',
-      color: 'bg-red-500'
-    },
-    {
-      icon: Clock,
-      title: 'Save Time',
-      description: 'No more manual calculations or formatting. Generate payslips in seconds, not hours.',
-      color: 'bg-orange-500'
-    },
-    {
-      icon: Users,
-      title: 'Parent Mode',
-      description: 'Perfect for parents managing multiple children\'s allowances and teaching financial literacy.',
-      color: 'bg-pink-500'
-    }
-  ];
-
-  const stats = [
-    { label: 'Payslips Created', value: '10,000+', icon: FileText },
-    { label: 'Happy Users', value: '2,500+', icon: Users },
-    { label: 'Time Saved', value: '500+ hrs', icon: Clock },
-    { label: 'Satisfaction', value: '98%', icon: Star }
-  ];
-
-  return (
-    <div className="min-h-screen bg-gray-50">
+  const {
+    user
+  } = useAuth();
+  const features = [{
+    icon: Calculator,
+    title: 'Easy Payslip Creation',
+    description: 'Create professional payslips in minutes with our intuitive step-by-step process.',
+    color: 'bg-blue-500'
+  }, {
+    icon: FileText,
+    title: 'Professional Templates',
+    description: 'Choose from beautifully designed templates that look professional and comply with standards.',
+    color: 'bg-purple-500'
+  }, {
+    icon: Download,
+    title: 'PDF Export',
+    description: 'Export your payslips as high-quality PDF files for easy sharing and record-keeping.',
+    color: 'bg-green-500'
+  }, {
+    icon: Shield,
+    title: 'Secure & Private',
+    description: 'Your data is encrypted and secure. We never share your information with third parties.',
+    color: 'bg-red-500'
+  }, {
+    icon: Clock,
+    title: 'Save Time',
+    description: 'No more manual calculations or formatting. Generate payslips in seconds, not hours.',
+    color: 'bg-orange-500'
+  }, {
+    icon: Users,
+    title: 'Parent Mode',
+    description: 'Perfect for parents managing multiple children\'s allowances and teaching financial literacy.',
+    color: 'bg-pink-500'
+  }];
+  const stats = [{
+    label: 'Payslips Created',
+    value: '10,000+',
+    icon: FileText
+  }, {
+    label: 'Happy Users',
+    value: '2,500+',
+    icon: Users
+  }, {
+    label: 'Time Saved',
+    value: '500+ hrs',
+    icon: Clock
+  }, {
+    label: 'Satisfaction',
+    value: '98%',
+    icon: Star
+  }];
+  return <div className="min-h-screen bg-gray-50">
       {/* Dark Header/Hero Section */}
       <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900">
         <Header />
@@ -98,7 +86,7 @@ const Index = () => {
                 </a>
               </Button>
               <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-white/30 text-white hover:bg-white/10 hover:border-white/50 transition-all duration-300" asChild>
-                <a href="#features">Learn More</a>
+                <a href="#features" className="text-black\n">Learn More</a>
               </Button>
             </div>
           </div>
@@ -109,15 +97,13 @@ const Index = () => {
       <section className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
+            {stats.map((stat, index) => <div key={index} className="text-center">
                 <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <stat.icon className="h-6 w-6 text-blue-600" />
                 </div>
                 <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
                 <div className="text-sm text-gray-600">{stat.label}</div>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
       </section>
@@ -135,8 +121,7 @@ const Index = () => {
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 bg-white">
+            {features.map((feature, index) => <Card key={index} className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 bg-white">
                 <CardHeader className="pb-4">
                   <div className={`w-12 h-12 ${feature.color} rounded-xl flex items-center justify-center mb-4`}>
                     <feature.icon className="h-6 w-6 text-white" />
@@ -148,8 +133,7 @@ const Index = () => {
                     {feature.description}
                   </CardDescription>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -175,8 +159,6 @@ const Index = () => {
       </section>
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;

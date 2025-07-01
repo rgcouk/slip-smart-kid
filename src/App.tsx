@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { MobileBottomNav } from "@/components/MobileBottomNav";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import App from "./pages/App";
@@ -26,41 +25,38 @@ const AppRouter = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <div className="relative pb-16 md:pb-0">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/app" element={
-                <ProtectedRoute>
-                  <App />
-                </ProtectedRoute>
-              } />
-              <Route path="/my-payslips" element={
-                <ProtectedRoute>
-                  <MyPayslips />
-                </ProtectedRoute>
-              } />
-              <Route path="/employees" element={
-                <ProtectedRoute>
-                  <Employees />
-                </ProtectedRoute>
-              } />
-              <Route path="/settings" element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              } />
-              <Route path="/subscription" element={
-                <ProtectedRoute>
-                  <Subscription />
-                </ProtectedRoute>
-              } />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <MobileBottomNav />
-          </div>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/app" element={
+              <ProtectedRoute>
+                <App />
+              </ProtectedRoute>
+            } />
+            <Route path="/my-payslips" element={
+              <ProtectedRoute>
+                <MyPayslips />
+              </ProtectedRoute>
+            } />
+            <Route path="/employees" element={
+              <ProtectedRoute>
+                <Employees />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            } />
+            <Route path="/subscription" element={
+              <ProtectedRoute>
+                <Subscription />
+              </ProtectedRoute>
+            } />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

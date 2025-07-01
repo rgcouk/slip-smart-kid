@@ -28,17 +28,17 @@ const App = () => {
     number: 5,
     title: 'Review & Export'
   }];
-  return <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Dark Header */}
-      <div className="bg-gradient-to-r from-gray-900 to-gray-800">
+  return <div className="min-h-screen bg-background flex flex-col animate-fade-in">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-primary to-secondary">
         <Header />
         
         {/* Page Header */}
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto section-padding py-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-white mb-2">Create Payslip</h1>
-              <p className="text-gray-300">Generate professional payslips in minutes</p>
+              <p className="text-white/90">Generate professional payslips in minutes</p>
             </div>
             <Badge className="bg-white/10 text-white border-white/20 px-3 py-1">
               Step {currentStep} of 5
@@ -48,22 +48,22 @@ const App = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 bg-gray-50">
-        <div className="container mx-auto px-4 py-8 max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
+      <div className="flex-1 bg-background">
+        <div className="container mx-auto section-padding py-8 max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left Sidebar - Controls */}
             <div className="lg:col-span-3 space-y-6">
-              <Card className="shadow-sm border-0">
+              <Card className="formaslips-card">
                 
                 
               </Card>
 
               {/* Progress Indicator for larger screens */}
               <div className="hidden lg:block">
-                <Card className="shadow-sm border-0">
+                <Card className="formaslips-card">
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center gap-2 text-lg">
-                      <TrendingUp className="h-5 w-5 text-gray-600" />
+                      <TrendingUp className="h-5 w-5 text-primary" />
                       Progress
                     </CardTitle>
                   </CardHeader>

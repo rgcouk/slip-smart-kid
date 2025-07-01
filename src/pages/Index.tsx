@@ -85,7 +85,7 @@ const Index = () => {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </a>
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-white/30 text-white hover:bg-white/10 hover:border-white/50 transition-all duration-300" asChild>
+              <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-white/30 hover:bg-white/10 hover:border-white/50 transition-all duration-300" asChild>
                 <a href="#features" className="text-black ">Learn More</a>
               </Button>
             </div>

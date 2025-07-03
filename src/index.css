@@ -1,3 +1,4 @@
+/* src/app/globals.css */
 
 @tailwind base;
 @tailwind components;
@@ -5,86 +6,56 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 263 70% 50.4%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 263 70% 50.4%;
-    --chart-1: 263 70% 50.4%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.75rem;
+    /* Main Orange Palette */
+    --primary: 30 80% 50%; /* A vibrant, warm orange */
+    --primary-foreground: 0 0% 100%; /* White text for contrast on primary */
+
+    --accent: 30 80% 55%; /* Slightly lighter orange for hover/active states */
+    --accent-foreground: 0 0% 100%; /* White text on accent */
+
+    /* General UI Colors for a Flatter Look */
+    --background: 0 0% 100%; /* Pure white for a clean, flat background */
+    --foreground: 222.2 47.4% 11.2%; /* Dark gray for general text */
+
+    --secondary: 210 40% 96.1%; /* Very light gray for secondary elements (e.g., subtle buttons) */
+    --secondary-foreground: 222.2 47.4% 11.2%; /* Dark text on secondary */
+
+    --muted: 210 40% 96.1%; /* Light gray for muted backgrounds (e.g., disabled states, subtle sections) */
+    --muted-foreground: 215.4 16.3% 46.9%; /* Gray for muted text */
+
+    --popover: 0 0% 100%; /* Pure white for popovers/dropdowns */
+    --popover-foreground: 222.2 47.4% 11.2%; /* Dark text on popover */
+
+    --card: 0 0% 100%; /* Pure white for cards */
+    --card-foreground: 222.2 47.4% 11.2%; /* Dark text on card */
+
+    --border: 214.3 31.8% 91.4%; /* Light gray for subtle borders, maintaining flatness */
+    --input: 214.3 31.8% 91.4%; /* Light gray for input borders */
+    --ring: 30 80% 50%; /* Primary orange for focus rings */
+
+    --destructive: 0 84.2% 60.2%; /* Standard red for destructive actions */
+    --destructive-foreground: 0 0% 98%; /* White text on destructive */
+
+    /* Sidebar Specific Colors (matching the orange theme) */
+    --sidebar-background: 30 80% 50%; /* Primary orange for sidebar background */
+    --sidebar-foreground: 0 0% 100%; /* White text for sidebar */
+    --sidebar-primary: 0 0% 100%; /* White for primary elements within sidebar (e.g., active links) */
+    --sidebar-primary-foreground: 30 80% 30%; /* Darker orange text on sidebar primary */
+    --sidebar-accent: 30 80% 60%; /* Lighter orange for sidebar accents/hovers */
+    --sidebar-accent-foreground: 0 0% 100%; /* White text on sidebar accent */
+    --sidebar-border: 30 80% 40%; /* Slightly darker orange for sidebar borders */
+    --sidebar-ring: 0 0% 100%; /* White for sidebar focus rings */
+
+
+    /* Flatter and Friendlier Look */
+    --radius: 0.75rem; /* Increased border-radius for softer, more rounded corners */
   }
 
+  /* Dark mode (optional, if you want to also adjust dark mode colors) */
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 263 70% 50.4%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 263 70% 50.4%;
-    --chart-1: 263 70% 50.4%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground font-sans;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    min-height: 100vh;
-  }
-}
-
-@layer components {
-  .touch-target-48 {
-    @apply min-h-[48px] min-w-[48px];
-  }
-  
-  .glass-card {
-    @apply bg-card/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-2xl;
-  }
-  
-  .gradient-text {
-    @apply bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent;
-  }
-  
-  .metric-card {
-    @apply bg-card/80 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-card/90 transition-all duration-300;
+    /* Example dark mode adjustments, you'd define similar HSL values here */
+    /* --background: 222.2 47.4% 11.2%; */
+    /* --foreground: 210 40% 98%; */
+    /* ... and so on for all variables */
   }
 }

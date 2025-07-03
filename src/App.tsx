@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import App from "./pages/App";
+import Dashboard from "./components/Dashboard";
 import Auth from "./pages/Auth";
 import Pricing from "./pages/Pricing";
 import Settings from "./pages/Settings";
@@ -32,6 +33,11 @@ const AppRouter = () => (
             <Route path="/app" element={
               <ProtectedRoute>
                 <App />
+              </ProtectedRoute>
+            } />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
               </ProtectedRoute>
             } />
             <Route path="/my-payslips" element={

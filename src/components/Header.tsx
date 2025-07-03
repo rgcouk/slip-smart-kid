@@ -61,7 +61,7 @@ export const Header = () => {
               <Calculator className="h-6 w-6 text-white" />
             </div>
             <div>
-              <span className="font-bold text-white text-xl">SlipSim</span>
+              <span className="font-bold text-white text-xl">FORMASLIPS</span>
               <Badge className="ml-2 bg-blue-600 text-white text-xs px-2 py-1">Pro</Badge>
             </div>
           </div>

@@ -13,7 +13,7 @@ export const Footer = () => {
               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                 <Calculator className="h-5 w-5 text-white" />
               </div>
-              <span className="font-bold text-white text-xl">SlipSim</span>
+              <span className="font-bold text-white text-xl">FORMASLIPS</span>
             </div>
             <p className="text-gray-400 text-sm mb-6 max-w-md">
               The easiest way to create professional payslips. Trusted by thousands of businesses and individuals worldwide.
@@ -57,7 +57,7 @@ export const Footer = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm">&copy; 2025 SlipSim. All rights reserved.</p>
+          <p className="text-gray-400 text-sm">&copy; 2025 FORMASLIPS. All rights reserved.</p>
           <p className="text-gray-400 text-sm mt-2 md:mt-0">Made with ❤️ for modern businesses</p>
         </div>
       </div>

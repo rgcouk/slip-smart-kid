@@ -11,7 +11,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@fontsource/inter": "^5.2.6",
     "@hookform/resolvers": "^3.9.0",
     "@pdfme/generator": "^5.4.0",
     "@radix-ui/react-accordion": "^1.2.0",

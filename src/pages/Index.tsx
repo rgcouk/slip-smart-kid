@@ -76,11 +76,11 @@ const Index = () => {
               </span>
             </h1>
             <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
-              Whether you're running a business or teaching kids about money, FORMASLIPS makes creating professional payslips simple and fast.
+              Whether you're running a business or teaching kids about money, SlipSim makes creating professional payslips simple and fast.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="text-lg px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300" asChild>
-                <a href={user ? "/dashboard" : "/auth"}>
+                <a href={user ? "/app" : "/auth"}>
                   {user ? "Go to Dashboard" : "Get Started Free"}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </a>
@@ -146,10 +146,10 @@ const Index = () => {
               Ready to streamline your payroll process?
             </h2>
             <p className="text-xl text-blue-100 mb-8">
-              Join thousands of businesses and individuals who trust FORMASLIPS
+              Join thousands of businesses and individuals who trust SlipSim
             </p>
             <Button size="lg" className="text-lg px-8 py-4 bg-white text-blue-600 hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all duration-300" asChild>
-              <a href={user ? "/dashboard" : "/auth"}>
+              <a href={user ? "/app" : "/auth"}>
                 {user ? "Go to Dashboard" : "Start Creating Payslips"}
                 <TrendingUp className="ml-2 h-5 w-5" />
               </a>

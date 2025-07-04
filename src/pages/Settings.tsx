@@ -38,66 +38,66 @@ const Settings = () => {
     : 'User';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
       
-      <div className="container mx-auto px-4 py-8 flex-1 max-w-4xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-blue-900 mb-2">Settings</h1>
-          <p className="text-blue-600">Manage your account and subscription preferences</p>
+      <div className="container mx-auto px-6 py-8 flex-1 max-w-4xl">
+        <div className="mb-8 animate-in">
+          <h1 className="text-2xl font-bold text-foreground mb-2">Settings</h1>
+          <p className="text-muted-foreground">Manage your account and subscription preferences</p>
         </div>
 
         <div className="grid gap-6">
           {/* Profile Settings */}
-          <Card>
+          <Card className="border border-border rounded-2xl shadow-sm">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <User className="h-5 w-5 text-primary" />
                 Profile Information
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-sm">
                 Update your personal information and preferences
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-700">Name</label>
-                <p className="text-sm text-gray-600">{displayName}</p>
+                <label className="text-sm font-medium text-foreground">Name</label>
+                <p className="text-sm text-muted-foreground">{displayName}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">Email</label>
-                <p className="text-sm text-gray-600">{profile?.email || user?.email}</p>
+                <label className="text-sm font-medium text-foreground">Email</label>
+                <p className="text-sm text-muted-foreground">{profile?.email || user?.email}</p>
               </div>
-              <Button variant="outline">Edit Profile</Button>
+              <Button variant="outline" className="rounded-xl">Edit Profile</Button>
             </CardContent>
           </Card>
 
           {/* Subscription Settings */}
-          <Card>
+          <Card className="border border-border rounded-2xl shadow-sm">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <CreditCard className="h-5 w-5 text-primary" />
                 Subscription Plan
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-sm">
                 Manage your current subscription and billing
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Current Plan</p>
+                  <p className="font-medium text-foreground">Current Plan</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="secondary">Free Trial</Badge>
-                    <span className="text-sm text-gray-600">7 days remaining</span>
+                    <Badge variant="secondary" className="rounded-lg">Free Trial</Badge>
+                    <span className="text-sm text-muted-foreground">7 days remaining</span>
                   </div>
                 </div>
-                <Button>Upgrade Plan</Button>
+                <Button className="rounded-xl">Upgrade Plan</Button>
               </div>
               
-              <div className="border-t pt-4">
-                <h4 className="font-medium mb-2">Plan Features</h4>
-                <ul className="text-sm text-gray-600 space-y-1">
+              <div className="border-t border-border pt-4">
+                <h4 className="font-medium mb-2 text-foreground">Plan Features</h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
                   <li>• Up to 3 payslips per month</li>
                   <li>• Basic templates</li>
                   <li>• Email support</li>
@@ -105,43 +105,43 @@ const Settings = () => {
               </div>
               
               <div className="flex gap-2">
-                <Button variant="outline">View Billing History</Button>
-                <Button variant="outline">Manage Payment Methods</Button>
+                <Button variant="outline" className="rounded-xl">View Billing History</Button>
+                <Button variant="outline" className="rounded-xl">Manage Payment Methods</Button>
               </div>
             </CardContent>
           </Card>
 
           {/* Notification Settings */}
-          <Card>
+          <Card className="border border-border rounded-2xl shadow-sm">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Mail className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Mail className="h-5 w-5 text-primary" />
                 Notifications
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-sm">
                 Configure how you receive updates and alerts
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Email Notifications</p>
-                  <p className="text-sm text-gray-600">Receive updates about your payslips</p>
+                  <p className="font-medium text-foreground">Email Notifications</p>
+                  <p className="text-sm text-muted-foreground">Receive updates about your payslips</p>
                 </div>
-                <Button variant="outline" size="sm">Configure</Button>
+                <Button variant="outline" size="sm" className="rounded-xl">Configure</Button>
               </div>
             </CardContent>
           </Card>
 
           {/* App Settings */}
-          <Card>
+          <Card className="border border-border rounded-2xl shadow-sm">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <SettingsIcon className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <SettingsIcon className="h-5 w-5 text-primary" />
                 Application Settings
               </CardTitle>
-              <CardDescription>
-                Customize your SlipSim experience
+              <CardDescription className="text-sm">
+                Customize your Formaslips experience
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -152,18 +152,18 @@ const Settings = () => {
               
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Default Currency</p>
-                  <p className="text-sm text-gray-600">USD ($)</p>
+                  <p className="font-medium text-foreground">Default Currency</p>
+                  <p className="text-sm text-muted-foreground">USD ($)</p>
                 </div>
-                <Button variant="outline" size="sm">Change</Button>
+                <Button variant="outline" size="sm" className="rounded-xl">Change</Button>
               </div>
               
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Date Format</p>
-                  <p className="text-sm text-gray-600">MM/DD/YYYY</p>
+                  <p className="font-medium text-foreground">Date Format</p>
+                  <p className="text-sm text-muted-foreground">MM/DD/YYYY</p>
                 </div>
-                <Button variant="outline" size="sm">Change</Button>
+                <Button variant="outline" size="sm" className="rounded-xl">Change</Button>
               </div>
             </CardContent>
           </Card>

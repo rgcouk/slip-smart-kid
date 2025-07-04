@@ -58,35 +58,34 @@ const Index = () => {
     value: '98%',
     icon: Star
   }];
-  return <div className="min-h-screen bg-gray-50">
-      {/* Dark Header/Hero Section */}
-      <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900">
+  return <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-br from-primary/5 via-background to-primary/5">
         <Header />
         
-        {/* Hero Section */}
-        <section className="container mx-auto px-4 py-20 lg:py-28">
-          <div className="max-w-4xl mx-auto text-center">
-            <Badge className="mb-6 bg-white/10 text-white border-white/20 hover:bg-white/20 px-4 py-2" variant="secondary">
+        <section className="container mx-auto px-6 py-20 lg:py-28">
+          <div className="max-w-4xl mx-auto text-center animate-in">
+            <Badge className="mb-6 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 px-4 py-2 rounded-xl" variant="secondary">
               ✨ Professional Payslip Generator
             </Badge>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
               Create Professional 
-              <span className="block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                 Payslips in Minutes
               </span>
             </h1>
-            <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
-              Whether you're running a business or teaching kids about money, SlipSim makes creating professional payslips simple and fast.
+            <p className="text-lg text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed">
+              Whether you're running a business or teaching kids about money, Formaslips makes creating professional payslips simple and fast.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="text-lg px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300" asChild>
+              <Button size="lg" className="text-base px-8 py-3 h-12 rounded-xl bg-primary hover:bg-primary/90 transition-all duration-300" asChild>
                 <a href={user ? "/app" : "/auth"}>
                   {user ? "Go to Dashboard" : "Get Started Free"}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </a>
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-white/30 hover:bg-white/10 hover:border-white/50 transition-all duration-300" asChild>
-                <a href="#features" className="text-black ">Learn More</a>
+              <Button size="lg" variant="outline" className="text-base px-8 py-3 h-12 rounded-xl border-border hover:bg-muted transition-all duration-300" asChild>
+                <a href="#features">Learn More</a>
               </Button>
             </div>
           </div>
@@ -94,42 +93,42 @@ const Index = () => {
       </div>
 
       {/* Stats Section */}
-      <section className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 py-16">
+      <section className="bg-card border-b border-border">
+        <div className="container mx-auto px-6 py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => <div key={index} className="text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <stat.icon className="h-6 w-6 text-blue-600" />
+                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <stat.icon className="h-6 w-6 text-primary" />
                 </div>
-                <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
-                <div className="text-sm text-gray-600">{stat.label}</div>
+                <div className="text-2xl font-bold text-foreground mb-1">{stat.value}</div>
+                <div className="text-sm text-muted-foreground">{stat.label}</div>
               </div>)}
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="bg-white py-20">
-        <div className="container mx-auto px-4">
+      <section id="features" className="bg-background py-20">
+        <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
               Everything you need
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Powerful features designed to make payslip creation effortless
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => <Card key={index} className="border-0 shadow-sm hover:shadow-lg transition-all duration-300 bg-white">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, index) => <Card key={index} className="border border-border rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 bg-card animate-in">
                 <CardHeader className="pb-4">
-                  <div className={`w-12 h-12 ${feature.color} rounded-xl flex items-center justify-center mb-4`}>
-                    <feature.icon className="h-6 w-6 text-white" />
+                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
+                    <feature.icon className="h-6 w-6 text-primary" />
                   </div>
-                  <CardTitle className="text-xl font-semibold text-gray-900">{feature.title}</CardTitle>
+                  <CardTitle className="text-lg font-semibold text-card-foreground">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-gray-600 leading-relaxed">
+                  <CardDescription className="text-muted-foreground leading-relaxed text-sm">
                     {feature.description}
                   </CardDescription>
                 </CardContent>
@@ -139,16 +138,16 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 py-20">
-        <div className="container mx-auto px-4 text-center">
+      <section className="bg-primary py-20">
+        <div className="container mx-auto px-6 text-center">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-4xl font-bold text-white mb-6">
+            <h2 className="text-3xl font-bold text-primary-foreground mb-6">
               Ready to streamline your payroll process?
             </h2>
-            <p className="text-xl text-blue-100 mb-8">
-              Join thousands of businesses and individuals who trust SlipSim
+            <p className="text-lg text-primary-foreground/80 mb-8">
+              Join thousands of businesses and individuals who trust Formaslips
             </p>
-            <Button size="lg" className="text-lg px-8 py-4 bg-white text-blue-600 hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all duration-300" asChild>
+            <Button size="lg" className="text-base px-8 py-3 h-12 rounded-xl bg-background text-foreground hover:bg-muted transition-all duration-300" asChild>
               <a href={user ? "/app" : "/auth"}>
                 {user ? "Go to Dashboard" : "Start Creating Payslips"}
                 <TrendingUp className="ml-2 h-5 w-5" />

@@ -1,4 +1,4 @@
-/* src/app/globals.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,56 +6,90 @@
 
 @layer base {
   :root {
-    /* Main Orange Palette */
-    --primary: 30 80% 50%; /* A vibrant, warm orange */
-    --primary-foreground: 0 0% 100%; /* White text for contrast on primary */
-
-    --accent: 30 80% 55%; /* Slightly lighter orange for hover/active states */
-    --accent-foreground: 0 0% 100%; /* White text on accent */
-
-    /* General UI Colors for a Flatter Look */
-    --background: 0 0% 100%; /* Pure white for a clean, flat background */
-    --foreground: 222.2 47.4% 11.2%; /* Dark gray for general text */
-
-    --secondary: 210 40% 96.1%; /* Very light gray for secondary elements (e.g., subtle buttons) */
-    --secondary-foreground: 222.2 47.4% 11.2%; /* Dark text on secondary */
-
-    --muted: 210 40% 96.1%; /* Light gray for muted backgrounds (e.g., disabled states, subtle sections) */
-    --muted-foreground: 215.4 16.3% 46.9%; /* Gray for muted text */
-
-    --popover: 0 0% 100%; /* Pure white for popovers/dropdowns */
-    --popover-foreground: 222.2 47.4% 11.2%; /* Dark text on popover */
-
-    --card: 0 0% 100%; /* Pure white for cards */
-    --card-foreground: 222.2 47.4% 11.2%; /* Dark text on card */
-
-    --border: 214.3 31.8% 91.4%; /* Light gray for subtle borders, maintaining flatness */
-    --input: 214.3 31.8% 91.4%; /* Light gray for input borders */
-    --ring: 30 80% 50%; /* Primary orange for focus rings */
-
-    --destructive: 0 84.2% 60.2%; /* Standard red for destructive actions */
-    --destructive-foreground: 0 0% 98%; /* White text on destructive */
-
-    /* Sidebar Specific Colors (matching the orange theme) */
-    --sidebar-background: 30 80% 50%; /* Primary orange for sidebar background */
-    --sidebar-foreground: 0 0% 100%; /* White text for sidebar */
-    --sidebar-primary: 0 0% 100%; /* White for primary elements within sidebar (e.g., active links) */
-    --sidebar-primary-foreground: 30 80% 30%; /* Darker orange text on sidebar primary */
-    --sidebar-accent: 30 80% 60%; /* Lighter orange for sidebar accents/hovers */
-    --sidebar-accent-foreground: 0 0% 100%; /* White text on sidebar accent */
-    --sidebar-border: 30 80% 40%; /* Slightly darker orange for sidebar borders */
-    --sidebar-ring: 0 0% 100%; /* White for sidebar focus rings */
-
-
-    /* Flatter and Friendlier Look */
-    --radius: 0.75rem; /* Increased border-radius for softer, more rounded corners */
+    /* Modern Neutral Palette - SaaS Fintech */
+    --primary: 239 84% 67%; /* Blue-500 for primary actions */
+    --primary-foreground: 0 0% 100%; /* White text */
+    
+    --secondary: 220 14% 96%; /* Very light gray */
+    --secondary-foreground: 220 9% 46%; /* Medium gray text */
+    
+    --accent: 239 84% 67%; /* Same as primary for consistency */
+    --accent-foreground: 0 0% 100%;
+    
+    /* Clean Backgrounds */
+    --background: 0 0% 100%; /* Pure white */
+    --foreground: 224 71% 4%; /* Near black for text */
+    
+    /* Muted Elements */
+    --muted: 220 14% 96%; /* Light gray backgrounds */
+    --muted-foreground: 220 9% 46%; /* Medium gray text */
+    
+    /* Cards & Surfaces */
+    --card: 0 0% 100%; /* Pure white cards */
+    --card-foreground: 224 71% 4%; /* Dark text on cards */
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+    
+    /* Borders & Inputs */
+    --border: 220 13% 91%; /* Light gray borders */
+    --input: 220 13% 91%; /* Light gray input borders */
+    --ring: 239 84% 67%; /* Blue focus ring */
+    
+    /* Status Colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    
+    /* Modern Radius */
+    --radius: 0.5rem; /* Clean, not too rounded */
   }
 
-  /* Dark mode (optional, if you want to also adjust dark mode colors) */
   .dark {
-    /* Example dark mode adjustments, you'd define similar HSL values here */
-    /* --background: 222.2 47.4% 11.2%; */
-    /* --foreground: 210 40% 98%; */
-    /* ... and so on for all variables */
+    --background: 224 71% 4%;
+    --foreground: 210 20% 98%;
+    --card: 224 71% 4%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215 28% 17%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 28% 17%;
+    --muted-foreground: 217 10% 64%;
+    --accent: 215 28% 17%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 28% 17%;
+    --input: 215 28% 17%;
+    --ring: 239 84% 67%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+}
+
+@layer components {
+  .animate-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }

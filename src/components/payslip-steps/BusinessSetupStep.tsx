@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Building2, User } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { ChevronDown, Building2, User, Info } from 'lucide-react';
 import { EmployeeSelector } from '@/components/employees/EmployeeSelector';
 import { EmployeeForm } from '@/components/employees/EmployeeForm';
 import { PayslipData } from '@/types/payslip';
@@ -27,8 +30,6 @@ export const BusinessSetupStep = ({
   isParentMode
 }: BusinessSetupStepProps) => {
   const [showEmployeeForm, setShowEmployeeForm] = useState(false);
-  const [companyExpanded, setCompanyExpanded] = useState(true);
-  const [employeeExpanded, setEmployeeExpanded] = useState(true);
   const handleEmployeeSelect = (employee: Employee) => {
     setPayslipData(prev => ({
       ...prev,

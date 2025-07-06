@@ -60,168 +60,244 @@ export const BusinessSetupStep = ({
         <p className="text-gray-600">Configure your company and employee information</p>
       </div>
 
-      <div className="space-y-4">
+      <Accordion type="multiple" defaultValue={["company", "employee"]} className="space-y-4">
+        
         {/* Company Details Section */}
-        <Collapsible open={companyExpanded} onOpenChange={setCompanyExpanded}>
-          <CollapsibleTrigger className="w-full">
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                    <Building2 className="h-5 w-5 text-white" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900">Company Details</h3>
+        <AccordionItem value="company" className="border-0">
+          <Card className="border border-border shadow-sm">
+            <AccordionTrigger className="px-6 py-4 hover:no-underline">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary rounded-2xl flex items-center justify-center">
+                  <Building2 className="h-5 w-5 text-primary-foreground" />
                 </div>
-                <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${companyExpanded ? 'rotate-180' : ''}`} />
+                <div className="text-left">
+                  <h3 className="text-lg font-semibold text-card-foreground">Company Details</h3>
+                  {payslipData.companyName && (
+                    <Badge variant="outline" className="mt-1 bg-primary/10 text-primary">
+                      {payslipData.companyName}
+                    </Badge>
+                  )}
+                </div>
               </div>
-              {!companyExpanded && payslipData.companyName && <div className="mt-2 text-sm text-gray-600">
-                  {payslipData.companyName}
-                </div>}
-            </div>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="bg-white border border-gray-200 rounded-xl p-6 mt-2 shadow-sm space-y-4">
-              <div>
-                <Label htmlFor="companyName">Company Name *</Label>
-                <Input id="companyName" value={payslipData.companyName || ''} onChange={e => setPayslipData(prev => ({
-                ...prev,
-                companyName: e.target.value
-              }))} placeholder="Enter company name" required className="h-10 rounded-br-sm " />
-              </div>
-
-              <div>
-                <Label htmlFor="companyAddress">Company Address</Label>
-                <Input id="companyAddress" value={payslipData.companyAddress || ''} onChange={e => setPayslipData(prev => ({
-                ...prev,
-                companyAddress: e.target.value
-              }))} placeholder="123 Business Street, City, State" className="h-10 rounded-lg" />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            </AccordionTrigger>
+            <AccordionContent className="px-6 pb-6">
+              <div className="space-y-4">
                 <div>
-                  <Label htmlFor="companyPhone">Phone Number</Label>
-                  <Input id="companyPhone" value={payslipData.companyPhone || ''} onChange={e => setPayslipData(prev => ({
-                  ...prev,
-                  companyPhone: e.target.value
-                }))} placeholder="+1 (555) 123-4567" className="h-10 rounded-lg" />
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label htmlFor="companyName">Company Name *</Label>
+                    <HoverCard>
+                      <HoverCardTrigger>
+                        <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                      </HoverCardTrigger>
+                      <HoverCardContent>
+                        <p className="text-sm">The official name of your company as it appears on legal documents.</p>
+                      </HoverCardContent>
+                    </HoverCard>
+                  </div>
+                  <Input 
+                    id="companyName" 
+                    value={payslipData.companyName || ''} 
+                    onChange={e => setPayslipData(prev => ({
+                      ...prev,
+                      companyName: e.target.value
+                    }))} 
+                    placeholder="Enter company name" 
+                    required 
+                    className="h-11 rounded-2xl border-border" 
+                  />
                 </div>
 
                 <div>
-                  <Label htmlFor="companyEmail">Email</Label>
-                  <Input id="companyEmail" type="email" value={payslipData.companyEmail || ''} onChange={e => setPayslipData(prev => ({
-                  ...prev,
-                  companyEmail: e.target.value
-                }))} placeholder="hr@company.com" className="h-10 rounded-lg" />
+                  <Label htmlFor="companyAddress">Company Address</Label>
+                  <Input 
+                    id="companyAddress" 
+                    value={payslipData.companyAddress || ''} 
+                    onChange={e => setPayslipData(prev => ({
+                      ...prev,
+                      companyAddress: e.target.value
+                    }))} 
+                    placeholder="123 Business Street, City, State" 
+                    className="h-11 rounded-2xl border-border" 
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="companyPhone">Phone Number</Label>
+                    <Input 
+                      id="companyPhone" 
+                      value={payslipData.companyPhone || ''} 
+                      onChange={e => setPayslipData(prev => ({
+                        ...prev,
+                        companyPhone: e.target.value
+                      }))} 
+                      placeholder="+1 (555) 123-4567" 
+                      className="h-11 rounded-2xl border-border" 
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="companyEmail">Email</Label>
+                    <Input 
+                      id="companyEmail" 
+                      type="email" 
+                      value={payslipData.companyEmail || ''} 
+                      onChange={e => setPayslipData(prev => ({
+                        ...prev,
+                        companyEmail: e.target.value
+                      }))} 
+                      placeholder="hr@company.com" 
+                      className="h-11 rounded-2xl border-border" 
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="companyRegistration">Registration Number</Label>
+                  <Input 
+                    id="companyRegistration" 
+                    value={payslipData.companyRegistration || ''} 
+                    onChange={e => setPayslipData(prev => ({
+                      ...prev,
+                      companyRegistration: e.target.value
+                    }))} 
+                    placeholder="REG123456789" 
+                    className="h-11 rounded-2xl border-border" 
+                  />
+                </div>
+
+                {/* Template Selection */}
+                <div>
+                  <Label className="text-base font-medium mb-3 block">Payslip Template</Label>
+                  <RadioGroup 
+                    value={payslipData.template || 'default'} 
+                    onValueChange={(value: 'default' | 'professional') => setPayslipData(prev => ({
+                      ...prev,
+                      template: value
+                    }))}
+                    className="grid grid-cols-2 gap-4"
+                  >
+                    <Card className="border border-border p-4 cursor-pointer hover:border-primary transition-colors">
+                      <div className="flex items-center space-x-3">
+                        <RadioGroupItem value="default" id="default" />
+                        <Label htmlFor="default" className="cursor-pointer font-medium">Default Template</Label>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-2">Clean and professional design</p>
+                    </Card>
+                    <Card className="border border-border p-4 cursor-pointer hover:border-primary transition-colors">
+                      <div className="flex items-center space-x-3">
+                        <RadioGroupItem value="professional" id="professional" />
+                        <Label htmlFor="professional" className="cursor-pointer font-medium">Professional Template</Label>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-2">Enhanced layout with company branding</p>
+                    </Card>
+                  </RadioGroup>
                 </div>
               </div>
-
-              <div>
-                <Label htmlFor="companyRegistration">Registration Number</Label>
-                <Input id="companyRegistration" value={payslipData.companyRegistration || ''} onChange={e => setPayslipData(prev => ({
-                ...prev,
-                companyRegistration: e.target.value
-              }))} placeholder="REG123456789" className="h-10 rounded-lg" />
-              </div>
-
-              {/* Template Selection */}
-              <div>
-                <Label className="text-base font-medium mb-3 block">Payslip Template</Label>
-                <RadioGroup value={payslipData.template || 'default'} onValueChange={(value: 'default' | 'professional') => setPayslipData(prev => ({
-                ...prev,
-                template: value
-              }))}>
-                  <div className="flex items-center space-x-2 min-h-[48px]">
-                    <RadioGroupItem value="default" id="default" />
-                    <Label htmlFor="default" className="cursor-pointer">Default Template</Label>
-                  </div>
-                  <div className="flex items-center space-x-2 min-h-[48px]">
-                    <RadioGroupItem value="professional" id="professional" />
-                    <Label htmlFor="professional" className="cursor-pointer">Professional Template</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
+            </AccordionContent>
+          </Card>
+        </AccordionItem>
 
         {/* Employee Details Section */}
-        <Collapsible open={employeeExpanded} onOpenChange={setEmployeeExpanded}>
-          <CollapsibleTrigger className="w-full">
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                    <User className="h-5 w-5 text-white" />
+        <AccordionItem value="employee" className="border-0">
+          <Card className="border border-border shadow-sm">
+            <AccordionTrigger className="px-6 py-4 hover:no-underline">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-secondary rounded-2xl flex items-center justify-center">
+                  <User className="h-5 w-5 text-secondary-foreground" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-lg font-semibold text-card-foreground">Employee Details</h3>
+                  {payslipData.name && (
+                    <Badge variant="outline" className="mt-1 bg-secondary/10 text-secondary-foreground">
+                      {payslipData.name} {payslipData.payrollNumber && `(${payslipData.payrollNumber})`}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="px-6 pb-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Select Employee</Label>
+                  <EmployeeSelector onSelect={handleEmployeeSelect} onCreateNew={handleCreateNewEmployee} />
+                  <p className="text-sm text-muted-foreground">
+                    Select from saved employees or add details manually below
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="employeeName">Employee Name *</Label>
+                    <Input 
+                      id="employeeName" 
+                      value={payslipData.name || ''} 
+                      onChange={e => setPayslipData(prev => ({
+                        ...prev,
+                        name: e.target.value,
+                        employeeName: e.target.value
+                      }))} 
+                      placeholder="Enter employee name" 
+                      className="h-11 rounded-2xl border-border" 
+                      required 
+                    />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900">Employee Details</h3>
-                </div>
-                <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${employeeExpanded ? 'rotate-180' : ''}`} />
-              </div>
-              {!employeeExpanded && payslipData.name && <div className="mt-2 text-sm text-gray-600">
-                  {payslipData.name} {payslipData.payrollNumber && `(${payslipData.payrollNumber})`}
-                </div>}
-            </div>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="bg-white border border-gray-200 rounded-xl p-6 mt-2 shadow-sm space-y-4">
-              <div className="space-y-2">
-                <Label>Select Employee</Label>
-                <EmployeeSelector onSelect={handleEmployeeSelect} onCreateNew={handleCreateNewEmployee} />
-                <p className="text-sm text-gray-500">
-                  Select from saved employees or add details manually below
-                </p>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="employeeName">Employee Name *</Label>
-                  <Input id="employeeName" value={payslipData.name || ''} onChange={e => setPayslipData(prev => ({
-                  ...prev,
-                  name: e.target.value,
-                  employeeName: e.target.value
-                }))} placeholder="Enter employee name" className="h-10 rounded-lg" required />
+                  <div>
+                    <Label htmlFor="payrollNumber">Payroll Number</Label>
+                    <Input 
+                      id="payrollNumber" 
+                      value={payslipData.payrollNumber || ''} 
+                      onChange={e => setPayslipData(prev => ({
+                        ...prev,
+                        payrollNumber: e.target.value
+                      }))} 
+                      placeholder="EMP001234" 
+                      className="h-11 rounded-2xl border-border" 
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="payrollNumber">Payroll Number</Label>
-                  <Input id="payrollNumber" value={payslipData.payrollNumber || ''} onChange={e => setPayslipData(prev => ({
-                  ...prev,
-                  payrollNumber: e.target.value
-                }))} placeholder="EMP001234" className="h-10 rounded-lg" />
-                </div>
-              </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="contractualHours">Contractual Hours/Week</Label>
+                    <Input 
+                      id="contractualHours" 
+                      type="number" 
+                      step="0.5" 
+                      min="0" 
+                      value={payslipData.contractualHours || ''} 
+                      onChange={e => setPayslipData(prev => ({
+                        ...prev,
+                        contractualHours: parseFloat(e.target.value) || 0
+                      }))} 
+                      placeholder="40" 
+                      className="h-11 rounded-2xl border-border" 
+                    />
+                  </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="contractualHours">Contractual Hours/Week</Label>
-                  <Input id="contractualHours" type="number" step="0.5" min="0" value={payslipData.contractualHours || ''} onChange={e => setPayslipData(prev => ({
-                  ...prev,
-                  contractualHours: parseFloat(e.target.value) || 0
-                }))} placeholder="40" className="h-10 rounded-lg" />
-                </div>
-
-                <div>
-                  <Label htmlFor="hourlyRate">Hourly Rate (£)</Label>
-                  <Input id="hourlyRate" type="number" step="0.01" min="0" value={payslipData.hourlyRate || ''} onChange={e => setPayslipData(prev => ({
-                  ...prev,
-                  hourlyRate: parseFloat(e.target.value) || 0
-                }))} placeholder="15.00" className="h-10 rounded-lg" />
+                  <div>
+                    <Label htmlFor="hourlyRate">Hourly Rate (£)</Label>
+                    <Input 
+                      id="hourlyRate" 
+                      type="number" 
+                      step="0.01" 
+                      min="0" 
+                      value={payslipData.hourlyRate || ''} 
+                      onChange={e => setPayslipData(prev => ({
+                        ...prev,
+                        hourlyRate: parseFloat(e.target.value) || 0
+                      }))} 
+                      placeholder="15.00" 
+                      className="h-11 rounded-2xl border-border" 
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-
-        {/* Learning Moment */}
-        {isParentMode && <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-            <h3 className="text-blue-800 font-medium mb-2">💡 Learning Moment</h3>
-            <p className="text-blue-700 text-sm">
-              Every payslip needs both company and employee information. The company details show who is paying, 
-              and the employee details show who is being paid. The payroll number helps companies keep track of 
-              different employees, and contractual hours show how many hours someone is expected to work each week.
-            </p>
-          </div>}
-      </div>
+            </AccordionContent>
+          </Card>
+        </AccordionItem>
+      </Accordion>
 
       {/* Employee Form Dialog */}
       <Dialog open={showEmployeeForm} onOpenChange={setShowEmployeeForm}>

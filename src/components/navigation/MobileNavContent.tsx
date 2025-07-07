@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
-import { Calculator, User, CreditCard, Settings, FileText, Users, LogOut } from 'lucide-react';
+import { Calculator, User, CreditCard, Settings, FileText, Users, LogOut, BarChart } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { MobileNavLinks } from './MobileNavLinks';
@@ -47,6 +47,7 @@ export const MobileNavContent = ({ onSignOut, setIsOpen }: MobileNavContentProps
   ];
 
   const userItems = [
+    { href: '/dashboard', label: 'Dashboard', icon: BarChart },
     { href: '/my-payslips', label: 'My Payslips', icon: FileText },
     { href: '/employees', label: 'Employees', icon: Users },
   ];

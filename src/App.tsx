@@ -9,6 +9,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import App from "./pages/App";
 import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
 import Pricing from "./pages/Pricing";
 import Settings from "./pages/Settings";
 import Subscription from "./pages/Subscription";
@@ -29,6 +30,11 @@ const AppRouter = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
             <Route path="/app" element={
               <ProtectedRoute>
                 <App />

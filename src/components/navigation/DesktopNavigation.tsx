@@ -8,7 +8,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
-import { Calculator, User, CreditCard, FileText, Users, Settings } from 'lucide-react';
+import { Calculator, User, CreditCard, FileText, Users, Settings, BarChart } from 'lucide-react';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface DesktopNavigationProps {
@@ -28,6 +28,18 @@ export const DesktopNavigation = ({ user }: DesktopNavigationProps) => {
             Home
           </NavigationMenuLink>
         </NavigationMenuItem>
+
+        {user && (
+          <NavigationMenuItem>
+            <NavigationMenuLink
+              href="/dashboard"
+              className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
+            >
+              <BarChart className="h-4 w-4 mr-2" />
+              Dashboard
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+        )}
 
         <NavigationMenuItem>
           <NavigationMenuLink

@@ -30,7 +30,7 @@ export const MobileNavLinks = ({
         <a
           key={item.href}
           href={item.href}
-          className="flex items-center space-x-2 text-lg font-medium hover:text-blue-600 p-2 rounded-md hover:bg-gray-100"
+          className="flex items-center space-x-2 text-lg font-medium hover:text-primary p-2 rounded-md hover:bg-muted"
           onClick={() => setIsOpen(false)}
         >
           <item.icon className="h-5 w-5" />
@@ -46,7 +46,7 @@ export const MobileNavLinks = ({
               <a
                 key={item.href}
                 href={item.href}
-                className="flex items-center space-x-2 text-lg font-medium hover:text-blue-600 mb-3 p-2 rounded-md hover:bg-gray-100"
+                className="flex items-center space-x-2 text-lg font-medium hover:text-primary mb-3 p-2 rounded-md hover:bg-muted"
                 onClick={() => setIsOpen(false)}
               >
                 <item.icon className="h-5 w-5" />
@@ -61,7 +61,7 @@ export const MobileNavLinks = ({
               <a
                 key={item.href}
                 href={item.href}
-                className="flex items-center space-x-2 text-lg font-medium hover:text-blue-600 mb-3 p-2 rounded-md hover:bg-gray-100"
+                className="flex items-center space-x-2 text-lg font-medium hover:text-primary mb-3 p-2 rounded-md hover:bg-muted"
                 onClick={() => setIsOpen(false)}
               >
                 <item.icon className="h-5 w-5" />

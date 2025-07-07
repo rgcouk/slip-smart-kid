@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -23,7 +22,7 @@ export const StepNavigation = ({
   onSave 
 }: StepNavigationProps) => {
   return (
-    <div className="p-4 border-t border-gray-100 flex justify-between">
+    <div className="p-4 border-t border-border flex justify-between">
       <Button
         variant="outline"
         onClick={onPrevStep}
@@ -38,7 +37,7 @@ export const StepNavigation = ({
         <Button
           onClick={onNextStep}
           disabled={!canProceed}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+          className="flex items-center gap-2"
         >
           Next
           <ArrowRight className="h-4 w-4" />
@@ -47,7 +46,7 @@ export const StepNavigation = ({
         <Button 
           onClick={onSave}
           disabled={isLoading}
-          className="bg-green-600 hover:bg-green-700"
+          className="bg-primary hover:bg-primary/90"
         >
           {isLoading ? 'Saving...' : 'Save Payslip'}
         </Button>

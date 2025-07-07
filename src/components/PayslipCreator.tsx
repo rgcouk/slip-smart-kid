@@ -10,6 +10,7 @@ import { PeriodSelectionStep } from './payslip-steps/PeriodSelectionStep';
 import { BasicInfoStep } from './payslip-steps/BasicInfoStep';
 import { DeductionsStep } from './payslip-steps/DeductionsStep';
 import { PreviewStep } from './payslip-steps/PreviewStep';
+import { StepNavigation } from './payslip-steps/StepNavigation';
 import { usePayslipCreator } from '@/hooks/usePayslipCreator';
 import { PayslipData } from '@/types/payslip';
 import { FileText, Building2, Calculator, Minus, Eye } from 'lucide-react';
@@ -22,7 +23,10 @@ interface PayslipCreatorProps {
 
 export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: PayslipCreatorProps) => {
   const { payslipData, setPayslipData, canProceed, currentStep, nextStep, prevStep, savePayslip, isLoading } = usePayslipCreator(isParentMode, selectedChild);
-  const [activeTab, setActiveTab] = useState('business');
+  
+  // Map current step to tab value
+  const stepToTab = ['business', 'period', 'earnings', 'deductions', 'summary'];
+  const activeTab = stepToTab[currentStep - 1] || 'business';
 
   useEffect(() => {
     if (onStepChange) {
@@ -87,7 +91,7 @@ export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: Pa
       </CardHeader>
 
       <CardContent className="p-0">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} className="w-full">
           <div className="px-6 pb-4 border-b">
             <TabsList className="grid grid-cols-5 w-full max-w-2xl mx-auto">
               <TabsTrigger value="business" className="flex items-center gap-2 text-xs">
@@ -162,6 +166,17 @@ export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: Pa
             </TabsContent>
           </div>
         </Tabs>
+
+        {/* Step Navigation */}
+        <StepNavigation
+          currentStep={currentStep}
+          totalSteps={5}
+          canProceed={canProceed()}
+          isLoading={isLoading}
+          onPrevStep={prevStep}
+          onNextStep={nextStep}
+          onSave={savePayslip}
+        />
 
         {/* Quick Stats Footer */}
         <div className="border-t bg-muted/50 px-6 py-4">

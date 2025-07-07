@@ -34,17 +34,7 @@ const App = () => {
         <Header />
         
         {/* Page Header */}
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Create Payslip</h1>
-              <p className="text-gray-300">Generate professional payslips in minutes</p>
-            </div>
-            <Badge className="bg-white/10 text-white border-white/20 px-3 py-1">
-              Step {currentStep} of 5
-            </Badge>
-          </div>
-        </div>
+        
       </div>
 
       {/* Main Content */}

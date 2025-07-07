@@ -10,7 +10,7 @@ export const MobileUsageCTA = () => {
           <span>7 days left</span>
         </div>
         <Progress value={100} className="h-2 mb-3" />
-        <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+        <Button size="sm" className="w-full bg-lime-800 hover:bg-lime-700 rounded">
           Upgrade Plan
         </Button>
       </div>

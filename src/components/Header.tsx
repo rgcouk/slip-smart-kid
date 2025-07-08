@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Menu, User } from 'lucide-react';
+import { Menu, User, ChevronDown } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -16,6 +17,33 @@ export const Header = () => {
     toast
   } = useToast();
   const [isOpen, setIsOpen] = useState(false);
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('first_name, last_name')
+        .eq('id', user.id)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return null;
+      }
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  const displayName = profile?.first_name && profile?.last_name 
+    ? `${profile.first_name} ${profile.last_name}`
+    : user?.email?.split('@')[0] || 'User';
+
+  const initials = profile?.first_name && profile?.last_name
+    ? `${profile.first_name[0]}${profile.last_name[0]}`
+    : displayName.slice(0, 2).toUpperCase();
   const handleSignOut = async () => {
     const {
       error
@@ -63,9 +91,15 @@ export const Header = () => {
           {/* User Menu Sidebar for logged-in users */}
           {user && <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  <span className="hidden md:block">Menu</span>
+                <Button variant="outline" size="sm" className="flex items-center gap-2 hover:bg-accent/50">
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage src="" />
+                    <AvatarFallback className="text-xs bg-primary/10 text-primary font-medium">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="hidden md:block font-medium">{displayName}</span>
+                  <ChevronDown className="h-3 w-3 text-muted-foreground" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-72 flex flex-col">

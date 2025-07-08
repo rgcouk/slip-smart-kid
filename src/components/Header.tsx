@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { MobileNavContent } from '@/components/navigation/MobileNavContent';
 export const Header = () => {
   const {
@@ -95,8 +96,12 @@ export const Header = () => {
                   <ChevronDown className="h-3 w-3 text-muted-foreground" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-72 flex flex-col">
-                <MobileNavContent onSignOut={handleSignOut} setIsOpen={setIsOpen} />
+              <SheetContent side="right" className="w-72 flex flex-col p-0">
+                <ScrollArea className="flex-1">
+                  <div className="p-6">
+                    <MobileNavContent onSignOut={handleSignOut} setIsOpen={setIsOpen} />
+                  </div>
+                </ScrollArea>
               </SheetContent>
             </Sheet>}
           

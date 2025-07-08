@@ -79,6 +79,19 @@ export const Header = () => {
                 <a href="/pricing">Pricing</a>
               </Button>
             </nav>}
+
+          {/* Public Navigation for non-logged-in users */}
+          {!user && <nav className="hidden md:flex items-center gap-1">
+              <Button variant="ghost" size="sm" asChild>
+                <a href="/pricing">Pricing</a>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <a href="/features">Features</a>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <a href="/support">Support</a>
+              </Button>
+            </nav>}
         </div>
         
         <div className="flex items-center gap-4">

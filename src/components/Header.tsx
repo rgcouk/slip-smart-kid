@@ -1,43 +1,19 @@
-import React from 'react';
-import { Calculator, LogOut, User, Menu } from 'lucide-react';
+import React, { useState } from 'react';
+import { Menu, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Navigation } from '@/components/Navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Badge } from '@/components/ui/badge';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { MobileNavContent } from '@/components/navigation/MobileNavContent';
 export const Header = () => {
-  const {
-    user,
-    signOut
-  } = useAuth();
-  const {
-    toast
-  } = useToast();
-  const {
-    data: profile
-  } = useQuery({
-    queryKey: ['profile', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      const {
-        data,
-        error
-      } = await supabase.from('profiles').select('first_name, last_name').eq('id', user.id).single();
-      if (error) {
-        console.error('Error fetching profile:', error);
-        return null;
-      }
-      return data;
-    },
-    enabled: !!user?.id
-  });
-  const displayName = profile?.first_name && profile?.last_name ? `${profile.first_name} ${profile.last_name}` : user?.email;
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
+  const [isOpen, setIsOpen] = useState(false);
+
   const handleSignOut = async () => {
-    const {
-      error
-    } = await signOut();
+    const { error } = await signOut();
     if (error) {
       toast({
         title: "Error",
@@ -51,48 +27,64 @@ export const Header = () => {
       });
     }
   };
-  return <header className="backdrop-blur-sm border-b border-border  bg-slate-50">
+  return (
+    <header className="backdrop-blur-sm border-b border-border bg-background/80">
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary rounded-xl">
-              <Calculator className="h-6 w-6 text-primary-foreground" />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-foreground text-xl">Formaslips</span>
-              
-            </div>
-          </div>
+          {/* Logo */}
+          <a href="/" className="flex items-center gap-1">
+            <span className="font-serif font-bold text-foreground text-2xl tracking-tight">FORMA</span>
+            <span className="font-sans font-medium text-muted-foreground text-xl">slips</span>
+          </a>
           
-          {user && <Navigation onSignOut={handleSignOut} />}
+          {/* Main Navigation for logged-in users */}
+          {user && (
+            <nav className="hidden md:flex items-center gap-1">
+              <Button variant="ghost" size="sm" asChild>
+                <a href="/dashboard">Dashboard</a>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <a href="/my-payslips">My Payslips</a>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <a href="/employees">Employees</a>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <a href="/pricing">Pricing</a>
+              </Button>
+            </nav>
+          )}
         </div>
         
         <div className="flex items-center gap-4">
-          {user && <div className="hidden md:flex items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <div className="text-sm">
-                  <div className="text-foreground font-medium">{displayName}</div>
-                  <div className="text-muted-foreground text-xs">Online</div>
-                </div>
-              </div>
-              <Button variant="outline" size="sm" onClick={handleSignOut} className="flex items-center gap-2 h-9 rounded-xl">
-                <LogOut className="h-4 w-4" />
-                Sign Out
-              </Button>
-            </div>}
+          {/* User Menu Sidebar for logged-in users */}
+          {user && (
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  <span className="hidden md:block">Menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-72 flex flex-col">
+                <MobileNavContent onSignOut={handleSignOut} setIsOpen={setIsOpen} />
+              </SheetContent>
+            </Sheet>
+          )}
           
-          {!user && <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm" className="h-9 rounded-xl" asChild>
+          {/* Login buttons for non-logged-in users */}
+          {!user && (
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="sm" asChild>
                 <a href="/auth">Sign In</a>
               </Button>
-              <Button size="sm" className="h-9 rounded-xl bg-primary hover:bg-primary/90" asChild>
+              <Button size="sm" asChild>
                 <a href="/auth">Get Started</a>
               </Button>
-            </div>}
+            </div>
+          )}
         </div>
       </div>
-    </header>;
+    </header>
+  );
 };

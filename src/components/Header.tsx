@@ -59,7 +59,7 @@ export const Header = () => {
         <div className="flex items-center gap-6">
           {/* Logo */}
           <a href="/" className="flex items-center gap-1">
-            <span className="text-3xl text-foreground text-2xl tracking-tight">FORMA</span>
+            <span className="text-foreground tracking-tight text-2xl">FORMA</span>
             <span className="font-sans font-medium text-muted-foreground text-xl">slips</span>
           </a>
           

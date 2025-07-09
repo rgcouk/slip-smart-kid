@@ -6,16 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import {
   Dialog,
   DialogContent,
@@ -33,7 +24,10 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { EmployeeForm } from '@/components/employees/EmployeeForm';
-import { Search, Plus, Edit, Trash, User } from 'lucide-react';
+import { EmployeeSearch } from '@/components/employees/table/EmployeeSearch';
+import { EmployeeTable } from '@/components/employees/table/EmployeeTable';
+import { EmptyEmployeeState } from '@/components/employees/table/EmptyEmployeeState';
+import { Plus } from 'lucide-react';
 
 interface Employee {
   id: string;
@@ -185,16 +179,10 @@ const Employees = () => {
             </Button>
           </div>
 
-          {/* Search */}
-          <div className="relative mb-4">
-            <Search className="h-4 w-4 absolute left-3 top-3 text-gray-400" />
-            <Input
-              placeholder="Search by name, email, or payroll number..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+          <EmployeeSearch 
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
         </div>
 
         {/* Employees Table */}
@@ -205,67 +193,16 @@ const Employees = () => {
                 <p className="text-gray-500">Loading employees...</p>
               </div>
             ) : filteredEmployees.length === 0 ? (
-              <div className="p-8 text-center">
-                <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 mb-4">
-                  {searchTerm ? 'No employees found matching your search.' : 'No employees added yet.'}
-                </p>
-                {!searchTerm && (
-                  <Button onClick={handleAddEmployee}>
-                    Add Your First Employee
-                  </Button>
-                )}
-              </div>
+              <EmptyEmployeeState
+                searchTerm={searchTerm}
+                onAddEmployee={handleAddEmployee}
+              />
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Payroll Number</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Tax Code</TableHead>
-                    <TableHead>Default Salary</TableHead>
-                    <TableHead>Payslips</TableHead>
-                    <TableHead className="w-[100px]">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredEmployees.map((employee) => (
-                    <TableRow key={employee.id}>
-                      <TableCell className="font-medium">{employee.name}</TableCell>
-                      <TableCell>{employee.payroll_number || '-'}</TableCell>
-                      <TableCell>{employee.email || '-'}</TableCell>
-                      <TableCell>{employee.tax_code || '-'}</TableCell>
-                      <TableCell>
-                        {employee.default_gross_salary 
-                          ? `£${employee.default_gross_salary.toFixed(2)}` 
-                          : '-'
-                        }
-                      </TableCell>
-                      <TableCell>{employee.payslip_count || 0}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEditEmployee(employee)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setDeletingEmployee(employee)}
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <Trash className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <EmployeeTable
+                employees={filteredEmployees}
+                onEdit={handleEditEmployee}
+                onDelete={setDeletingEmployee}
+              />
             )}
           </CardContent>
         </Card>

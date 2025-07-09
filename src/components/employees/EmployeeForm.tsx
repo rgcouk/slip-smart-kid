@@ -1,14 +1,14 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { PersonalInfoFields } from './form/PersonalInfoFields';
+import { EmploymentInfoFields } from './form/EmploymentInfoFields';
+import { TaxInfoFields } from './form/TaxInfoFields';
+import { NotesField } from './form/NotesField';
 
 interface Employee {
   id?: string;
@@ -126,6 +126,10 @@ export const EmployeeForm = ({ employee, onSave, onCancel }: EmployeeFormProps) 
     }
   };
 
+  const handleFieldChange = (field: string, value: string | number | undefined | 'A' | 'B' | 'C') => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -134,123 +138,32 @@ export const EmployeeForm = ({ employee, onSave, onCancel }: EmployeeFormProps) 
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="name">Name *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="Employee full name"
-                required
-              />
-            </div>
+            <PersonalInfoFields
+              name={formData.name}
+              email={formData.email || ''}
+              phone={formData.phone || ''}
+              address={formData.address || ''}
+              onFieldChange={handleFieldChange}
+            />
             
-            <div>
-              <Label htmlFor="payroll_number">Payroll Number</Label>
-              <Input
-                id="payroll_number"
-                value={formData.payroll_number}
-                onChange={(e) => setFormData(prev => ({ ...prev, payroll_number: e.target.value }))}
-                placeholder="EMP001234"
-              />
-            </div>
+            <EmploymentInfoFields
+              payrollNumber={formData.payroll_number || ''}
+              defaultGrossSalary={formData.default_gross_salary}
+              onFieldChange={handleFieldChange}
+            />
             
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="employee@company.com"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="phone">Phone</Label>
-              <Input
-                id="phone"
-                value={formData.phone}
-                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                placeholder="+44 7123 456789"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="default_gross_salary">Default Gross Salary</Label>
-              <Input
-                id="default_gross_salary"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.default_gross_salary || ''}
-                onChange={(e) => setFormData(prev => ({ 
-                  ...prev, 
-                  default_gross_salary: e.target.value ? parseFloat(e.target.value) : undefined 
-                }))}
-                placeholder="3000.00"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="tax_code">Tax Code</Label>
-              <Input
-                id="tax_code"
-                value={formData.tax_code}
-                onChange={(e) => setFormData(prev => ({ ...prev, tax_code: e.target.value }))}
-                placeholder="1257L"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="ni_number">National Insurance Number</Label>
-              <Input
-                id="ni_number"
-                value={formData.ni_number}
-                onChange={(e) => setFormData(prev => ({ ...prev, ni_number: e.target.value }))}
-                placeholder="AB123456C"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="starter_declaration">Starter Declaration</Label>
-              <Select 
-                value={formData.starter_declaration} 
-                onValueChange={(value: 'A' | 'B' | 'C') => setFormData(prev => ({ ...prev, starter_declaration: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select declaration" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="A">A - First job since last 6 April</SelectItem>
-                  <SelectItem value="B">B - Second job or pension</SelectItem>
-                  <SelectItem value="C">C - Receives benefits/pension from previous job</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          
-          <div>
-            <Label htmlFor="address">Address</Label>
-            <Textarea
-              id="address"
-              value={formData.address}
-              onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-              placeholder="Full address"
-              rows={2}
+            <TaxInfoFields
+              taxCode={formData.tax_code || ''}
+              niNumber={formData.ni_number || ''}
+              starterDeclaration={formData.starter_declaration}
+              onFieldChange={handleFieldChange}
             />
           </div>
           
-          <div>
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea
-              id="notes"
-              value={formData.notes}
-              onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-              placeholder="Additional notes about this employee"
-              rows={3}
-            />
-          </div>
+          <NotesField
+            notes={formData.notes || ''}
+            onFieldChange={handleFieldChange}
+          />
 
           <div className="flex gap-2 pt-4">
             <Button type="submit" disabled={loading}>

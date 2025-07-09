@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,6 +19,9 @@ interface Employee {
   address?: string;
   default_gross_salary?: number;
   notes?: string;
+  tax_code?: string;
+  ni_number?: string;
+  starter_declaration?: 'A' | 'B' | 'C';
 }
 
 interface EmployeeFormProps {
@@ -39,6 +43,9 @@ export const EmployeeForm = ({ employee, onSave, onCancel }: EmployeeFormProps) 
     address: employee?.address || '',
     default_gross_salary: employee?.default_gross_salary || undefined,
     notes: employee?.notes || '',
+    tax_code: employee?.tax_code || '',
+    ni_number: employee?.ni_number || '',
+    starter_declaration: employee?.starter_declaration || undefined,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -74,6 +81,9 @@ export const EmployeeForm = ({ employee, onSave, onCancel }: EmployeeFormProps) 
         address: formData.address?.trim() || null,
         default_gross_salary: formData.default_gross_salary || null,
         notes: formData.notes?.trim() || null,
+        tax_code: formData.tax_code?.trim() || null,
+        ni_number: formData.ni_number?.trim() || null,
+        starter_declaration: formData.starter_declaration || null,
       };
 
       if (employee?.id) {
@@ -180,6 +190,43 @@ export const EmployeeForm = ({ employee, onSave, onCancel }: EmployeeFormProps) 
                 }))}
                 placeholder="3000.00"
               />
+            </div>
+            
+            <div>
+              <Label htmlFor="tax_code">Tax Code</Label>
+              <Input
+                id="tax_code"
+                value={formData.tax_code}
+                onChange={(e) => setFormData(prev => ({ ...prev, tax_code: e.target.value }))}
+                placeholder="1257L"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="ni_number">National Insurance Number</Label>
+              <Input
+                id="ni_number"
+                value={formData.ni_number}
+                onChange={(e) => setFormData(prev => ({ ...prev, ni_number: e.target.value }))}
+                placeholder="AB123456C"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="starter_declaration">Starter Declaration</Label>
+              <Select 
+                value={formData.starter_declaration} 
+                onValueChange={(value: 'A' | 'B' | 'C') => setFormData(prev => ({ ...prev, starter_declaration: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select declaration" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="A">A - First job since last 6 April</SelectItem>
+                  <SelectItem value="B">B - Second job or pension</SelectItem>
+                  <SelectItem value="C">C - Receives benefits/pension from previous job</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           

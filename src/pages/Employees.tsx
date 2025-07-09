@@ -44,6 +44,9 @@ interface Employee {
   address?: string;
   default_gross_salary?: number;
   notes?: string;
+  tax_code?: string;
+  ni_number?: string;
+  starter_declaration?: 'A' | 'B' | 'C';
   created_at: string;
   payslip_count?: number;
 }
@@ -220,7 +223,7 @@ const Employees = () => {
                     <TableHead>Name</TableHead>
                     <TableHead>Payroll Number</TableHead>
                     <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
+                    <TableHead>Tax Code</TableHead>
                     <TableHead>Default Salary</TableHead>
                     <TableHead>Payslips</TableHead>
                     <TableHead className="w-[100px]">Actions</TableHead>
@@ -232,7 +235,7 @@ const Employees = () => {
                       <TableCell className="font-medium">{employee.name}</TableCell>
                       <TableCell>{employee.payroll_number || '-'}</TableCell>
                       <TableCell>{employee.email || '-'}</TableCell>
-                      <TableCell>{employee.phone || '-'}</TableCell>
+                      <TableCell>{employee.tax_code || '-'}</TableCell>
                       <TableCell>
                         {employee.default_gross_salary 
                           ? `£${employee.default_gross_salary.toFixed(2)}` 

@@ -82,7 +82,7 @@ export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: Pa
           </div>
           <div>
             <CardTitle className="text-xl text-card-foreground">Create Payslip</CardTitle>
-            <CardDescription>ah Generate professional payslips with ease</CardDescription>
+            <CardDescription>Generate professional payslips with ease</CardDescription>
           </div>
           {isParentMode && (
             <Badge variant="secondary" className="ml-auto">Parent Mode</Badge>

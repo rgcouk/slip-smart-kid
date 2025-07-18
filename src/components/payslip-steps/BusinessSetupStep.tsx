@@ -46,7 +46,7 @@ export const BusinessSetupStep = ({
       selectedEmployeeId: employee.id,
       taxCode: employee.tax_code || '',
       niNumber: employee.ni_number || '',
-      taxAllowance: employee.tax_allowance || 12570,
+      taxAllowance: employee.tax_allowance || 1257L,
       niCategory: employee.ni_category || 'A',
       studentLoanPlan: employee.student_loan_plan || undefined,
       pensionSchemeReference: employee.pension_scheme_reference || undefined,

@@ -127,6 +127,78 @@ src/
 - Dark/light mode support
 - Professional payslip templates
 
+## Template System & Customization
+
+### Available Templates
+1. **Default Template**: Clean, minimalist design for basic payslips
+2. **Professional Template**: Enhanced layout with comprehensive employee tax information
+
+### Template Selection
+Templates are selected in the Business Setup step via radio buttons. The selected template is stored in `payslipData.template` and determines which component renders the payslip.
+
+### Template Structure
+All templates follow a consistent data structure:
+- **Header**: Company branding, payslip title, pay period
+- **Employee Details**: Name, payroll number, tax code, NI number, NI category
+- **Employer Details**: Company information, PAYE reference
+- **Payments Table**: Earnings breakdown with YTD calculations
+- **Deductions Table**: Tax and other deductions with YTD
+- **Net Pay**: Final calculation prominently displayed
+- **Footer**: Payment method, disclaimers, branding
+
+### Customizing Templates
+Templates are React components located in `src/components/payslip-steps/preview/`:
+- `ProfessionalPayslipTemplate.tsx` - Professional template with full tax details
+- Create new templates by copying existing ones and modifying the JSX structure
+- All templates receive the same props: `payslipData`, `currency`, `ytdValues`, `totalDeductions`, `netPay`
+
+### Template Data Mapping
+Templates automatically use employee data from the form:
+- `payslipData.taxCode` → Employee tax code (defaults to '1257L')
+- `payslipData.niNumber` → NI number (defaults to 'AB123456C')
+- `payslipData.niCategory` → NI category (defaults to 'A')
+- `payslipData.studentLoanPlan` → Student loan plan if applicable
+- `payslipData.pensionSchemeReference` → Workplace pension reference
+
+### PDF Export Integration
+Templates include hidden PDF-optimized versions with:
+- Fixed dimensions (794px width for A4)
+- Inline styles for consistent PDF rendering
+- Print-friendly colors and fonts
+- Proper table structures for complex layouts
+
+### Adding New Templates
+1. Create new template component in preview folder
+2. Add template option to BusinessSetupStep radio group
+3. Update template selection logic in preview components
+4. Include both screen and PDF versions in the component
+
+## Form Architecture & Data Flow
+
+### Multi-Step Form Structure
+1. **BusinessSetupStep**: Company details, employee selection, template choice
+2. **PeriodSelectionStep**: Pay period dates
+3. **BasicInfoStep**: Payment entries and earnings
+4. **DeductionsStep**: Tax calculations and deductions
+5. **PreviewStep**: Final payslip preview and export
+
+### Employee Data Integration
+The form automatically populates employee tax information when an employee is selected:
+- Tax code, NI number, NI category are pulled from employee record
+- Student loan plan and pension scheme reference are included if available
+- All fields are dynamically rendered in the payslip templates
+
+### Real-time Calculations
+- Gross pay calculated from payment entries
+- Tax deductions calculated based on employee tax code and allowances
+- Net pay calculated as gross pay minus total deductions
+- YTD values calculated based on pay period
+
+### Export System
+- PDF generation uses hidden template versions optimized for print
+- Templates are captured as images then converted to PDF
+- All employee tax information is included in exported payslips
+
 ## Code Standards
 - Use HSL colors exclusively in design system
 - Implement proper loading states
@@ -135,3 +207,5 @@ src/
 - Implement proper form validation
 - Use TypeScript strict mode
 - Modular component architecture for maintainability
+- All form inputs are dynamic and connected to database
+- Templates automatically use employee data with sensible defaults

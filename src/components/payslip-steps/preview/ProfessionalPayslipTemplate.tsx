@@ -76,15 +76,15 @@ export const ProfessionalPayslipTemplate = React.memo(({
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                 <span>Tax Code:</span>
-                <span>1257L</span>
+                <span>{payslipData.taxCode || '1257L'}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                 <span>NI Number:</span>
-                <span>JZ23434C</span>
+                <span>{payslipData.niNumber || 'AB123456C'}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>NI Category:</span>
-                <span>A</span>
+                <span>{payslipData.niCategory || 'A'}</span>
               </div>
             </div>
           </div>
@@ -242,15 +242,15 @@ export const ProfessionalPayslipTemplate = React.memo(({
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-600">Tax Code:</span>
-                <span className="text-slate-800">1257L</span>
+                <span className="text-slate-800">{payslipData.taxCode || '1257L'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-600">NI Number:</span>
-                <span className="text-slate-800">JZ23434C</span>
+                <span className="text-slate-800">{payslipData.niNumber || 'AB123456C'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-600">NI Category:</span>
-                <span className="text-slate-800">A</span>
+                <span className="text-slate-800">{payslipData.niCategory || 'A'}</span>
               </div>
             </div>
           </div>

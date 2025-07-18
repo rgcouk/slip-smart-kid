@@ -23,6 +23,13 @@ interface Employee {
   payroll_number?: string;
   email?: string;
   default_gross_salary?: number;
+  tax_code?: string;
+  ni_number?: string;
+  tax_allowance?: number;
+  ni_category?: string;
+  student_loan_plan?: string;
+  pension_scheme_reference?: string;
+  starter_declaration?: 'A' | 'B' | 'C';
 }
 export const BusinessSetupStep = ({
   payslipData,
@@ -37,6 +44,13 @@ export const BusinessSetupStep = ({
       employeeName: employee.name,
       payrollNumber: employee.payroll_number || '',
       selectedEmployeeId: employee.id,
+      taxCode: employee.tax_code || '',
+      niNumber: employee.ni_number || '',
+      taxAllowance: employee.tax_allowance || 12570,
+      niCategory: employee.ni_category || 'A',
+      studentLoanPlan: employee.student_loan_plan || undefined,
+      pensionSchemeReference: employee.pension_scheme_reference || undefined,
+      starterDeclaration: employee.starter_declaration || undefined,
       paymentEntries: [{
         id: '1',
         description: 'Basic Salary',

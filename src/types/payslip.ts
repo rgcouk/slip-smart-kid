@@ -6,6 +6,15 @@ export interface PayslipData {
   payrollNumber?: string;
   selectedEmployeeId?: string;
   
+  // Employee Tax Information
+  taxCode?: string;
+  niNumber?: string;
+  taxAllowance?: number;
+  niCategory?: string;
+  studentLoanPlan?: string;
+  pensionSchemeReference?: string;
+  starterDeclaration?: 'A' | 'B' | 'C';
+  
   // Pay Period Information
   period: string; // YYYY-MM format for backward compatibility
   payPeriodStart: string; // YYYY-MM-DD format

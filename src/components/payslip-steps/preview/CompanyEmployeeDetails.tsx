@@ -57,6 +57,24 @@ export const CompanyEmployeeDetails = ({ payslipData, isParentMode, selectedChil
               <span className="font-medium">{payslipData.payrollNumber}</span>
             </div>
           )}
+          {payslipData.taxCode && (
+            <div className="flex justify-between">
+              <span className="text-gray-600">Tax Code:</span>
+              <span className="font-medium">{payslipData.taxCode}</span>
+            </div>
+          )}
+          {payslipData.niNumber && (
+            <div className="flex justify-between">
+              <span className="text-gray-600">NI Number:</span>
+              <span className="font-medium">{payslipData.niNumber}</span>
+            </div>
+          )}
+          {payslipData.niCategory && (
+            <div className="flex justify-between">
+              <span className="text-gray-600">NI Category:</span>
+              <span className="font-medium">{payslipData.niCategory}</span>
+            </div>
+          )}
           <div className="flex justify-between">
             <span className="text-gray-600">Pay Period:</span>
             <span className="font-medium">{formatPeriod(payslipData.period)}</span>

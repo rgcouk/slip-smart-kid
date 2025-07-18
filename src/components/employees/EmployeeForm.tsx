@@ -21,6 +21,10 @@ interface Employee {
   notes?: string;
   tax_code?: string;
   ni_number?: string;
+  tax_allowance?: number;
+  ni_category?: string;
+  student_loan_plan?: string;
+  pension_scheme_reference?: string;
   starter_declaration?: 'A' | 'B' | 'C';
 }
 
@@ -45,6 +49,10 @@ export const EmployeeForm = ({ employee, onSave, onCancel }: EmployeeFormProps) 
     notes: employee?.notes || '',
     tax_code: employee?.tax_code || '',
     ni_number: employee?.ni_number || '',
+    tax_allowance: employee?.tax_allowance || 12570,
+    ni_category: employee?.ni_category || 'A',
+    student_loan_plan: employee?.student_loan_plan || undefined,
+    pension_scheme_reference: employee?.pension_scheme_reference || undefined,
     starter_declaration: employee?.starter_declaration || undefined,
   });
 
@@ -83,6 +91,10 @@ export const EmployeeForm = ({ employee, onSave, onCancel }: EmployeeFormProps) 
         notes: formData.notes?.trim() || null,
         tax_code: formData.tax_code?.trim() || null,
         ni_number: formData.ni_number?.trim() || null,
+        tax_allowance: formData.tax_allowance || null,
+        ni_category: formData.ni_category || 'A',
+        student_loan_plan: formData.student_loan_plan?.trim() || null,
+        pension_scheme_reference: formData.pension_scheme_reference?.trim() || null,
         starter_declaration: formData.starter_declaration || null,
       };
 
@@ -155,6 +167,10 @@ export const EmployeeForm = ({ employee, onSave, onCancel }: EmployeeFormProps) 
             <TaxInfoFields
               taxCode={formData.tax_code || ''}
               niNumber={formData.ni_number || ''}
+              taxAllowance={formData.tax_allowance}
+              niCategory={formData.ni_category || 'A'}
+              studentLoanPlan={formData.student_loan_plan}
+              pensionSchemeReference={formData.pension_scheme_reference}
               starterDeclaration={formData.starter_declaration}
               onFieldChange={handleFieldChange}
             />

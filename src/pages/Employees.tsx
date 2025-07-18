@@ -40,6 +40,10 @@ interface Employee {
   notes?: string;
   tax_code?: string;
   ni_number?: string;
+  tax_allowance?: number;
+  ni_category?: string;
+  student_loan_plan?: string;
+  pension_scheme_reference?: string;
   starter_declaration?: 'A' | 'B' | 'C';
   created_at: string;
   payslip_count?: number;

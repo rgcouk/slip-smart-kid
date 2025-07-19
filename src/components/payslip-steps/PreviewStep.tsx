@@ -10,6 +10,7 @@ import { PaymentsDeductionsSection } from './preview/PaymentsDeductionsSection';
 import { SummarySection } from './preview/SummarySection';
 import { PayslipFooter } from './preview/PayslipFooter';
 import { ProfessionalPayslipTemplate } from './preview/ProfessionalPayslipTemplate';
+import { getTemplateComponent } from './templates';
 import { PreviewSection } from './export/PreviewSection';
 import { DownloadSection } from './export/DownloadSection';
 import { EmailSection } from './export/EmailSection';
@@ -186,48 +187,22 @@ export const PreviewStep = React.memo(({ payslipData, isParentMode, selectedChil
     }
   }, [pdfBlob, payslipData, generatePreview]);
 
-  // Determine which template to render
+  // Determine which template to render using the new template system
   const renderPayslipTemplate = () => {
-    if (payslipData.template === 'professional') {
-      return (
-        <ProfessionalPayslipTemplate
-          payslipData={payslipData}
-          currency={config.currency}
-          ytdValues={ytdValues}
-          totalDeductions={totalDeductions}
-          netPay={netPay}
-        />
-      );
-    }
-
-    // Default template (current design)
+    const templateId = payslipData.template || 'default';
+    const TemplateComponent = getTemplateComponent(templateId);
+    
     return (
-      <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-3 sm:p-6 mx-auto max-w-4xl">
-        <PayslipHeader 
-          period={payslipData.period}
-          locale={locale}
-        />
-
-        <CompanyEmployeeDetails 
-          payslipData={payslipData}
-          isParentMode={isParentMode}
-          selectedChild={selectedChild}
-        />
-
-        <PaymentsDeductionsSection 
-          payslipData={payslipData}
-          currency={config.currency}
-          ytdValues={ytdValues}
-        />
-
-        <SummarySection 
-          payslipData={payslipData}
-          currency={config.currency}
-          ytdValues={ytdValues}
-        />
-
-        <PayslipFooter />
-      </div>
+      <TemplateComponent
+        payslipData={payslipData}
+        currency={config.currency}
+        ytdValues={ytdValues}
+        totalDeductions={totalDeductions}
+        netPay={netPay}
+        isParentMode={isParentMode}
+        selectedChild={selectedChild}
+        locale={locale}
+      />
     );
   };
 

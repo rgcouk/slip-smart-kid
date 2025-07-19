@@ -37,7 +37,7 @@ export interface PayslipData {
   companyLogo?: string;
   
   // Template Selection
-  template?: 'default' | 'professional';
+  template?: 'default' | 'professional' | 'compact' | string;
   
   // Deductions
   deductions: DeductionEntry[];

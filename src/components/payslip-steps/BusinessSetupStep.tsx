@@ -7,9 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { ChevronDown, Building2, User, Info } from 'lucide-react';
+import { ChevronDown, Building2, User, Info, FileText } from 'lucide-react';
 import { EmployeeSelector } from '@/components/employees/EmployeeSelector';
 import { EmployeeForm } from '@/components/employees/EmployeeForm';
+import { TemplateSelector } from './TemplateSelector';
 import { PayslipData } from '@/types/payslip';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 interface BusinessSetupStepProps {
@@ -307,6 +308,43 @@ export const BusinessSetupStep = ({
                     />
                   </div>
                 </div>
+              </div>
+            </AccordionContent>
+          </Card>
+        </AccordionItem>
+
+        {/* Template Selection */}
+        <AccordionItem value="template" className="border-0">
+          <Card className="mb-4 shadow-sm border-border">
+            <AccordionTrigger className="hover:no-underline">
+              <CardHeader className="flex flex-row items-center space-y-0 pb-3 w-full">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-xl">
+                    <FileText className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <div className="text-left">
+                    <CardTitle className="text-lg">Payslip Template</CardTitle>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Choose how your payslip will look
+                    </p>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="ml-auto">
+                  {payslipData.template || 'default'}
+                </Badge>
+              </CardHeader>
+            </AccordionTrigger>
+            <AccordionContent className="pb-6">
+              <div className="px-6">
+                <TemplateSelector
+                  selectedTemplate={payslipData.template || 'default'}
+                  onTemplateSelect={(templateId) => {
+                    setPayslipData(prev => ({
+                      ...prev,
+                      template: templateId
+                    }));
+                  }}
+                />
               </div>
             </AccordionContent>
           </Card>

@@ -230,74 +230,34 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
         </div>
       </div>
 
-      {/* Visible Display Version */}
-      <div className="space-y-4">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-4 border-b border-border pb-3">
-          <div>
-            <h1 className="text-lg font-bold text-foreground">
-              {payslipData.name || 'Employee Name'} {formatPeriod(payslipData.payPeriodStart, payslipData.payPeriodEnd)}
-            </h1>
+        {/* Visible Display Version */}
+        <div className="space-y-4">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-4 border-b border-border pb-3">
+            <div>
+              <h1 className="text-lg font-bold text-foreground">
+                {isParentMode && selectedChild ? selectedChild.name : payslipData.name || payslipData.employeeName || 'Employee Name'} {formatPeriod(payslipData.payPeriodStart, payslipData.payPeriodEnd)}
+              </h1>
+            </div>
+            <div className="text-right">
+              <div className="text-sm font-semibold text-foreground">{payslipData.companyName || 'Company Name'}</div>
+            </div>
           </div>
-          <div className="text-right">
-            <div className="text-sm font-semibold text-foreground">{payslipData.companyName || 'Company Name'}</div>
-          </div>
-        </div>
 
         {/* Top Section - 3 Columns */}
         <div className="grid grid-cols-3 gap-4 mb-4">
           {/* Employee Details */}
-          <div>
-            <h3 className="text-sm font-semibold mb-1">Employee Details</h3>
-            <div className="border border-border p-3 bg-muted/30 h-32">
-              <div className="text-xs space-y-1">
-                <div>Works number: {payslipData.payrollNumber || 'N/A'}</div>
-                <div>Department: {payslipData.department || payslipData.position || 'N/A'}</div>
-                <div>Tax code: {payslipData.taxCode || 'N/A'}</div>
-                <div>National Insurance number: {payslipData.niNumber || 'N/A'}</div>
-                <div>National Insurance table: {payslipData.niCategory || 'A'}</div>
-                <div>Annual leave remaining: {payslipData.annualLeave || 'N/A'}</div>
-              </div>
-            </div>
-          </div>
+          <CompactEmployeeDetails 
+            payslipData={payslipData}
+            isParentMode={isParentMode}
+            selectedChild={selectedChild}
+          />
 
-          {/* Payments */}
-          <div>
-            <h3 className="text-sm font-semibold mb-1">Payments</h3>
-            <div className="border border-border p-3 bg-muted/30 h-32 relative">
-              <div className="text-xs space-y-1">
-                {payslipData.paymentEntries?.map((entry: any, index: number) => (
-                  <div key={entry.id || index} className="flex justify-between">
-                    <span>{entry.description}</span>
-                    <span>{currency}{entry.amount?.toFixed(2) || '0.00'}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="absolute bottom-3 left-3 right-3 border-t border-border pt-1 flex justify-between font-semibold">
-                <span>Total</span>
-                <span>{currency}{payslipData.grossPay?.toFixed(2) || '0.00'}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Deductions */}
-          <div>
-            <h3 className="text-sm font-semibold mb-1">Deductions</h3>
-            <div className="border border-border p-3 bg-muted/30 h-32 relative">
-              <div className="text-xs space-y-1">
-                {payslipData.deductions?.map((deduction: any, index: number) => (
-                  <div key={deduction.id || index} className="flex justify-between">
-                    <span>{deduction.name}</span>
-                    <span>{currency}{deduction.amount?.toFixed(2) || '0.00'}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="absolute bottom-3 left-3 right-3 border-t border-border pt-1 flex justify-between font-semibold">
-                <span>Total</span>
-                <span>{currency}{totalDeductions?.toFixed(2) || '0.00'}</span>
-              </div>
-            </div>
-          </div>
+          {/* Payments and Deductions */}
+          <CompactPaymentsDeductions 
+            payslipData={payslipData}
+            currency={currency || '£'}
+          />
         </div>
 
         {/* Bottom Section - 3 Columns */}

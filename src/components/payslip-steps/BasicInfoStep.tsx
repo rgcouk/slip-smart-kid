@@ -17,17 +17,23 @@ export const BasicInfoStep = ({ payslipData, setPayslipData, isParentMode }: Bas
   const [entriesExpanded, setEntriesExpanded] = useState(true);
 
   const addTemplateEntry = (template: 'basic' | 'hourly' | 'overtime' | 'bonus') => {
+    // Use employee's default salary for basic salary if available
+    const defaultSalary = payslipData.paymentEntries.find(entry => entry.description === 'Basic Salary')?.amount || 
+                         payslipData.grossPay || 0;
+    
     const newEntry = {
       id: Date.now().toString(),
       description: template === 'basic' ? 'Basic Salary' : 
                   template === 'hourly' ? 'Hourly Pay' :
                   template === 'overtime' ? 'Overtime Pay' : 'Performance Bonus',
       type: template === 'hourly' || template === 'overtime' ? 'hourly' as const : 'fixed' as const,
-      quantity: template === 'hourly' ? 40 : template === 'overtime' ? 8 : undefined,
-      rate: template === 'hourly' ? 15 : template === 'overtime' ? 22.5 : undefined,
-      amount: template === 'basic' ? 3000 : 
-              template === 'hourly' ? 600 :
-              template === 'overtime' ? 180 : 500
+      quantity: template === 'hourly' ? (payslipData.contractualHours || 40) : 
+                template === 'overtime' ? 8 : undefined,
+      rate: template === 'hourly' ? (payslipData.hourlyRate || 15) : 
+            template === 'overtime' ? ((payslipData.hourlyRate || 15) * 1.5) : undefined,
+      amount: template === 'basic' ? defaultSalary : 
+              template === 'hourly' ? ((payslipData.hourlyRate || 15) * (payslipData.contractualHours || 40)) :
+              template === 'overtime' ? (((payslipData.hourlyRate || 15) * 1.5) * 8) : 500
     };
 
     setPayslipData(prev => ({

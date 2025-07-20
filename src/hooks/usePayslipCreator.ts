@@ -280,6 +280,18 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
         net_salary: Number(netSalary) || 0
       };
 
+      // Store additional employee data in payslip data for templates
+      const enrichedPayslipData = {
+        ...syncedData,
+        payrollNumber: syncedData.payrollNumber,
+        taxCode: syncedData.taxCode,
+        niNumber: syncedData.niNumber,
+        niCategory: syncedData.niCategory,
+        department: syncedData.department,
+        companyName: sanitizedCompanyName,
+        employeeName: sanitizedName
+      };
+
       console.log('Saving validated payslip record:', payslipRecord);
 
       const { error } = await supabase

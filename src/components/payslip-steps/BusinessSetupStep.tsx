@@ -52,6 +52,7 @@ export const BusinessSetupStep = ({
       studentLoanPlan: employee.student_loan_plan || undefined,
       pensionSchemeReference: employee.pension_scheme_reference || undefined,
       starterDeclaration: employee.starter_declaration || undefined,
+      grossPay: employee.default_gross_salary || 0,
       paymentEntries: [{
         id: '1',
         description: 'Basic Salary',

@@ -14,6 +14,7 @@ export interface PayslipData {
   studentLoanPlan?: string;
   pensionSchemeReference?: string;
   starterDeclaration?: 'A' | 'B' | 'C';
+  department?: string;
   
   // Pay Period Information
   period: string; // YYYY-MM format for backward compatibility

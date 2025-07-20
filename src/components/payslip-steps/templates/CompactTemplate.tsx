@@ -260,8 +260,8 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
           </div>
 
           {/* Top Section - 3 Columns with blue-gray background */}
-          <div style={{ backgroundColor: '#d6dbdf', padding: '15px', marginBottom: '25px' }}>
-            <div style={{ display: 'flex', gap: '15px' }}>
+          <div style={{ backgroundColor: '#e8ecf0', margin: '0 -20px', padding: '20px', marginBottom: '25px' }}>
+            <div style={{ display: 'flex', gap: '15px', maxWidth: '860px', margin: '0 auto' }}>
             {/* Employee Details */}
             <div style={{ flex: '1' }}>
               <h3 style={{ fontSize: '11px', fontWeight: 'bold', margin: '0 0 8px 0', color: '#333', fontFamily: 'Arial, sans-serif' }}>Employee Details</h3>

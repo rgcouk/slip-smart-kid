@@ -25,10 +25,10 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
     return amount.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
-  const getWorkingDayDate = () => {
-    const today = new Date();
-    const twoDaysAgo = new Date(today);
-    twoDaysAgo.setDate(today.getDate() - 2);
+  const getWorkingDayDate = (paidDate?: string) => {
+    const baseDate = paidDate ? new Date(paidDate) : new Date(payslipData.payPeriodEnd || new Date());
+    const twoDaysAgo = new Date(baseDate);
+    twoDaysAgo.setDate(baseDate.getDate() - 2);
     
     // If it's Saturday (6) or Sunday (0), move to Friday
     const dayOfWeek = twoDaysAgo.getDay();
@@ -258,7 +258,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
         </div>
 
         <div style={{ borderTop: '1px solid #ccc', paddingTop: '15px', fontSize: '10px', fontFamily: 'Arial, sans-serif' }}>
-          Payment processed on {getWorkingDayDate()}
+          Payment processed on {getWorkingDayDate(payslipData.payPeriodEnd || payslipData.payDate)} via {payslipData.paymentMethod || 'BACS'}
         </div>
       </div>
 
@@ -422,7 +422,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
 
           {/* Footer */}
           <div style={{ borderTop: '1px solid #ccc', paddingTop: '15px', fontSize: '10px', color: '#333', fontFamily: 'Arial, sans-serif' }}>
-            Payment processed on {getWorkingDayDate()}
+            Payment processed on {getWorkingDayDate(payslipData.payPeriodEnd || payslipData.payDate)} via {payslipData.paymentMethod || 'BACS'}
           </div>
       </div>
     </div>

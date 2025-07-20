@@ -31,14 +31,16 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
   // Use YTD override values if available, otherwise calculate from current deductions
   const calculateYTDValues = () => {
     if (payslipData.ytdOverride) {
-      // Use the YTD override values for Tax and NI
+      // Use the YTD override values for calculations
+      const ytdTotalDeductions = payslipData.ytdOverride.totalDeductions || 0;
       const taxDeduction = payslipData.deductions?.find((d: any) => d.name?.toLowerCase().includes('tax')) || {};
       const niDeduction = payslipData.deductions?.find((d: any) => d.name?.toLowerCase().includes('national insurance')) || {};
       
+      // For YTD, we need to calculate cumulative values, not just current month
       return {
-        tax: taxDeduction.amount || 0,
-        employeeNI: niDeduction.amount || 0,
-        employerNI: (ytdValues.grossPay || 0) * 0.138
+        tax: ytdTotalDeductions > 0 ? (taxDeduction.amount || 0) : 0,
+        employeeNI: ytdTotalDeductions > 0 ? (niDeduction.amount || 0) : 0,
+        employerNI: (payslipData.ytdOverride.grossPay || 0) * 0.1325 // Correct employer NI rate
       };
     } else {
       // Fall back to current payslip deductions
@@ -48,7 +50,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
       return {
         tax: taxDeduction.amount || 0,
         employeeNI: niDeduction.amount || 0,
-        employerNI: (payslipData.grossPay || 0) * 0.138
+        employerNI: (payslipData.grossPay || 0) * 0.1325 // Correct employer NI rate
       };
     }
   };
@@ -182,10 +184,10 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                   <span>Taxable gross pay</span>
                   <span style={{ fontWeight: 'bold' }}>£{payslipData.grossPay?.toFixed(2) || '2,000.00'}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
-                  <span>Employer National Insurance</span>
-                  <span style={{ fontWeight: 'bold' }}>£{((payslipData.grossPay || 2000) * 0.0938)?.toFixed(2) || '186.92'}</span>
-                </div>
+                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                   <span>Employer National Insurance</span>
+                   <span style={{ fontWeight: 'bold' }}>£{((payslipData.grossPay || 2000) * 0.1325)?.toFixed(2) || '186.92'}</span>
+                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #999', paddingTop: '8px', marginTop: '8px', fontWeight: 'bold' }}>
                   <span>Net pay</span>
                   <span>£{netPay?.toFixed(2) || '1,653.85'}</span>
@@ -280,10 +282,10 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                   <span>Taxable gross pay</span>
                   <span>{currency}{payslipData.grossPay?.toFixed(2) || '0.00'}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Employer National Insurance</span>
-                  <span>{currency}{(payslipData.grossPay * 0.138)?.toFixed(2) || '0.00'}</span>
-                </div>
+                 <div className="flex justify-between">
+                   <span>Employer National Insurance</span>
+                   <span>{currency}{(payslipData.grossPay * 0.1325)?.toFixed(2) || '0.00'}</span>
+                 </div>
                 <div className="flex justify-between border-t border-border pt-1 mt-2 font-semibold">
                   <span>Net pay</span>
                   <span>{currency}{netPay?.toFixed(2) || '0.00'}</span>

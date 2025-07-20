@@ -18,7 +18,17 @@ interface Employee {
   name: string;
   payroll_number?: string;
   email?: string;
+  phone?: string;
+  address?: string;
   default_gross_salary?: number;
+  tax_code?: string;
+  ni_number?: string;
+  tax_allowance?: number;
+  ni_category?: string;
+  student_loan_plan?: string;
+  pension_scheme_reference?: string;
+  starter_declaration?: 'A' | 'B' | 'C';
+  notes?: string;
 }
 
 interface EmployeeSelectorProps {
@@ -41,7 +51,7 @@ export const EmployeeSelector = ({ onSelect, onCreateNew }: EmployeeSelectorProp
     try {
       const { data, error } = await (supabase as any)
         .from('employees')
-        .select('id, name, payroll_number, email, default_gross_salary')
+        .select('*')
         .eq('user_id', user.id)
         .order('name');
 

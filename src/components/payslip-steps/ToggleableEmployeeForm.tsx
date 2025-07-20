@@ -465,7 +465,7 @@ export const ToggleableEmployeeForm = ({ payslipData, setPayslipData }: Toggleab
                   />
                 </div>
               </CardContent>
-            </CollipsibleContent>
+            </CollapsibleContent>
           </Card>
         </Collapsible>
       )}

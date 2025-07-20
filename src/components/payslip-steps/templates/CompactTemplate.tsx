@@ -58,7 +58,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
   const calculatedYTD = calculateYTDValues();
 
   return (
-    <div className="bg-white border border-gray-200 shadow-sm rounded-lg p-4 mx-auto max-w-4xl">
+    <div style={{ backgroundColor: '#f8f9fa', border: '1px solid #ddd', padding: '0', margin: '0 auto', maxWidth: '900px', fontFamily: 'Arial, sans-serif' }}>
       {/* Hidden PDF Template */}
       <div 
         className="fixed top-0 left-[-9999px]"
@@ -242,101 +242,165 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
       </div>
 
         {/* Visible Display Version */}
-        <div className="space-y-4">
+        <div style={{ padding: '25px', backgroundColor: 'white', fontFamily: 'Arial, sans-serif' }}>
           {/* Header */}
-          <div className="flex justify-between items-center mb-4 border-b border-border pb-3">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '25px' }}>
             <div>
-              <h1 className="text-lg font-bold text-foreground">
-                {isParentMode && selectedChild ? selectedChild.name : payslipData.name || payslipData.employeeName || 'Employee Name'} {formatPeriod(payslipData.payPeriodStart, payslipData.payPeriodEnd)}
+              <h1 style={{ fontSize: '18px', fontWeight: 'normal', margin: '0', color: '#333', fontFamily: 'Arial, sans-serif' }}>
+                {isParentMode && selectedChild ? selectedChild.name : payslipData.name || payslipData.employeeName || 'Employee Name'} <span style={{ color: '#666', fontWeight: 'normal' }}>{formatPeriod(payslipData.payPeriodStart, payslipData.payPeriodEnd)}</span>
               </h1>
             </div>
-            <div className="text-right">
-              <div className="text-sm font-semibold text-foreground">{payslipData.companyName || 'Company Name'}</div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#333', fontFamily: 'Arial, sans-serif' }}>{payslipData.companyName || 'Sample Company'}</div>
             </div>
           </div>
 
-        {/* Top Section - 3 Columns */}
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          {/* Employee Details */}
-          <CompactEmployeeDetails 
-            payslipData={payslipData}
-            isParentMode={isParentMode}
-            selectedChild={selectedChild}
-          />
+          {/* Top Section - 3 Columns */}
+          <div style={{ display: 'flex', gap: '15px', marginBottom: '25px' }}>
+            {/* Employee Details */}
+            <div style={{ flex: '1' }}>
+              <h3 style={{ fontSize: '11px', fontWeight: 'bold', margin: '0 0 8px 0', color: '#333', fontFamily: 'Arial, sans-serif' }}>Employee Details</h3>
+              <div style={{ border: '1px solid #999', padding: '12px', backgroundColor: '#f5f5f5', minHeight: '140px' }}>
+                <div style={{ fontSize: '10px', lineHeight: '1.6', color: '#333', fontFamily: 'Arial, sans-serif' }}>
+                  {payslipData.payrollNumber && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                      <span>Works number</span>
+                      <span style={{ fontWeight: 'bold' }}>{payslipData.payrollNumber}</span>
+                    </div>
+                  )}
+                  {payslipData.taxCode && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                      <span>Tax code</span>
+                      <span style={{ fontWeight: 'bold' }}>{payslipData.taxCode}</span>
+                    </div>
+                  )}
+                  {payslipData.niNumber && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                      <span>National Insurance number</span>
+                      <span style={{ fontWeight: 'bold' }}>{payslipData.niNumber}</span>
+                    </div>
+                  )}
+                  {payslipData.niCategory && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>National Insurance table</span>
+                      <span style={{ fontWeight: 'bold' }}>{payslipData.niCategory}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
 
-          {/* Payments and Deductions */}
-          <CompactPaymentsDeductions 
-            payslipData={payslipData}
-            currency={currency || '£'}
-          />
-        </div>
-
-        {/* Bottom Section - 3 Columns */}
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          {/* This Month */}
-          <div>
-            <h3 className="text-sm font-semibold mb-1">This Month</h3>
-            <div className="border border-border p-3 bg-muted/30 h-26">
-              <div className="text-xs space-y-1">
-                <div className="flex justify-between">
-                  <span>Taxable gross pay</span>
+            {/* Payments */}
+            <div style={{ flex: '1' }}>
+              <h3 style={{ fontSize: '11px', fontWeight: 'bold', margin: '0 0 8px 0', color: '#333', fontFamily: 'Arial, sans-serif' }}>Payments</h3>
+              <div style={{ border: '1px solid #999', padding: '12px', backgroundColor: '#f5f5f5', minHeight: '140px', position: 'relative' }}>
+                <div style={{ fontSize: '10px', lineHeight: '1.6', color: '#333', fontFamily: 'Arial, sans-serif' }}>
+                  {payslipData.paymentEntries?.map((entry: any, index: number) => (
+                    <div key={entry.id || index} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                      <span>{entry.description || 'Monthly pay'}</span>
+                      <span style={{ fontWeight: 'bold' }}>{currency}{entry.amount?.toFixed(2) || '0.00'}</span>
+                    </div>
+                  ))}
+                  {(!payslipData.paymentEntries || payslipData.paymentEntries.length === 0) && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                      <span>Monthly pay</span>
+                      <span style={{ fontWeight: 'bold' }}>{currency}{payslipData.grossPay?.toFixed(2) || '0.00'}</span>
+                    </div>
+                  )}
+                </div>
+                <div style={{ position: 'absolute', bottom: '12px', left: '12px', right: '12px', borderTop: '1px solid #999', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '10px', color: '#333' }}>
+                  <span>Total</span>
                   <span>{currency}{payslipData.grossPay?.toFixed(2) || '0.00'}</span>
                 </div>
-                 <div className="flex justify-between">
-                   <span>Employer National Insurance</span>
-                   <span>{currency}{(payslipData.grossPay * 0.1325)?.toFixed(2) || '0.00'}</span>
-                 </div>
-                <div className="flex justify-between border-t border-border pt-1 mt-2 font-semibold">
-                  <span>Net pay</span>
-                  <span>{currency}{netPay?.toFixed(2) || '0.00'}</span>
+              </div>
+            </div>
+
+            {/* Deductions */}
+            <div style={{ flex: '1' }}>
+              <h3 style={{ fontSize: '11px', fontWeight: 'bold', margin: '0 0 8px 0', color: '#333', fontFamily: 'Arial, sans-serif' }}>Deductions</h3>
+              <div style={{ border: '1px solid #999', padding: '12px', backgroundColor: '#f5f5f5', minHeight: '140px', position: 'relative' }}>
+                <div style={{ fontSize: '10px', lineHeight: '1.6', color: '#333', fontFamily: 'Arial, sans-serif' }}>
+                  {payslipData.deductions?.map((deduction: any, index: number) => (
+                    <div key={deduction.id || index} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                      <span>{deduction.name}</span>
+                      <span style={{ fontWeight: 'bold' }}>{currency}{deduction.amount?.toFixed(2) || '0.00'}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ position: 'absolute', bottom: '12px', left: '12px', right: '12px', borderTop: '1px solid #999', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '10px', color: '#333' }}>
+                  <span>Total</span>
+                  <span>{currency}{totalDeductions?.toFixed(2) || '0.00'}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Year to Date */}
-          <div>
-            <h3 className="text-sm font-semibold mb-1">Year to Date</h3>
-            <div className="border border-border p-3 bg-muted/30 h-26">
-              <div className="text-xs space-y-1">
-                <div className="flex justify-between">
-                  <span>Taxable gross pay</span>
-                  <span>{currency}{ytdValues.grossPay?.toFixed(2) || '0.00'}</span>
+          {/* Bottom Section - 3 Columns */}
+          <div style={{ display: 'flex', gap: '15px', marginBottom: '25px' }}>
+            {/* This Month */}
+            <div style={{ flex: '1' }}>
+              <h3 style={{ fontSize: '11px', fontWeight: 'bold', margin: '0 0 8px 0', color: '#333', fontFamily: 'Arial, sans-serif' }}>This Month</h3>
+              <div style={{ border: '1px solid #999', padding: '12px', backgroundColor: '#f5f5f5', minHeight: '120px' }}>
+                <div style={{ fontSize: '10px', lineHeight: '1.6', color: '#333', fontFamily: 'Arial, sans-serif' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                    <span>Taxable gross pay</span>
+                    <span style={{ fontWeight: 'bold' }}>{currency}{payslipData.grossPay?.toFixed(2) || '0.00'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                    <span>Employer National Insurance</span>
+                    <span style={{ fontWeight: 'bold' }}>{currency}{((payslipData.grossPay || 0) * 0.1325)?.toFixed(2) || '0.00'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #999', paddingTop: '8px', marginTop: '8px', fontWeight: 'bold' }}>
+                    <span>Net pay</span>
+                    <span>{currency}{netPay?.toFixed(2) || '0.00'}</span>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span>Tax</span>
-                  <span>{currency}{calculatedYTD.tax?.toFixed(2) || '0.00'}</span>
+              </div>
+            </div>
+
+            {/* Year to Date */}
+            <div style={{ flex: '1' }}>
+              <h3 style={{ fontSize: '11px', fontWeight: 'bold', margin: '0 0 8px 0', color: '#333', fontFamily: 'Arial, sans-serif' }}>Year to Date</h3>
+              <div style={{ border: '1px solid #999', padding: '12px', backgroundColor: '#f5f5f5', minHeight: '120px' }}>
+                <div style={{ fontSize: '10px', lineHeight: '1.6', color: '#333', fontFamily: 'Arial, sans-serif' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                    <span>Taxable gross pay</span>
+                    <span style={{ fontWeight: 'bold' }}>{currency}{ytdValues.grossPay?.toFixed(2) || '0.00'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                    <span>Tax</span>
+                    <span style={{ fontWeight: 'bold' }}>{currency}{calculatedYTD.tax?.toFixed(2) || '0.00'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                    <span>Employee National Insurance</span>
+                    <span style={{ fontWeight: 'bold' }}>{currency}{calculatedYTD.employeeNI?.toFixed(2) || '0.00'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Employer National Insurance</span>
+                    <span style={{ fontWeight: 'bold' }}>{currency}{calculatedYTD.employerNI?.toFixed(2) || '0.00'}</span>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span>Employee National Insurance</span>
-                  <span>{currency}{calculatedYTD.employeeNI?.toFixed(2) || '0.00'}</span>
+              </div>
+            </div>
+
+            {/* Payment */}
+            <div style={{ flex: '1' }}>
+              <h3 style={{ fontSize: '11px', fontWeight: 'bold', margin: '0 0 8px 0', color: '#333', fontFamily: 'Arial, sans-serif' }}>Payment</h3>
+              <div style={{ border: '1px solid #999', padding: '20px', backgroundColor: '#f5f5f5', minHeight: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center' }}>
+                <div style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '8px', color: '#333', fontFamily: 'Arial, sans-serif' }}>
+                  {currency}{netPay?.toFixed(2) || '0.00'}
                 </div>
-                <div className="flex justify-between">
-                  <span>Employer National Insurance</span>
-                  <span>{currency}{calculatedYTD.employerNI?.toFixed(2) || '0.00'}</span>
+                <div style={{ fontSize: '10px', color: '#666', fontFamily: 'Arial, sans-serif' }}>
+                  Paid {formatDate(payslipData.payPeriodEnd) || new Date().toLocaleDateString('en-GB')}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Payment */}
-          <div>
-            <h3 className="text-sm font-semibold mb-1">Payment</h3>
-            <div className="border border-border p-5 bg-muted/30 h-26 flex flex-col justify-center text-center">
-              <div className="text-3xl font-bold mb-2">
-                {currency}{netPay?.toFixed(2) || '0.00'}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Paid {formatDate(payslipData.payPeriodEnd) || new Date().toLocaleDateString('en-GB')}
-              </div>
-            </div>
+          {/* Footer */}
+          <div style={{ borderTop: '1px solid #999', paddingTop: '15px', fontSize: '10px', color: '#333', fontFamily: 'Arial, sans-serif' }}>
+            Employer PAYE Reference: {payslipData.companyRegistration || '123/AB123'}
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="border-t border-border pt-3 text-xs text-muted-foreground">
-          Employer PAYE Reference: {payslipData.companyRegistration || '123/AB123'}
-        </div>
       </div>
     </div>
   );

@@ -65,8 +65,8 @@ export const DefaultTemplate: React.FC<TemplateProps> = ({
               </div>
               {payslipData.department && (
                 <div style={{ marginBottom: '5px' }}>
-                  <strong>Department:</strong> {payslipData.department}
-                </div>
+                <strong>Department:</strong> {payslipData.department || 'N/A'}
+              </div>
               )}
             </div>
             <div>

@@ -83,7 +83,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                   <span>Department</span>
-                  <span style={{ fontWeight: 'bold' }}>{payslipData.department || payslipData.position || 'Marketing'}</span>
+                  <span style={{ fontWeight: 'bold' }}>{payslipData.department || 'N/A'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                   <span>Tax code</span>
@@ -99,7 +99,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Annual leave remaining</span>
-                  <span style={{ fontWeight: 'bold' }}>{payslipData.annualLeave || '112 days'}</span>
+                  <span style={{ fontWeight: 'bold' }}>N/A</span>
                 </div>
               </div>
             </div>

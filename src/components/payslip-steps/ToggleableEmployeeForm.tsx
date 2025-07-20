@@ -3,49 +3,49 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, User, Briefcase, Calculator, Info } from 'lucide-react';
+import { ChevronDown, User, Briefcase, Calculator, Info, Settings, RotateCcw } from 'lucide-react';
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { PayslipData } from '@/types/payslip';
+import { useEmployeeFormSettings } from '@/hooks/useEmployeeFormSettings';
 
 interface ToggleableEmployeeFormProps {
   payslipData: PayslipData;
   setPayslipData: (data: PayslipData | ((prev: PayslipData) => PayslipData)) => void;
 }
 
-interface SectionToggle {
-  personal: boolean;
-  employment: boolean;
-  tax: boolean;
-  additional: boolean;
-}
-
 export const ToggleableEmployeeForm = ({ payslipData, setPayslipData }: ToggleableEmployeeFormProps) => {
-  const [sectionToggles, setSectionToggles] = useState<SectionToggle>({
-    personal: true,
-    employment: true,
-    tax: false,
-    additional: false
+  const { 
+    sections, 
+    presets, 
+    toggleSection, 
+    applyPreset, 
+    resetToDefault, 
+    getActivePreset, 
+    getEnabledSectionsCount,
+    getTotalSectionsCount 
+  } = useEmployeeFormSettings();
+
+  const [openSections, setOpenSections] = useState<string[]>(() => {
+    // Auto-open enabled sections on mount
+    return Object.entries(sections)
+      .filter(([_, enabled]) => enabled)
+      .map(([key, _]) => key);
   });
 
-  const [openSections, setOpenSections] = useState<string[]>(['personal', 'employment']);
-
-  const toggleSection = (section: keyof SectionToggle) => {
-    setSectionToggles(prev => {
-      const newToggle = { ...prev, [section]: !prev[section] };
-      
-      // Auto-open section when enabled
-      if (newToggle[section] && !openSections.includes(section)) {
-        setOpenSections(current => [...current, section]);
+  // Auto-open section when it gets enabled
+  React.useEffect(() => {
+    Object.entries(sections).forEach(([key, enabled]) => {
+      if (enabled && !openSections.includes(key)) {
+        setOpenSections(current => [...current, key]);
       }
-      
-      return newToggle;
     });
-  };
+  }, [sections, openSections]);
 
   const handleSectionToggle = (section: string) => {
     setOpenSections(current => 
@@ -59,7 +59,7 @@ export const ToggleableEmployeeForm = ({ payslipData, setPayslipData }: Toggleab
     setPayslipData(prev => ({ ...prev, [field]: value }));
   };
 
-  const getCompletionStatus = (section: keyof SectionToggle) => {
+  const getCompletionStatus = (section: string) => {
     switch (section) {
       case 'personal':
         return payslipData.name ? 'complete' : 'incomplete';
@@ -85,24 +85,64 @@ export const ToggleableEmployeeForm = ({ payslipData, setPayslipData }: Toggleab
     }
   };
 
+  const activePreset = getActivePreset();
+
   return (
     <div className="space-y-4">
-      {/* Section Toggles */}
+      {/* Quick Setup Presets */}
       <Card className="border border-border">
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium">Employee Information Sections</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              Form Configuration
+            </CardTitle>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              {getEnabledSectionsCount()} of {getTotalSectionsCount()} sections enabled
+              {activePreset && (
+                <Badge variant="secondary" className="text-xs">
+                  {activePreset.name}
+                </Badge>
+              )}
+            </div>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-4">
+          {/* Preset Buttons */}
+          <div className="flex flex-wrap gap-2">
+            {presets.map((preset) => (
+              <Button
+                key={preset.id}
+                variant={activePreset?.id === preset.id ? "default" : "outline"}
+                size="sm"
+                onClick={() => applyPreset(preset.id)}
+                className="text-xs"
+              >
+                {preset.name}
+              </Button>
+            ))}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={resetToDefault}
+              className="text-xs"
+            >
+              <RotateCcw className="h-3 w-3 mr-1" />
+              Reset
+            </Button>
+          </div>
+          
+          {/* Individual Section Toggles */}
           <div className="grid grid-cols-2 gap-4">
-            {Object.entries(sectionToggles).map(([key, enabled]) => (
+            {Object.entries(sections).map(([key, enabled]) => (
               <div key={key} className="flex items-center justify-between p-2 border rounded-lg">
                 <div className="flex items-center gap-2">
                   <span className="capitalize text-sm font-medium">{key} Info</span>
-                  {getStatusBadge(getCompletionStatus(key as keyof SectionToggle))}
+                  {getStatusBadge(getCompletionStatus(key))}
                 </div>
                 <Switch
                   checked={enabled}
-                  onCheckedChange={() => toggleSection(key as keyof SectionToggle)}
+                  onCheckedChange={() => toggleSection(key as keyof typeof sections)}
                 />
               </div>
             ))}
@@ -111,7 +151,7 @@ export const ToggleableEmployeeForm = ({ payslipData, setPayslipData }: Toggleab
       </Card>
 
       {/* Personal Information Section */}
-      {sectionToggles.personal && (
+      {sections.personal && (
         <Collapsible 
           open={openSections.includes('personal')}
           onOpenChange={() => handleSectionToggle('personal')}
@@ -192,7 +232,7 @@ export const ToggleableEmployeeForm = ({ payslipData, setPayslipData }: Toggleab
       )}
 
       {/* Employment Information Section */}
-      {sectionToggles.employment && (
+      {sections.employment && (
         <Collapsible 
           open={openSections.includes('employment')}
           onOpenChange={() => handleSectionToggle('employment')}
@@ -276,7 +316,7 @@ export const ToggleableEmployeeForm = ({ payslipData, setPayslipData }: Toggleab
       )}
 
       {/* Tax Information Section */}
-      {sectionToggles.tax && (
+      {sections.tax && (
         <Collapsible 
           open={openSections.includes('tax')}
           onOpenChange={() => handleSectionToggle('tax')}
@@ -416,7 +456,7 @@ export const ToggleableEmployeeForm = ({ payslipData, setPayslipData }: Toggleab
       )}
 
       {/* Additional Information Section */}
-      {sectionToggles.additional && (
+      {sections.additional && (
         <Collapsible 
           open={openSections.includes('additional')}
           onOpenChange={() => handleSectionToggle('additional')}

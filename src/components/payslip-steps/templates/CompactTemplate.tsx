@@ -75,10 +75,10 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
           {/* Employee Details */}
           <div style={{ flex: '1' }}>
             <h3 style={{ fontSize: '13px', fontWeight: 'bold', margin: '0 0 5px 0' }}>Employee Details</h3>
-            <div style={{ border: '1px solid #ccc', padding: '10px', backgroundColor: '#f9f9f9' }}>
+            <div style={{ border: '1px solid #ccc', padding: '10px', backgroundColor: '#f9f9f9', height: '120px' }}>
               <div style={{ fontSize: '11px', lineHeight: '1.5' }}>
                 <div>Works number: {payslipData.payrollNumber || 'N/A'}</div>
-                <div>Department: {payslipData.department || 'N/A'}</div>
+                <div>Department: {payslipData.department || payslipData.position || 'N/A'}</div>
                 <div>Tax code: {payslipData.taxCode || 'N/A'}</div>
                 <div>National Insurance number: {payslipData.niNumber || 'N/A'}</div>
                 <div>National Insurance table: {payslipData.niCategory || 'A'}</div>
@@ -90,7 +90,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
           {/* Payments */}
           <div style={{ flex: '1' }}>
             <h3 style={{ fontSize: '13px', fontWeight: 'bold', margin: '0 0 5px 0' }}>Payments</h3>
-            <div style={{ border: '1px solid #ccc', padding: '10px', backgroundColor: '#f9f9f9', height: '120px' }}>
+            <div style={{ border: '1px solid #ccc', padding: '10px', backgroundColor: '#f9f9f9', height: '120px', position: 'relative' }}>
               <div style={{ fontSize: '11px', lineHeight: '1.5' }}>
                 {payslipData.paymentEntries?.map((entry: any, index: number) => (
                   <div key={entry.id || index} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
@@ -98,10 +98,10 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                     <span>{currency}{entry.amount?.toFixed(2) || '0.00'}</span>
                   </div>
                 ))}
-                <div style={{ position: 'absolute', bottom: '10px', left: '10px', right: '10px', borderTop: '1px solid #ccc', paddingTop: '5px', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
-                  <span>Total</span>
-                  <span>{currency}{payslipData.grossPay?.toFixed(2) || '0.00'}</span>
-                </div>
+              </div>
+              <div style={{ position: 'absolute', bottom: '10px', left: '10px', right: '10px', borderTop: '1px solid #ccc', paddingTop: '5px', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
+                <span>Total</span>
+                <span>{currency}{payslipData.grossPay?.toFixed(2) || '0.00'}</span>
               </div>
             </div>
           </div>
@@ -117,10 +117,10 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                     <span>{currency}{deduction.amount?.toFixed(2) || '0.00'}</span>
                   </div>
                 ))}
-                <div style={{ position: 'absolute', bottom: '10px', left: '10px', right: '10px', borderTop: '1px solid #ccc', paddingTop: '5px', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
-                  <span>Total</span>
-                  <span>{currency}{totalDeductions?.toFixed(2) || '0.00'}</span>
-                </div>
+              </div>
+              <div style={{ position: 'absolute', bottom: '10px', left: '10px', right: '10px', borderTop: '1px solid #ccc', paddingTop: '5px', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
+                <span>Total</span>
+                <span>{currency}{totalDeductions?.toFixed(2) || '0.00'}</span>
               </div>
             </div>
           </div>
@@ -131,7 +131,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
           {/* This Month */}
           <div style={{ flex: '1' }}>
             <h3 style={{ fontSize: '13px', fontWeight: 'bold', margin: '0 0 5px 0' }}>This Month</h3>
-            <div style={{ border: '1px solid #ccc', padding: '10px', backgroundColor: '#f9f9f9' }}>
+            <div style={{ border: '1px solid #ccc', padding: '10px', backgroundColor: '#f9f9f9', height: '100px' }}>
               <div style={{ fontSize: '11px', lineHeight: '1.5' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Taxable gross pay</span>
@@ -152,7 +152,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
           {/* Year to Date */}
           <div style={{ flex: '1' }}>
             <h3 style={{ fontSize: '13px', fontWeight: 'bold', margin: '0 0 5px 0' }}>Year to Date</h3>
-            <div style={{ border: '1px solid #ccc', padding: '10px', backgroundColor: '#f9f9f9' }}>
+            <div style={{ border: '1px solid #ccc', padding: '10px', backgroundColor: '#f9f9f9', height: '100px' }}>
               <div style={{ fontSize: '11px', lineHeight: '1.5' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Taxable gross pay</span>
@@ -177,7 +177,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
           {/* Payment */}
           <div style={{ flex: '1' }}>
             <h3 style={{ fontSize: '13px', fontWeight: 'bold', margin: '0 0 5px 0' }}>Payment</h3>
-            <div style={{ border: '1px solid #ccc', padding: '20px', backgroundColor: '#f9f9f9', textAlign: 'center' }}>
+            <div style={{ border: '1px solid #ccc', padding: '20px', backgroundColor: '#f9f9f9', textAlign: 'center', height: '100px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <div style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '10px' }}>
                 {currency}{netPay?.toFixed(2) || '0.00'}
               </div>
@@ -213,10 +213,10 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
           {/* Employee Details */}
           <div>
             <h3 className="text-sm font-semibold mb-1">Employee Details</h3>
-            <div className="border border-border p-3 bg-muted/30">
+            <div className="border border-border p-3 bg-muted/30 h-32">
               <div className="text-xs space-y-1">
                 <div>Works number: {payslipData.payrollNumber || 'N/A'}</div>
-                <div>Department: {payslipData.department || 'N/A'}</div>
+                <div>Department: {payslipData.department || payslipData.position || 'N/A'}</div>
                 <div>Tax code: {payslipData.taxCode || 'N/A'}</div>
                 <div>National Insurance number: {payslipData.niNumber || 'N/A'}</div>
                 <div>National Insurance table: {payslipData.niCategory || 'A'}</div>
@@ -236,10 +236,10 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                     <span>{currency}{entry.amount?.toFixed(2) || '0.00'}</span>
                   </div>
                 ))}
-                <div className="absolute bottom-3 left-3 right-3 border-t border-border pt-1 flex justify-between font-semibold">
-                  <span>Total</span>
-                  <span>{currency}{payslipData.grossPay?.toFixed(2) || '0.00'}</span>
-                </div>
+              </div>
+              <div className="absolute bottom-3 left-3 right-3 border-t border-border pt-1 flex justify-between font-semibold">
+                <span>Total</span>
+                <span>{currency}{payslipData.grossPay?.toFixed(2) || '0.00'}</span>
               </div>
             </div>
           </div>
@@ -255,10 +255,10 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                     <span>{currency}{deduction.amount?.toFixed(2) || '0.00'}</span>
                   </div>
                 ))}
-                <div className="absolute bottom-3 left-3 right-3 border-t border-border pt-1 flex justify-between font-semibold">
-                  <span>Total</span>
-                  <span>{currency}{totalDeductions?.toFixed(2) || '0.00'}</span>
-                </div>
+              </div>
+              <div className="absolute bottom-3 left-3 right-3 border-t border-border pt-1 flex justify-between font-semibold">
+                <span>Total</span>
+                <span>{currency}{totalDeductions?.toFixed(2) || '0.00'}</span>
               </div>
             </div>
           </div>
@@ -269,7 +269,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
           {/* This Month */}
           <div>
             <h3 className="text-sm font-semibold mb-1">This Month</h3>
-            <div className="border border-border p-3 bg-muted/30">
+            <div className="border border-border p-3 bg-muted/30 h-26">
               <div className="text-xs space-y-1">
                 <div className="flex justify-between">
                   <span>Taxable gross pay</span>
@@ -290,7 +290,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
           {/* Year to Date */}
           <div>
             <h3 className="text-sm font-semibold mb-1">Year to Date</h3>
-            <div className="border border-border p-3 bg-muted/30">
+            <div className="border border-border p-3 bg-muted/30 h-26">
               <div className="text-xs space-y-1">
                 <div className="flex justify-between">
                   <span>Taxable gross pay</span>
@@ -315,7 +315,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
           {/* Payment */}
           <div>
             <h3 className="text-sm font-semibold mb-1">Payment</h3>
-            <div className="border border-border p-5 bg-muted/30 text-center">
+            <div className="border border-border p-5 bg-muted/30 h-26 flex flex-col justify-center text-center">
               <div className="text-3xl font-bold mb-2">
                 {currency}{netPay?.toFixed(2) || '0.00'}
               </div>

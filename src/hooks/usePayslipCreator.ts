@@ -155,7 +155,7 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
   }, [toast]);
 
   const nextStep = () => {
-    if (currentStep < 5) setCurrentStep(currentStep + 1);
+    if (currentStep < 6) setCurrentStep(currentStep + 1);
   };
 
   const prevStep = () => {
@@ -268,6 +268,7 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
         amount: Number(deduction.amount) || 0
       }));
 
+      // Include YTD data in the payslip record
       const payslipRecord = {
         user_id: user.id,
         child_id: isParentMode && selectedChild ? selectedChild.id : null,
@@ -277,19 +278,12 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
         pay_period_end: syncedData.payPeriodEnd,
         gross_salary: Number(syncedData.grossPay) || 0,
         deductions: formattedDeductions,
-        net_salary: Number(netSalary) || 0
-      };
-
-      // Store additional employee data in payslip data for templates
-      const enrichedPayslipData = {
-        ...syncedData,
-        payrollNumber: syncedData.payrollNumber,
-        taxCode: syncedData.taxCode,
-        niNumber: syncedData.niNumber,
-        niCategory: syncedData.niCategory,
-        department: syncedData.department,
-        companyName: sanitizedCompanyName,
-        employeeName: sanitizedName
+        net_salary: Number(netSalary) || 0,
+        // Store YTD data in deductions JSONB field or add metadata
+        ytd_data: syncedData.ytdOverride ? {
+          override: syncedData.ytdOverride,
+          calculated_at: new Date().toISOString()
+        } : null
       };
 
       console.log('Saving validated payslip record:', payslipRecord);

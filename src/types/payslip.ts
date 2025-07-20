@@ -6,6 +6,11 @@ export interface PayslipData {
   payrollNumber?: string;
   selectedEmployeeId?: string;
   
+  // Employee Personal Information
+  employeeEmail?: string;
+  employeePhone?: string;
+  employeeAddress?: string;
+  
   // Employee Tax Information
   taxCode?: string;
   niNumber?: string;
@@ -15,6 +20,9 @@ export interface PayslipData {
   pensionSchemeReference?: string;
   starterDeclaration?: 'A' | 'B' | 'C';
   department?: string;
+  
+  // Additional Employee Information
+  notes?: string;
   
   // Pay Period Information
   period: string; // YYYY-MM format for backward compatibility

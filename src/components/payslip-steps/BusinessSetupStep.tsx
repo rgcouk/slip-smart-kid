@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,19 +11,24 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { ChevronDown, Building2, User, Info, FileText } from 'lucide-react';
 import { EmployeeSelector } from '@/components/employees/EmployeeSelector';
 import { EmployeeForm } from '@/components/employees/EmployeeForm';
+import { ToggleableEmployeeForm } from './ToggleableEmployeeForm';
 import { TemplateSelector } from './TemplateSelector';
 import { PayslipData } from '@/types/payslip';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+
 interface BusinessSetupStepProps {
   payslipData: PayslipData;
   setPayslipData: (data: PayslipData | ((prev: PayslipData) => PayslipData)) => void;
   isParentMode: boolean;
 }
+
 interface Employee {
   id: string;
   name: string;
   payroll_number?: string;
   email?: string;
+  phone?: string;
+  address?: string;
   default_gross_salary?: number;
   tax_code?: string;
   ni_number?: string;
@@ -31,13 +37,16 @@ interface Employee {
   student_loan_plan?: string;
   pension_scheme_reference?: string;
   starter_declaration?: 'A' | 'B' | 'C';
+  notes?: string;
 }
+
 export const BusinessSetupStep = ({
   payslipData,
   setPayslipData,
   isParentMode
 }: BusinessSetupStepProps) => {
   const [showEmployeeForm, setShowEmployeeForm] = useState(false);
+
   const handleEmployeeSelect = (employee: Employee) => {
     setPayslipData(prev => ({
       ...prev,
@@ -45,6 +54,9 @@ export const BusinessSetupStep = ({
       employeeName: employee.name,
       payrollNumber: employee.payroll_number || '',
       selectedEmployeeId: employee.id,
+      employeeEmail: employee.email || '',
+      employeePhone: employee.phone || '',
+      employeeAddress: employee.address || '',
       taxCode: employee.tax_code || '',
       niNumber: employee.ni_number || '',
       taxAllowance: employee.tax_allowance || 12570,
@@ -52,6 +64,7 @@ export const BusinessSetupStep = ({
       studentLoanPlan: employee.student_loan_plan || undefined,
       pensionSchemeReference: employee.pension_scheme_reference || undefined,
       starterDeclaration: employee.starter_declaration || undefined,
+      notes: employee.notes || '',
       grossPay: employee.default_gross_salary || 0,
       paymentEntries: employee.default_gross_salary ? [{
         id: '1',
@@ -61,16 +74,21 @@ export const BusinessSetupStep = ({
       }] : prev.paymentEntries
     }));
   };
+
   const handleCreateNewEmployee = () => {
     setShowEmployeeForm(true);
   };
+
   const handleEmployeeFormSave = () => {
     setShowEmployeeForm(false);
   };
+
   const handleEmployeeFormCancel = () => {
     setShowEmployeeForm(false);
   };
-  return <div className="space-y-6">
+
+  return (
+    <div className="space-y-6">
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Business Setup</h2>
         <p className="text-gray-600">Configure your company and employee information</p>
@@ -240,118 +258,20 @@ export const BusinessSetupStep = ({
               </div>
             </AccordionTrigger>
             <AccordionContent className="px-6 pb-6">
-              <div className="space-y-4">
+              <div className="space-y-6">
+                {/* Employee Selector */}
                 <div className="space-y-2">
                   <Label>Select Employee</Label>
                   <EmployeeSelector onSelect={handleEmployeeSelect} onCreateNew={handleCreateNewEmployee} />
                   <p className="text-sm text-muted-foreground">
-                    Select from saved employees or add details manually below
+                    Select from saved employees or configure details below
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="employeeName">Employee Name *</Label>
-                    <Input 
-                      id="employeeName" 
-                      value={payslipData.name || ''} 
-                      onChange={e => setPayslipData(prev => ({
-                        ...prev,
-                        name: e.target.value,
-                        employeeName: e.target.value
-                      }))} 
-                      placeholder="Enter employee name" 
-                      className="h-11 rounded-2xl border-border" 
-                      required 
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="payrollNumber">Payroll Number</Label>
-                    <Input 
-                      id="payrollNumber" 
-                      value={payslipData.payrollNumber || ''} 
-                      onChange={e => setPayslipData(prev => ({
-                        ...prev,
-                        payrollNumber: e.target.value
-                      }))} 
-                      placeholder="EMP001234" 
-                      className="h-11 rounded-2xl border-border" 
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="contractualHours">Contractual Hours/Week</Label>
-                    <Input 
-                      id="contractualHours" 
-                      type="number" 
-                      step="0.5" 
-                      min="0" 
-                      value={payslipData.contractualHours || ''} 
-                      onChange={e => setPayslipData(prev => ({
-                        ...prev,
-                        contractualHours: parseFloat(e.target.value) || 0
-                      }))} 
-                      placeholder="40" 
-                      className="h-11 rounded-2xl border-border" 
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="hourlyRate">Hourly Rate (£)</Label>
-                    <Input 
-                      id="hourlyRate" 
-                      type="number" 
-                      step="0.01" 
-                      min="0" 
-                      value={payslipData.hourlyRate || ''} 
-                      onChange={e => setPayslipData(prev => ({
-                        ...prev,
-                        hourlyRate: parseFloat(e.target.value) || 0
-                      }))} 
-                      placeholder="15.00" 
-                      className="h-11 rounded-2xl border-border" 
-                    />
-                  </div>
-                </div>
-              </div>
-            </AccordionContent>
-          </Card>
-        </AccordionItem>
-
-        {/* Template Selection */}
-        <AccordionItem value="template" className="border-0">
-          <Card className="mb-4 shadow-sm border-border">
-            <AccordionTrigger className="hover:no-underline">
-              <CardHeader className="flex flex-row items-center space-y-0 pb-3 w-full">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-xl">
-                    <FileText className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  <div className="text-left">
-                    <CardTitle className="text-lg">Payslip Template</CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Choose how your payslip will look
-                    </p>
-                  </div>
-                </div>
-                <Badge variant="secondary" className="ml-auto">
-                  {payslipData.template || 'default'}
-                </Badge>
-              </CardHeader>
-            </AccordionTrigger>
-            <AccordionContent className="pb-6">
-              <div className="px-6">
-                <TemplateSelector
-                  selectedTemplate={payslipData.template || 'default'}
-                  onTemplateSelect={(templateId) => {
-                    setPayslipData(prev => ({
-                      ...prev,
-                      template: templateId
-                    }));
-                  }}
+                {/* Enhanced Employee Form with Toggles */}
+                <ToggleableEmployeeForm
+                  payslipData={payslipData}
+                  setPayslipData={setPayslipData}
                 />
               </div>
             </AccordionContent>
@@ -368,5 +288,6 @@ export const BusinessSetupStep = ({
           <EmployeeForm onSave={handleEmployeeFormSave} onCancel={handleEmployeeFormCancel} />
         </DialogContent>
       </Dialog>
-    </div>;
+    </div>
+  );
 };

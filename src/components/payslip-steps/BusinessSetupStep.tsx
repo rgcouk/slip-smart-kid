@@ -53,12 +53,12 @@ export const BusinessSetupStep = ({
       pensionSchemeReference: employee.pension_scheme_reference || undefined,
       starterDeclaration: employee.starter_declaration || undefined,
       grossPay: employee.default_gross_salary || 0,
-      paymentEntries: [{
+      paymentEntries: employee.default_gross_salary ? [{
         id: '1',
         description: 'Basic Salary',
         type: 'fixed',
-        amount: employee.default_gross_salary || 0
-      }]
+        amount: employee.default_gross_salary
+      }] : prev.paymentEntries
     }));
   };
   const handleCreateNewEmployee = () => {

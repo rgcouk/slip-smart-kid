@@ -130,12 +130,8 @@ export const ProfessionalPayslip = ({ payslipData, currency, ytdValues }: Profes
         </div>
 
         <div className="space-y-3">
-          <h4 className="font-bold text-gray-800 border-b border-gray-300 pb-1">Employer Contributions</h4>
+          <h4 className="font-bold text-gray-800 border-b border-gray-300 pb-1">Additional Information</h4>
           <div className="text-sm space-y-1">
-            <div className="flex justify-between">
-              <span className="text-gray-700">Employer NI:</span>
-              <span className="text-gray-900">{currency}{(totalDeductions * 0.138).toFixed(2)}</span>
-            </div>
             <div className="flex justify-between">
               <span className="text-gray-700">Employer Pension:</span>
               <span className="text-gray-900">{currency}{(payslipData.grossPay * 0.03).toFixed(2)}</span>

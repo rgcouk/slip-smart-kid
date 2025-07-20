@@ -27,10 +27,6 @@ export const CompactSummary = ({ payslipData, currency, ytdValues }: CompactSumm
             <span className="text-gray-700">Taxable gross pay</span>
             <span className="font-medium">{currency}{payslipData.grossPay.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-700">Employer National Insurance</span>
-            <span className="font-medium">{currency}{(totalDeductions * 0.138).toFixed(2)}</span>
-          </div>
         </div>
       </div>
 
@@ -51,10 +47,6 @@ export const CompactSummary = ({ payslipData, currency, ytdValues }: CompactSumm
           <div className="flex justify-between">
             <span className="text-gray-700">Employee National Insurance</span>
             <span className="font-medium">{currency}{(ytdValues.totalDeductions * 0.12).toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-700">Employer National Insurance</span>
-            <span className="font-medium">{currency}{(ytdValues.totalDeductions * 0.138).toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-700">Employee pension</span>

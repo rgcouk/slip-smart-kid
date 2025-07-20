@@ -91,7 +91,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                   <span>National Insurance number</span>
-                  <span style={{ fontWeight: 'bold' }}>{payslipData.ni_number || 'AB 12 34 56 D'}</span>
+                  <span style={{ fontWeight: 'bold' }}>{payslipData.niNumber || 'AB 12 34 56 D'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                   <span>National Insurance table</span>

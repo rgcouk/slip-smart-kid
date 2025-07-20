@@ -57,9 +57,16 @@ export type Database = {
           email: string | null
           id: string
           name: string
+          ni_category: string | null
+          ni_number: string | null
           notes: string | null
           payroll_number: string | null
+          pension_scheme_reference: string | null
           phone: string | null
+          starter_declaration: string | null
+          student_loan_plan: string | null
+          tax_allowance: number | null
+          tax_code: string | null
           updated_at: string
           user_id: string
         }
@@ -70,9 +77,16 @@ export type Database = {
           email?: string | null
           id?: string
           name: string
+          ni_category?: string | null
+          ni_number?: string | null
           notes?: string | null
           payroll_number?: string | null
+          pension_scheme_reference?: string | null
           phone?: string | null
+          starter_declaration?: string | null
+          student_loan_plan?: string | null
+          tax_allowance?: number | null
+          tax_code?: string | null
           updated_at?: string
           user_id: string
         }
@@ -83,9 +97,16 @@ export type Database = {
           email?: string | null
           id?: string
           name?: string
+          ni_category?: string | null
+          ni_number?: string | null
           notes?: string | null
           payroll_number?: string | null
+          pension_scheme_reference?: string | null
           phone?: string | null
+          starter_declaration?: string | null
+          student_loan_plan?: string | null
+          tax_allowance?: number | null
+          tax_code?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -105,6 +126,7 @@ export type Database = {
           pay_period_start: string
           updated_at: string
           user_id: string
+          ytd_data: Json | null
         }
         Insert: {
           child_id?: string | null
@@ -119,6 +141,7 @@ export type Database = {
           pay_period_start: string
           updated_at?: string
           user_id: string
+          ytd_data?: Json | null
         }
         Update: {
           child_id?: string | null
@@ -133,6 +156,7 @@ export type Database = {
           pay_period_start?: string
           updated_at?: string
           user_id?: string
+          ytd_data?: Json | null
         }
         Relationships: [
           {
@@ -174,6 +198,36 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tax_codes: {
+        Row: {
+          code: string
+          created_at: string
+          description: string
+          id: string
+          is_active: boolean | null
+          tax_free_allowance: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description: string
+          id?: string
+          is_active?: boolean | null
+          tax_free_allowance: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean | null
+          tax_free_allowance?: number
           updated_at?: string
         }
         Relationships: []

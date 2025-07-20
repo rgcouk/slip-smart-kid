@@ -56,24 +56,42 @@ export const ProfessionalTemplate: React.FC<TemplateProps> = ({
             <div style={{ fontSize: '12px', lineHeight: '1.6' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                 <span>Name:</span>
-                <span style={{ fontWeight: 'bold' }}>{payslipData.name}</span>
+                <span style={{ fontWeight: 'bold' }}>{payslipData.name || payslipData.employeeName}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                 <span>Employee ID:</span>
-                <span>{payslipData.payrollNumber || '001'}</span>
+                <span>{payslipData.payrollNumber || 'N/A'}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                 <span>Tax Code:</span>
-                <span>{payslipData.taxCode || '1257L'}</span>
+                <span>{payslipData.taxCode || 'N/A'}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                 <span>NI Number:</span>
-                <span>{payslipData.niNumber || 'JZ23434C'}</span>
+                <span>{payslipData.niNumber || 'N/A'}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                 <span>NI Category:</span>
                 <span>{payslipData.niCategory || 'A'}</span>
               </div>
+              {payslipData.department && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                  <span>Department:</span>
+                  <span>{payslipData.department}</span>
+                </div>
+              )}
+              {payslipData.studentLoanPlan && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                  <span>Student Loan:</span>
+                  <span>{payslipData.studentLoanPlan}</span>
+                </div>
+              )}
+              {payslipData.pensionSchemeReference && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                  <span>Pension Ref:</span>
+                  <span>{payslipData.pensionSchemeReference}</span>
+                </div>
+              )}
             </div>
           </div>
 

@@ -86,7 +86,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
         style={{ 
           width: '794px',
           padding: '40px',
-          backgroundColor: 'white',
+          backgroundColor: '#e6eaee',
           fontFamily: 'Arial, sans-serif',
           fontSize: '11px',
           lineHeight: '1.4',

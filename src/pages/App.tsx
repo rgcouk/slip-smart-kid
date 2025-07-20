@@ -26,6 +26,9 @@ const App = () => {
     title: 'Deductions'
   }, {
     number: 5,
+    title: 'Year to Date'
+  }, {
+    number: 6,
     title: 'Review & Export'
   }];
   return <div className="min-h-screen bg-gray-50 flex flex-col">

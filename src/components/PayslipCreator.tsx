@@ -10,10 +10,11 @@ import { PeriodSelectionStep } from './payslip-steps/PeriodSelectionStep';
 import { BasicInfoStep } from './payslip-steps/BasicInfoStep';
 import { DeductionsStep } from './payslip-steps/DeductionsStep';
 import { PreviewStep } from './payslip-steps/PreviewStep';
+import { YTDStep } from './payslip-steps/YTDStep';
 import { StepNavigation } from './payslip-steps/StepNavigation';
 import { usePayslipCreator } from '@/hooks/usePayslipCreator';
 import { PayslipData } from '@/types/payslip';
-import { FileText, Building2, Calculator, Minus, Eye } from 'lucide-react';
+import { FileText, Building2, Calculator, Minus, Eye, Calendar } from 'lucide-react';
 
 interface PayslipCreatorProps {
   isParentMode: boolean;
@@ -25,7 +26,7 @@ export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: Pa
   const { payslipData, setPayslipData, canProceed, currentStep, nextStep, prevStep, savePayslip, isLoading } = usePayslipCreator(isParentMode, selectedChild);
   
   // Map current step to tab value
-  const stepToTab = ['business', 'period', 'earnings', 'deductions', 'summary'];
+  const stepToTab = ['business', 'period', 'earnings', 'deductions', 'ytd', 'summary'];
   const activeTab = stepToTab[currentStep - 1] || 'business';
 
   useEffect(() => {
@@ -44,6 +45,8 @@ export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: Pa
       case 'earnings':
         return payslipData.paymentEntries?.length > 0 && payslipData.grossPay > 0;
       case 'deductions':
+        return true; // Optional step
+      case 'ytd':
         return true; // Optional step
       case 'summary':
         return canProceed();
@@ -93,7 +96,7 @@ export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: Pa
       <CardContent className="p-0">
         <Tabs value={activeTab} className="w-full">
           <div className="px-6 pb-4 border-b">
-            <TabsList className="grid grid-cols-5 w-full max-w-2xl mx-auto">
+            <TabsList className="grid grid-cols-6 w-full max-w-3xl mx-auto">
               <TabsTrigger value="business" className="flex items-center gap-2 text-xs">
                 <Building2 className="h-3 w-3" />
                 <span className="hidden sm:inline">Business</span>
@@ -113,6 +116,11 @@ export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: Pa
                 <Minus className="h-3 w-3" />
                 <span className="hidden sm:inline">Deductions</span>
                 {getTabStatus('deductions') && <Badge variant="outline" className="w-2 h-2 p-0 bg-primary" />}
+              </TabsTrigger>
+              <TabsTrigger value="ytd" className="flex items-center gap-2 text-xs">
+                <Calendar className="h-3 w-3" />
+                <span className="hidden sm:inline">YTD</span>
+                {getTabStatus('ytd') && <Badge variant="outline" className="w-2 h-2 p-0 bg-primary" />}
               </TabsTrigger>
               <TabsTrigger value="summary" className="flex items-center gap-2 text-xs">
                 <Eye className="h-3 w-3" />
@@ -156,6 +164,15 @@ export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: Pa
               />
             </TabsContent>
 
+            <TabsContent value="ytd" className="mt-0 space-y-0">
+              <YTDStep
+                payslipData={payslipData}
+                setPayslipData={setPayslipData}
+                isParentMode={isParentMode}
+                selectedChild={selectedChild}
+              />
+            </TabsContent>
+
             <TabsContent value="summary" className="mt-0 space-y-0">
               <PreviewStep
                 payslipData={payslipData}
@@ -170,7 +187,7 @@ export const PayslipCreator = ({ isParentMode, selectedChild, onStepChange }: Pa
         {/* Step Navigation */}
         <StepNavigation
           currentStep={currentStep}
-          totalSteps={5}
+          totalSteps={6}
           canProceed={canProceed()}
           isLoading={isLoading}
           onPrevStep={prevStep}

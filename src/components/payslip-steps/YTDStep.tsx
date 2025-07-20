@@ -17,7 +17,7 @@ interface YTDStepProps {
 
 export const YTDStep = ({ payslipData, setPayslipData, isParentMode }: YTDStepProps) => {
   const { config } = useLocale();
-  const [enableYTDOverride, setEnableYTDOverride] = useState(false);
+  const [enableYTDOverride, setEnableYTDOverride] = useState(!!payslipData.ytdOverride);
 
   // Calculate automatic YTD values
   const getCurrentPeriodNumber = () => {
@@ -27,11 +27,11 @@ export const YTDStep = ({ payslipData, setPayslipData, isParentMode }: YTDStepPr
   };
 
   const periodNumber = getCurrentPeriodNumber();
-  const totalDeductions = payslipData.deductions.reduce((sum: number, d: any) => sum + d.amount, 0);
-  const netPay = payslipData.grossPay - totalDeductions;
+  const totalDeductions = payslipData.deductions?.reduce((sum: number, d: any) => sum + d.amount, 0) || 0;
+  const netPay = (payslipData.grossPay || 0) - totalDeductions;
 
   const autoYTD = {
-    grossPay: payslipData.grossPay * periodNumber,
+    grossPay: (payslipData.grossPay || 0) * periodNumber,
     totalDeductions: totalDeductions * periodNumber,
     netPay: netPay * periodNumber
   };
@@ -110,10 +110,10 @@ export const YTDStep = ({ payslipData, setPayslipData, isParentMode }: YTDStepPr
                 {config.currency}{autoYTD.grossPay.toFixed(2)}
               </div>
             )}
-            {!enableYTDOverride && (
-              <p className="text-xs text-gray-500 mt-1">
-                Calculated: {config.currency}{payslipData.grossPay.toFixed(2)} × {periodNumber} months
-              </p>
+             {!enableYTDOverride && (
+               <p className="text-xs text-gray-500 mt-1">
+                 Calculated: {config.currency}{(payslipData.grossPay || 0).toFixed(2)} × {periodNumber} months
+               </p>
             )}
           </CardContent>
         </Card>

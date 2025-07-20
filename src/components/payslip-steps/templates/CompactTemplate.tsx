@@ -28,16 +28,29 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
     return `Month Ending ${endDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`;
   };
 
-  // Calculate missing YTD values from deductions
+  // Use YTD override values if available, otherwise calculate from current deductions
   const calculateYTDValues = () => {
-    const taxDeduction = payslipData.deductions?.find((d: any) => d.name?.toLowerCase().includes('tax')) || {};
-    const niDeduction = payslipData.deductions?.find((d: any) => d.name?.toLowerCase().includes('national insurance')) || {};
-    
-    return {
-      tax: taxDeduction.amount || 0,
-      employeeNI: niDeduction.amount || 0,
-      employerNI: (payslipData.grossPay || 0) * 0.138
-    };
+    if (payslipData.ytdOverride) {
+      // Use the YTD override values for Tax and NI
+      const taxDeduction = payslipData.deductions?.find((d: any) => d.name?.toLowerCase().includes('tax')) || {};
+      const niDeduction = payslipData.deductions?.find((d: any) => d.name?.toLowerCase().includes('national insurance')) || {};
+      
+      return {
+        tax: taxDeduction.amount || 0,
+        employeeNI: niDeduction.amount || 0,
+        employerNI: (ytdValues.grossPay || 0) * 0.138
+      };
+    } else {
+      // Fall back to current payslip deductions
+      const taxDeduction = payslipData.deductions?.find((d: any) => d.name?.toLowerCase().includes('tax')) || {};
+      const niDeduction = payslipData.deductions?.find((d: any) => d.name?.toLowerCase().includes('national insurance')) || {};
+      
+      return {
+        tax: taxDeduction.amount || 0,
+        employeeNI: niDeduction.amount || 0,
+        employerNI: (payslipData.grossPay || 0) * 0.138
+      };
+    }
   };
 
   const calculatedYTD = calculateYTDValues();
@@ -80,10 +93,6 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                   <span>Works number</span>
                   <span style={{ fontWeight: 'bold' }}>{payslipData.payrollNumber || '861'}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
-                  <span>Department</span>
-                  <span style={{ fontWeight: 'bold' }}>{payslipData.department || 'N/A'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                   <span>Tax code</span>

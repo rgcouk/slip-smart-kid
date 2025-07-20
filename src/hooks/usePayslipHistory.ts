@@ -12,7 +12,7 @@ interface PayslipRecord {
   pay_period_end: string;
   gross_salary: number;
   net_salary: number;
-  deductions: any[];
+  deductions: any;
   created_at: string;
 }
 

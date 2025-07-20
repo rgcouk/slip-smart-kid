@@ -26,8 +26,7 @@ export const CompactEmployeeDetails = ({ payslipData, isParentMode, selectedChil
     { label: "Works number", value: payslipData.payrollNumber },
     { label: "Tax code", value: payslipData.taxCode },
     { label: "National Insurance number", value: payslipData.niNumber },
-    { label: "National Insurance table", value: payslipData.niCategory },
-    { label: "Department", value: payslipData.department }
+    { label: "National Insurance table", value: payslipData.niCategory }
   ].filter(detail => detail.value); // Only include fields that have values
 
   // Don't render the component if no employee details exist

@@ -21,6 +21,10 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
     return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
   };
 
+  const formatCurrency = (amount: number) => {
+    return amount.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
   const formatPeriod = (start: string, end: string) => {
     if (!start || !end) return payslipData.period || '';
     const startDate = new Date(start);
@@ -124,19 +128,19 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                 {payslipData.paymentEntries?.map((entry: any, index: number) => (
                   <div key={entry.id || index} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                     <span>{entry.description || 'Monthly pay'}</span>
-                    <span style={{ fontWeight: 'bold' }}>£{entry.amount?.toFixed(2) || '2,000.00'}</span>
+                    <span style={{ fontWeight: 'bold' }}>£{formatCurrency(entry.amount || 0)}</span>
                   </div>
                 ))}
                 {(!payslipData.paymentEntries || payslipData.paymentEntries.length === 0) && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                     <span>Monthly pay</span>
-                    <span style={{ fontWeight: 'bold' }}>£{payslipData.grossPay?.toFixed(2) || '2,000.00'}</span>
+                     <span style={{ fontWeight: 'bold' }}>£{formatCurrency(payslipData.grossPay || 0)}</span>
                   </div>
                 )}
               </div>
               <div style={{ position: 'absolute', bottom: '12px', left: '12px', right: '12px', borderTop: '1px solid #999', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '10px' }}>
                 <span>Total</span>
-                <span>£{payslipData.grossPay?.toFixed(2) || '2,000.00'}</span>
+                <span>£{formatCurrency(payslipData.grossPay || 0)}</span>
               </div>
             </div>
           </div>
@@ -149,7 +153,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                 {payslipData.deductions?.map((deduction: any, index: number) => (
                   <div key={deduction.id || index} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                     <span>{deduction.name}</span>
-                    <span style={{ fontWeight: 'bold' }}>£{deduction.amount?.toFixed(2) || '0.00'}</span>
+                    <span style={{ fontWeight: 'bold' }}>£{formatCurrency(deduction.amount || 0)}</span>
                   </div>
                 ))}
                 {(!payslipData.deductions || payslipData.deductions.length === 0) && (
@@ -167,7 +171,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
               </div>
               <div style={{ position: 'absolute', bottom: '12px', left: '12px', right: '12px', borderTop: '1px solid #999', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '10px' }}>
                 <span>Total</span>
-                <span>£{totalDeductions?.toFixed(2) || '346.15'}</span>
+                <span>£{formatCurrency(totalDeductions || 0)}</span>
               </div>
             </div>
           </div>
@@ -182,15 +186,15 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
               <div style={{ fontSize: '10px', lineHeight: '1.6', fontFamily: 'Arial, sans-serif' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                   <span>Taxable gross pay</span>
-                  <span style={{ fontWeight: 'bold' }}>£{payslipData.grossPay?.toFixed(2) || '2,000.00'}</span>
+                  <span style={{ fontWeight: 'bold' }}>£{formatCurrency(payslipData.grossPay || 0)}</span>
                 </div>
                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                    <span>Employer National Insurance</span>
-                   <span style={{ fontWeight: 'bold' }}>£{((payslipData.grossPay || 2000) * 0.1325)?.toFixed(2) || '186.92'}</span>
+                   <span style={{ fontWeight: 'bold' }}>£{formatCurrency((payslipData.grossPay || 0) * 0.1325)}</span>
                  </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #999', paddingTop: '8px', marginTop: '8px', fontWeight: 'bold' }}>
                   <span>Net pay</span>
-                  <span>£{netPay?.toFixed(2) || '1,653.85'}</span>
+                  <span>£{formatCurrency(netPay || 0)}</span>
                 </div>
               </div>
             </div>
@@ -203,19 +207,19 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
               <div style={{ fontSize: '10px', lineHeight: '1.6', fontFamily: 'Arial, sans-serif' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                   <span>Taxable gross pay</span>
-                  <span style={{ fontWeight: 'bold' }}>£{ytdValues.grossPay?.toFixed(2) || '2,000.00'}</span>
+                  <span style={{ fontWeight: 'bold' }}>£{formatCurrency(ytdValues.grossPay || 0)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                   <span>Tax</span>
-                  <span style={{ fontWeight: 'bold' }}>£{calculatedYTD.tax?.toFixed(2) || '190.20'}</span>
+                  <span style={{ fontWeight: 'bold' }}>£{formatCurrency(calculatedYTD.tax || 0)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                   <span>Employee National Insurance</span>
-                  <span style={{ fontWeight: 'bold' }}>£{calculatedYTD.employeeNI?.toFixed(2) || '155.95'}</span>
+                  <span style={{ fontWeight: 'bold' }}>£{formatCurrency(calculatedYTD.employeeNI || 0)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Employer National Insurance</span>
-                  <span style={{ fontWeight: 'bold' }}>£{calculatedYTD.employerNI?.toFixed(2) || '186.92'}</span>
+                  <span style={{ fontWeight: 'bold' }}>£{formatCurrency(calculatedYTD.employerNI || 0)}</span>
                 </div>
               </div>
             </div>
@@ -226,7 +230,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
             <h3 style={{ fontSize: '11px', fontWeight: 'bold', margin: '0 0 8px 0', fontFamily: 'Arial, sans-serif' }}>Payment</h3>
             <div style={{ border: '1px solid #999', padding: '20px', backgroundColor: '#f5f5f5', minHeight: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center' }}>
               <div style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '8px', fontFamily: 'Arial, sans-serif' }}>
-                £{netPay?.toFixed(2) || '1,653.85'}
+                £{formatCurrency(netPay || 0)}
               </div>
               <div style={{ fontSize: '10px', color: '#666', fontFamily: 'Arial, sans-serif' }}>
                 Paid {formatDate(payslipData.payPeriodEnd) || '30/04/2022'}
@@ -298,19 +302,19 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                   {payslipData.paymentEntries?.map((entry: any, index: number) => (
                     <div key={entry.id || index} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                       <span>{entry.description || 'Monthly pay'}</span>
-                      <span style={{ fontWeight: 'bold' }}>{currency}{entry.amount?.toFixed(2) || '0.00'}</span>
+                      <span style={{ fontWeight: 'bold' }}>{currency}{formatCurrency(entry.amount || 0)}</span>
                     </div>
                   ))}
                   {(!payslipData.paymentEntries || payslipData.paymentEntries.length === 0) && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                       <span>Monthly pay</span>
-                      <span style={{ fontWeight: 'bold' }}>{currency}{payslipData.grossPay?.toFixed(2) || '0.00'}</span>
+                      <span style={{ fontWeight: 'bold' }}>{currency}{formatCurrency(payslipData.grossPay || 0)}</span>
                     </div>
                   )}
                 </div>
                 <div style={{ position: 'absolute', bottom: '12px', left: '12px', right: '12px', borderTop: '1px solid #999', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '10px', color: '#333' }}>
                   <span>Total</span>
-                  <span>{currency}{payslipData.grossPay?.toFixed(2) || '0.00'}</span>
+                  <span>{currency}{formatCurrency(payslipData.grossPay || 0)}</span>
                 </div>
               </div>
             </div>
@@ -323,13 +327,13 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                   {payslipData.deductions?.map((deduction: any, index: number) => (
                     <div key={deduction.id || index} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                       <span>{deduction.name}</span>
-                      <span style={{ fontWeight: 'bold' }}>{currency}{deduction.amount?.toFixed(2) || '0.00'}</span>
+                      <span style={{ fontWeight: 'bold' }}>{currency}{formatCurrency(deduction.amount || 0)}</span>
                     </div>
                   ))}
                 </div>
                 <div style={{ position: 'absolute', bottom: '12px', left: '12px', right: '12px', borderTop: '1px solid #999', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '10px', color: '#333' }}>
                   <span>Total</span>
-                  <span>{currency}{totalDeductions?.toFixed(2) || '0.00'}</span>
+                  <span>{currency}{formatCurrency(totalDeductions || 0)}</span>
                 </div>
               </div>
             </div>
@@ -344,15 +348,15 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                 <div style={{ fontSize: '10px', lineHeight: '1.6', color: '#333', fontFamily: 'Arial, sans-serif' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                     <span>Taxable gross pay</span>
-                    <span style={{ fontWeight: 'bold' }}>{currency}{payslipData.grossPay?.toFixed(2) || '0.00'}</span>
+                    <span style={{ fontWeight: 'bold' }}>{currency}{formatCurrency(payslipData.grossPay || 0)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                     <span>Employer National Insurance</span>
-                    <span style={{ fontWeight: 'bold' }}>{currency}{((payslipData.grossPay || 0) * 0.1325)?.toFixed(2) || '0.00'}</span>
+                    <span style={{ fontWeight: 'bold' }}>{currency}{formatCurrency((payslipData.grossPay || 0) * 0.1325)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #999', paddingTop: '8px', marginTop: '8px', fontWeight: 'bold' }}>
                     <span>Net pay</span>
-                    <span>{currency}{netPay?.toFixed(2) || '0.00'}</span>
+                    <span>{currency}{formatCurrency(netPay || 0)}</span>
                   </div>
                 </div>
               </div>
@@ -365,19 +369,19 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                 <div style={{ fontSize: '10px', lineHeight: '1.6', color: '#333', fontFamily: 'Arial, sans-serif' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                     <span>Taxable gross pay</span>
-                    <span style={{ fontWeight: 'bold' }}>{currency}{ytdValues.grossPay?.toFixed(2) || '0.00'}</span>
+                    <span style={{ fontWeight: 'bold' }}>{currency}{formatCurrency(ytdValues.grossPay || 0)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                     <span>Tax</span>
-                    <span style={{ fontWeight: 'bold' }}>{currency}{calculatedYTD.tax?.toFixed(2) || '0.00'}</span>
+                    <span style={{ fontWeight: 'bold' }}>{currency}{formatCurrency(calculatedYTD.tax || 0)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                     <span>Employee National Insurance</span>
-                    <span style={{ fontWeight: 'bold' }}>{currency}{calculatedYTD.employeeNI?.toFixed(2) || '0.00'}</span>
+                    <span style={{ fontWeight: 'bold' }}>{currency}{formatCurrency(calculatedYTD.employeeNI || 0)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span>Employer National Insurance</span>
-                    <span style={{ fontWeight: 'bold' }}>{currency}{calculatedYTD.employerNI?.toFixed(2) || '0.00'}</span>
+                    <span style={{ fontWeight: 'bold' }}>{currency}{formatCurrency(calculatedYTD.employerNI || 0)}</span>
                   </div>
                 </div>
               </div>
@@ -388,7 +392,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
               <h3 style={{ fontSize: '11px', fontWeight: 'bold', margin: '0 0 8px 0', color: '#333', fontFamily: 'Arial, sans-serif' }}>Payment</h3>
               <div style={{ border: '1px solid #999', padding: '20px', backgroundColor: '#f5f5f5', minHeight: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center' }}>
                 <div style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '8px', color: '#333', fontFamily: 'Arial, sans-serif' }}>
-                  {currency}{netPay?.toFixed(2) || '0.00'}
+                  {currency}{formatCurrency(netPay || 0)}
                 </div>
                 <div style={{ fontSize: '10px', color: '#666', fontFamily: 'Arial, sans-serif' }}>
                   Paid {formatDate(payslipData.payPeriodEnd) || new Date().toLocaleDateString('en-GB')}

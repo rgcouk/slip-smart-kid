@@ -86,14 +86,14 @@ export const TaxInfoFields = ({
       <div>
         <Label htmlFor="student_loan_plan">Student Loan Plan</Label>
         <Select 
-          value={studentLoanPlan || ''} 
-          onValueChange={(value) => onFieldChange('student_loan_plan', value || undefined)}
+          value={studentLoanPlan || 'none'} 
+          onValueChange={(value) => onFieldChange('student_loan_plan', value === 'none' ? undefined : value)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select plan (if applicable)" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">None</SelectItem>
+            <SelectItem value="none">None</SelectItem>
             <SelectItem value="Plan1">Plan 1 (Before Sept 2012)</SelectItem>
             <SelectItem value="Plan2">Plan 2 (Sept 2012 onwards)</SelectItem>
             <SelectItem value="Plan4">Plan 4 (Scotland)</SelectItem>

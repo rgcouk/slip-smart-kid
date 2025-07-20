@@ -25,6 +25,22 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
     return amount.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
+  const getWorkingDayDate = () => {
+    const today = new Date();
+    const twoDaysAgo = new Date(today);
+    twoDaysAgo.setDate(today.getDate() - 2);
+    
+    // If it's Saturday (6) or Sunday (0), move to Friday
+    const dayOfWeek = twoDaysAgo.getDay();
+    if (dayOfWeek === 6) { // Saturday
+      twoDaysAgo.setDate(twoDaysAgo.getDate() - 1); // Move to Friday
+    } else if (dayOfWeek === 0) { // Sunday
+      twoDaysAgo.setDate(twoDaysAgo.getDate() - 2); // Move to Friday
+    }
+    
+    return twoDaysAgo.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  };
+
   const formatPeriod = (start: string, end: string) => {
     if (!start || !end) return payslipData.period || '';
     const startDate = new Date(start);
@@ -241,9 +257,8 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
           </div>
         </div>
 
-        {/* Footer */}
         <div style={{ borderTop: '1px solid #ccc', paddingTop: '15px', fontSize: '10px', fontFamily: 'Arial, sans-serif' }}>
-          Employer PAYE Reference: {payslipData.companyRegistration || '123/AB123'}
+          Payment processed on {getWorkingDayDate()}
         </div>
       </div>
 
@@ -407,7 +422,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
 
           {/* Footer */}
           <div style={{ borderTop: '1px solid #ccc', paddingTop: '15px', fontSize: '10px', color: '#333', fontFamily: 'Arial, sans-serif' }}>
-            Employer PAYE Reference: {payslipData.companyRegistration || '123/AB123'}
+            Payment processed on {getWorkingDayDate()}
           </div>
       </div>
     </div>

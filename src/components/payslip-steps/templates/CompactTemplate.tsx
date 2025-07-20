@@ -26,66 +26,126 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
           padding: '30px',
           backgroundColor: 'white',
           fontFamily: 'Arial, sans-serif',
-          fontSize: '12px',
-          lineHeight: '1.3'
+          fontSize: '13px',
+          lineHeight: '1.4'
         }}
       >
         {/* PDF Header */}
-        <div style={{ textAlign: 'center', marginBottom: '25px', borderBottom: '1px solid #333', paddingBottom: '15px' }}>
-          <h1 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0', color: '#333' }}>
+        <div style={{ textAlign: 'center', marginBottom: '20px', borderBottom: '2px solid #333', paddingBottom: '15px' }}>
+          <h1 style={{ fontSize: '22px', fontWeight: 'bold', margin: '0', color: '#333' }}>
             {payslipData.companyName || 'Company Name'}
           </h1>
-          <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#666' }}>
-            Payslip for {payslipData.period}
+          <p style={{ margin: '8px 0 0 0', fontSize: '14px', color: '#666' }}>
+            Payslip for {payslipData.period || 'Pay Period'}
           </p>
+          {payslipData.companyAddress && (
+            <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#666' }}>
+              {payslipData.companyAddress}
+            </p>
+          )}
         </div>
 
-        {/* Employee Information - Compact */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '11px' }}>
+        {/* Employee Information Row */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '12px', backgroundColor: '#f8f9fa', padding: '12px', borderRadius: '4px' }}>
           <div>
-            <div><strong>Employee:</strong> {payslipData.name}</div>
-            <div><strong>ID:</strong> {payslipData.payrollNumber || 'N/A'}</div>
-          </div>
-          <div>
+            <div style={{ marginBottom: '4px' }}><strong>Employee:</strong> {payslipData.name || 'N/A'}</div>
+            <div style={{ marginBottom: '4px' }}><strong>Employee ID:</strong> {payslipData.payrollNumber || 'N/A'}</div>
             <div><strong>Tax Code:</strong> {payslipData.taxCode || 'N/A'}</div>
-            <div><strong>NI:</strong> {payslipData.niNumber || 'N/A'}</div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ marginBottom: '4px' }}><strong>NI Number:</strong> {payslipData.niNumber || 'N/A'}</div>
+            <div style={{ marginBottom: '4px' }}><strong>NI Category:</strong> {payslipData.niCategory || 'A'}</div>
+            <div><strong>Pay Date:</strong> {new Date().toLocaleDateString('en-GB')}</div>
           </div>
         </div>
 
-        {/* Simple Payment Summary */}
-        <div style={{ marginBottom: '15px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #eee' }}>
-            <span>Gross Pay:</span>
-            <span>{currency}{payslipData.grossPay?.toFixed(2) || '0.00'}</span>
-          </div>
-          
-          {payslipData.deductions?.map((deduction: any, index: number) => (
-            <div key={deduction.id || index} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', fontSize: '10px', color: '#666' }}>
-              <span>{deduction.name}:</span>
-              <span>-{currency}{deduction.amount?.toFixed(2) || '0.00'}</span>
-            </div>
-          ))}
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderTop: '2px solid #333', fontWeight: 'bold', fontSize: '14px' }}>
-            <span>NET PAY:</span>
-            <span>{currency}{netPay?.toFixed(2) || '0.00'}</span>
-          </div>
-        </div>
+        {/* Payment Details Table */}
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', marginBottom: '15px' }}>
+          <thead>
+            <tr style={{ backgroundColor: '#e9ecef' }}>
+              <th style={{ border: '1px solid #333', padding: '8px', textAlign: 'left', fontWeight: 'bold' }}>Description</th>
+              <th style={{ border: '1px solid #333', padding: '8px', textAlign: 'right', fontWeight: 'bold' }}>Amount</th>
+              <th style={{ border: '1px solid #333', padding: '8px', textAlign: 'right', fontWeight: 'bold' }}>YTD</th>
+            </tr>
+          </thead>
+          <tbody>
+            {/* Gross Pay */}
+            <tr>
+              <td style={{ border: '1px solid #333', padding: '6px', fontWeight: 'bold', color: '#28a745' }}>Gross Pay</td>
+              <td style={{ border: '1px solid #333', padding: '6px', textAlign: 'right', fontWeight: 'bold', color: '#28a745' }}>
+                {currency}{payslipData.grossPay?.toFixed(2) || '0.00'}
+              </td>
+              <td style={{ border: '1px solid #333', padding: '6px', textAlign: 'right', color: '#28a745' }}>
+                {currency}{ytdValues.grossPay?.toFixed(2) || '0.00'}
+              </td>
+            </tr>
+            
+            {/* Payment Entries */}
+            {payslipData.paymentEntries?.map((entry: any, index: number) => (
+              <tr key={entry.id || index}>
+                <td style={{ border: '1px solid #333', padding: '6px', paddingLeft: '12px', fontSize: '11px', color: '#666' }}>
+                  + {entry.description}
+                </td>
+                <td style={{ border: '1px solid #333', padding: '6px', textAlign: 'right', fontSize: '11px' }}>
+                  {currency}{entry.amount?.toFixed(2) || '0.00'}
+                </td>
+                <td style={{ border: '1px solid #333', padding: '6px', textAlign: 'right', fontSize: '11px', color: '#666' }}>
+                  {currency}{(entry.amount * (ytdValues.grossPay / (payslipData.grossPay || 1))).toFixed(2) || '0.00'}
+                </td>
+              </tr>
+            ))}
 
-        {/* YTD Summary */}
-        <div style={{ fontSize: '10px', color: '#666', borderTop: '1px solid #eee', paddingTop: '10px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>YTD Gross:</span>
-            <span>{currency}{ytdValues.grossPay?.toFixed(2) || '0.00'}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>YTD Deductions:</span>
-            <span>{currency}{ytdValues.totalDeductions?.toFixed(2) || '0.00'}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
-            <span>YTD Net:</span>
-            <span>{currency}{ytdValues.netPay?.toFixed(2) || '0.00'}</span>
-          </div>
+            {/* Deductions */}
+            {payslipData.deductions?.map((deduction: any, index: number) => (
+              <tr key={deduction.id || index}>
+                <td style={{ border: '1px solid #333', padding: '6px', paddingLeft: '12px', fontSize: '11px', color: '#dc3545' }}>
+                  - {deduction.name}
+                </td>
+                <td style={{ border: '1px solid #333', padding: '6px', textAlign: 'right', fontSize: '11px', color: '#dc3545' }}>
+                  -{currency}{deduction.amount?.toFixed(2) || '0.00'}
+                </td>
+                <td style={{ border: '1px solid #333', padding: '6px', textAlign: 'right', fontSize: '11px', color: '#dc3545' }}>
+                  -{currency}{(deduction.amount * (ytdValues.grossPay / (payslipData.grossPay || 1))).toFixed(2) || '0.00'}
+                </td>
+              </tr>
+            ))}
+
+            {/* Total Deductions */}
+            <tr style={{ backgroundColor: '#f8f9fa' }}>
+              <td style={{ border: '1px solid #333', padding: '6px', fontWeight: 'bold' }}>Total Deductions</td>
+              <td style={{ border: '1px solid #333', padding: '6px', textAlign: 'right', fontWeight: 'bold' }}>
+                -{currency}{totalDeductions?.toFixed(2) || '0.00'}
+              </td>
+              <td style={{ border: '1px solid #333', padding: '6px', textAlign: 'right' }}>
+                -{currency}{ytdValues.totalDeductions?.toFixed(2) || '0.00'}
+              </td>
+            </tr>
+
+            {/* Net Pay */}
+            <tr style={{ backgroundColor: '#d4edda', borderTop: '2px solid #28a745' }}>
+              <td style={{ border: '1px solid #333', padding: '10px', fontWeight: 'bold', fontSize: '14px', color: '#155724' }}>
+                NET PAY
+              </td>
+              <td style={{ border: '1px solid #333', padding: '10px', textAlign: 'right', fontWeight: 'bold', fontSize: '14px', color: '#155724' }}>
+                {currency}{netPay?.toFixed(2) || '0.00'}
+              </td>
+              <td style={{ border: '1px solid #333', padding: '10px', textAlign: 'right', fontWeight: 'bold', fontSize: '14px', color: '#155724' }}>
+                {currency}{ytdValues.netPay?.toFixed(2) || '0.00'}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        {/* Footer */}
+        <div style={{ borderTop: '1px solid #ccc', paddingTop: '12px', fontSize: '10px', color: '#666', textAlign: 'center' }}>
+          <p style={{ margin: '0' }}>
+            This payslip is computer generated and does not require a signature.
+          </p>
+          {payslipData.companyEmail && (
+            <p style={{ margin: '5px 0 0 0' }}>
+              For queries, contact: {payslipData.companyEmail}
+            </p>
+          )}
         </div>
       </div>
 

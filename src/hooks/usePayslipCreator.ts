@@ -253,6 +253,10 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
 
     setIsLoading(true);
     
+    console.log('Current user:', user);
+    console.log('Is parent mode:', isParentMode);
+    console.log('Selected child:', selectedChild);
+    
     try {
       const syncedData = syncPeriodFormats({ ...payslipData });
       const netSalary = calculateNetSalary();

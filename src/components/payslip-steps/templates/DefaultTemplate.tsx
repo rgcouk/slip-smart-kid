@@ -55,7 +55,7 @@ export const DefaultTemplate: React.FC<TemplateProps> = ({
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', fontSize: '12px' }}>
             <div>
               <div style={{ marginBottom: '5px' }}>
-                <strong>Name:</strong> {payslipData.name}
+                <strong>Name:</strong> {payslipData.name || payslipData.employeeName}
               </div>
               <div style={{ marginBottom: '5px' }}>
                 <strong>Employee ID:</strong> {payslipData.payrollNumber || 'N/A'}
@@ -63,6 +63,11 @@ export const DefaultTemplate: React.FC<TemplateProps> = ({
               <div style={{ marginBottom: '5px' }}>
                 <strong>Tax Code:</strong> {payslipData.taxCode || 'N/A'}
               </div>
+              {payslipData.department && (
+                <div style={{ marginBottom: '5px' }}>
+                  <strong>Department:</strong> {payslipData.department}
+                </div>
+              )}
             </div>
             <div>
               <div style={{ marginBottom: '5px' }}>
@@ -71,6 +76,16 @@ export const DefaultTemplate: React.FC<TemplateProps> = ({
               <div style={{ marginBottom: '5px' }}>
                 <strong>NI Category:</strong> {payslipData.niCategory || 'A'}
               </div>
+              {payslipData.studentLoanPlan && (
+                <div style={{ marginBottom: '5px' }}>
+                  <strong>Student Loan:</strong> {payslipData.studentLoanPlan}
+                </div>
+              )}
+              {payslipData.pensionSchemeReference && (
+                <div style={{ marginBottom: '5px' }}>
+                  <strong>Pension Ref:</strong> {payslipData.pensionSchemeReference}
+                </div>
+              )}
             </div>
           </div>
         </div>

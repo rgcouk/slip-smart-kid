@@ -186,25 +186,32 @@ export const BusinessSetupStep = ({
                   <Label className="text-base font-medium mb-3 block">Payslip Template</Label>
                   <RadioGroup 
                     value={payslipData.template || 'default'} 
-                    onValueChange={(value: 'default' | 'professional') => setPayslipData(prev => ({
+                    onValueChange={(value: 'default' | 'professional' | 'compact') => setPayslipData(prev => ({
                       ...prev,
                       template: value
                     }))}
-                    className="grid grid-cols-2 gap-4"
+                    className="grid grid-cols-3 gap-4"
                   >
                     <Card className="border border-border p-4 cursor-pointer hover:border-primary transition-colors">
-                      <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-3 mb-2">
                         <RadioGroupItem value="default" id="default" />
-                        <Label htmlFor="default" className="cursor-pointer font-medium">Default Template</Label>
+                        <Label htmlFor="default" className="cursor-pointer font-medium">Default</Label>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-2">Clean and professional design</p>
+                      <p className="text-xs text-muted-foreground">Clean and modern design</p>
                     </Card>
                     <Card className="border border-border p-4 cursor-pointer hover:border-primary transition-colors">
-                      <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-3 mb-2">
                         <RadioGroupItem value="professional" id="professional" />
-                        <Label htmlFor="professional" className="cursor-pointer font-medium">Professional Template</Label>
+                        <Label htmlFor="professional" className="cursor-pointer font-medium">Professional</Label>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-2">Enhanced layout with company branding</p>
+                      <p className="text-xs text-muted-foreground">Detailed business format</p>
+                    </Card>
+                    <Card className="border border-border p-4 cursor-pointer hover:border-primary transition-colors">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <RadioGroupItem value="compact" id="compact" />
+                        <Label htmlFor="compact" className="cursor-pointer font-medium">Compact</Label>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Space-efficient layout</p>
                     </Card>
                   </RadioGroup>
                 </div>

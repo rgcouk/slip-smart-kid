@@ -288,9 +288,10 @@ export const usePayslipCreator = (isParentMode: boolean, selectedChild: any) => 
 
       console.log('Saving validated payslip record:', payslipRecord);
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('payslips')
-        .insert([payslipRecord]);
+        .insert([payslipRecord])
+        .select();
 
       if (error) {
         console.error('Error saving payslip:', error);

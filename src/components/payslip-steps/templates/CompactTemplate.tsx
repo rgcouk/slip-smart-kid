@@ -235,7 +235,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                 £{formatCurrency(netPay || 0)}
               </div>
               <div style={{ fontSize: '10px', color: '#666', fontFamily: 'Arial, sans-serif' }}>
-                Paid {formatDate(payslipData.payPeriodEnd) || '30/04/2022'}
+                Paid {formatDate(payslipData.payPeriodEnd || payslipData.payDate) || formatDate(new Date().toISOString())}
               </div>
             </div>
           </div>
@@ -399,7 +399,7 @@ export const CompactTemplate: React.FC<TemplateProps> = ({
                   {currency}{formatCurrency(netPay || 0)}
                 </div>
                 <div style={{ fontSize: '10px', color: '#666', fontFamily: 'Arial, sans-serif' }}>
-                  Paid {formatDate(payslipData.payPeriodEnd) || new Date().toLocaleDateString('en-GB')}
+                  Paid {formatDate(payslipData.payPeriodEnd || payslipData.payDate) || formatDate(new Date().toISOString())}
                 </div>
               </div>
             </div>
